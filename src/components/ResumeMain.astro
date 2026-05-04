@@ -27,18 +27,42 @@ const boot = t.bootLines;
     }
     <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,280px)_1fr] lg:gap-x-8">
       <div class="flex justify-center lg:justify-start">
-        <div class="avatar-terminal-group">
+        <div
+          class="avatar-terminal-group"
+          tabindex="0"
+          aria-label={
+            lang === 'ru'
+              ? 'Фото профиля: в терминальном режиме показан пиксельный кадр; наведите курсор или сфокусируйте блок, чтобы плавно показать фото в высоком разрешении.'
+              : 'Profile photo: low-fi preview by default; hover or focus this block to reveal the high-resolution photo with a terminal-style decode effect.'
+          }
+        >
           <div class="avatar-terminal-frame">
             <div class="avatar-terminal-rotator" aria-hidden="true" />
             <div class="avatar-terminal-inner">
-              <img
-                src="/profile.png"
-                alt=""
-                width="256"
-                height="256"
-                class="avatar-terminal-photo h-full w-full object-cover object-center"
-                loading="eager"
-              />
+              <div class="avatar-terminal-deco" aria-hidden="true" />
+              <div class="avatar-terminal-visuals">
+                <img
+                  class="avatar-terminal-retro"
+                  src="/avatar-retro-pixel.png"
+                  alt=""
+                  width="256"
+                  height="256"
+                  loading="eager"
+                  decoding="async"
+                />
+                <img
+                  class="avatar-terminal-natural"
+                  data-avatar-natural
+                  src="/avatar-natural-im.png"
+                  alt=""
+                  width="256"
+                  height="256"
+                  loading="eager"
+                  decoding="async"
+                />
+                <div class="avatar-terminal-crt" aria-hidden="true" />
+                <div class="avatar-terminal-glitch" aria-hidden="true" />
+              </div>
             </div>
           </div>
         </div>
@@ -236,3 +260,12 @@ const boot = t.bootLines;
     </div>
   </section>
 </main>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    var natural = document.querySelector('[data-avatar-natural]');
+    if (!natural || !(natural instanceof HTMLImageElement)) return;
+    var pool = ['/avatar-natural-im.png', '/profile.png'];
+    natural.src = pool[Math.floor(Math.random() * pool.length)];
+  });
+</script>
