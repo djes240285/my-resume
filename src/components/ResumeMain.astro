@@ -278,6 +278,8 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
 
     var idx = 0;
+    /** Один плеер: перед каждым кликом стоп + с начала — без наслоения длинного MP3 */
+    var shutterAudio = null;
 
     function applyRetroClass() {
       var id = stackSlides[idx] && stackSlides[idx].id;
@@ -297,11 +299,14 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (!shutterSrc) return;
       try {
-        var a = new Audio(shutterSrc);
-        a.preload = 'auto';
-        a.volume = 0.95;
-        a.currentTime = 0;
-        var p = a.play();
+        if (!shutterAudio) {
+          shutterAudio = new Audio(shutterSrc);
+          shutterAudio.preload = 'auto';
+          shutterAudio.volume = 0.95;
+        }
+        shutterAudio.pause();
+        shutterAudio.currentTime = 0;
+        var p = shutterAudio.play();
         if (p && typeof p.catch === 'function') void p.catch(function () {});
       } catch (e) {
         /* ignore */
