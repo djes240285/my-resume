@@ -629,7 +629,7 @@
     border-radius: 14px;
     overflow: hidden;
     background: #070b12;
-    border: 2px dashed rgba(74, 222, 128, 0.72);
+    border: none;
     box-shadow:
       inset 0 0 0 1px rgba(56, 189, 248, 0.06),
       0 0 0 1px rgba(0, 0, 0, 0.55),
@@ -720,8 +720,7 @@
     transition: opacity 0.35s ease;
   }
 
-  .avatar-terminal-group:hover .avatar-terminal-crt,
-  .avatar-terminal-group:focus-within .avatar-terminal-crt {
+  .avatar-terminal-group:hover .avatar-terminal-crt {
     opacity: 0.12;
   }
 
@@ -735,8 +734,7 @@
     transition: opacity 0.22s ease;
   }
 
-  .avatar-terminal-group:hover .avatar-terminal-crosshair,
-  .avatar-terminal-group:focus-within .avatar-terminal-crosshair {
+  .avatar-terminal-group:hover .avatar-terminal-crosshair {
     opacity: 1;
   }
 
@@ -1177,7 +1175,11 @@
   }
 
   .avatar-terminal-crosshair {
-    opacity: 0.3 !important;
+    opacity: 0 !important;
+  }
+
+  .avatar-terminal-group:hover .avatar-terminal-crosshair {
+    opacity: 0.35 !important;
   }
 
   .reveal-2026 {
