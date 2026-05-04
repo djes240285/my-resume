@@ -296,7 +296,10 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       applyRetroClass();
     }
 
-    /** Процедурный «затвор» SLR: корпус → шторка 1 → шторка 2 (без семплов, лицензий) */
+    /**
+     * Процедурный звук съёмки: затвор SLR + короткая фаза «схлопывания» диафрагмы.
+     * Только синтез Web Audio — не записи с микрофона, отдельный phonogram не копируется.
+     */
     function playShutterSound() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       try {
@@ -373,6 +376,57 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         latch.start(t0 + 0.008);
         latch.stop(t0 + 0.022);
 
+        /* Диафрагма после экспозиции: короткий «воздух» через схлопывающийся lowpass + щелчки лепестков */
+        function apertureAirStop(start) {
+          var len = Math.floor(ctx.sampleRate * 0.034);
+          var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+          var ch = buf.getChannelData(0);
+          var i;
+          for (i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len) * 0.85;
+          var src = ctx.createBufferSource();
+          src.buffer = buf;
+          var lp = ctx.createBiquadFilter();
+          lp.type = 'lowpass';
+          lp.Q.value = 0.65;
+          lp.frequency.setValueAtTime(4200, start);
+          lp.frequency.exponentialRampToValueAtTime(320, start + 0.03);
+          var g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, start);
+          g.gain.exponentialRampToValueAtTime(0.072, start + 0.002);
+          g.gain.exponentialRampToValueAtTime(0.0001, start + 0.034);
+          src.connect(lp);
+          lp.connect(g);
+          g.connect(master);
+          src.start(start);
+          src.stop(start + 0.042);
+        }
+
+        function apertureBladeClicks(start) {
+          var freqs = [2480, 2220, 1980, 1760, 1560, 1380, 1220];
+          var t = start;
+          var bi = 0;
+          for (bi = 0; bi < freqs.length; bi++) {
+            var o = ctx.createOscillator();
+            o.type = 'triangle';
+            o.frequency.setValueAtTime(freqs[bi], t);
+            var og = ctx.createGain();
+            var peak = 0.048 - bi * 0.005;
+            if (peak < 0.014) peak = 0.014;
+            og.gain.setValueAtTime(0.0001, t);
+            og.gain.exponentialRampToValueAtTime(peak, t + 0.00045);
+            og.gain.exponentialRampToValueAtTime(0.0001, t + 0.0026);
+            o.connect(og);
+            og.connect(master);
+            o.start(t);
+            o.stop(t + 0.0035);
+            t += 0.00335;
+          }
+        }
+
+        var tIris = t0 + 0.05;
+        apertureAirStop(tIris);
+        apertureBladeClicks(tIris + 0.004);
+
         window.setTimeout(function () {
           try {
             comp.disconnect();
@@ -380,7 +434,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           } catch (e2) {
             /* ignore */
           }
-        }, 220);
+        }, 300);
       } catch (e) {
         /* ignore */
       }
