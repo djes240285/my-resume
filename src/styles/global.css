@@ -433,10 +433,173 @@
     border: 1px solid #1f2933;
     background: #111827;
     border-radius: 14px;
-    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.05);
+    box-shadow:
+      inset 0 0 0 1px rgba(56, 189, 248, 0.05),
+      inset 3px 0 0 -1px rgba(74, 222, 128, 0.12);
   }
 
-  /* Аватар: лоадер снаружи + концепт-пиксель → натуральное фото (терминальный «декод») */
+  /* Шапка: «живой» HUD — штрих снизу, скобки у ссылок */
+  .terminal-header {
+    position: relative;
+  }
+
+  .terminal-header__track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(74, 222, 128, 0.5) 0 4px,
+      transparent 4px 9px
+    );
+    background-size: 9px 1px;
+    opacity: 0.55;
+    animation: hud-dash-march 1.4s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes hud-dash-march {
+    to {
+      background-position: 9px 0;
+    }
+  }
+
+  .terminal-logo {
+    text-decoration: none;
+    color: #86efac;
+  }
+
+  .terminal-logo--inline {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.45rem;
+  }
+
+  .terminal-logo__mark {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 12px rgba(74, 222, 128, 0.35);
+  }
+
+  .terminal-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.12rem;
+    padding: 0.35rem 0.45rem;
+    border-radius: 6px;
+    color: #94a3b8;
+    text-decoration: none;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .terminal-nav-link__bracket {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    color: rgba(74, 222, 128, 0.45);
+    transition: color 0.2s ease;
+  }
+
+  .terminal-nav-link:hover,
+  .terminal-nav-link:focus-visible {
+    color: #ecfdf5;
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.22);
+  }
+
+  .terminal-nav-link:hover .terminal-nav-link__bracket,
+  .terminal-nav-link:focus-visible .terminal-nav-link__bracket {
+    color: rgba(74, 222, 128, 0.85);
+  }
+
+  .terminal-nav-link--active {
+    color: #bbf7d0;
+  }
+
+  .terminal-nav-link--active .terminal-nav-link__bracket {
+    color: #4ade80;
+  }
+
+  .terminal-nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 0.15rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.55), transparent);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .terminal-nav-link:hover::after,
+  .terminal-nav-link:focus-visible::after,
+  .terminal-nav-link--active::after {
+    transform: scaleX(1);
+  }
+
+  .terminal-lang-pill--on {
+    background: rgba(30, 41, 59, 0.95);
+    color: #bbf7d0;
+    box-shadow:
+      inset 0 0 0 1px rgba(74, 222, 128, 0.35),
+      0 0 12px -4px rgba(74, 222, 128, 0.25);
+  }
+
+  .terminal-lang-switch:hover {
+    border-color: rgba(74, 222, 128, 0.5);
+    box-shadow:
+      inset 0 0 0 1px rgba(56, 189, 248, 0.1),
+      0 0 0 1px rgba(74, 222, 128, 0.12);
+  }
+
+  /* Общие уголки + пунктир (контакты, лого) */
+  .hud-mini {
+    position: relative;
+  }
+
+  .hud-mini::before,
+  .hud-mini::after {
+    content: "";
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    pointer-events: none;
+    z-index: 2;
+    border-color: rgba(74, 222, 128, 0.65);
+    border-style: solid;
+    border-width: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .hud-mini::before {
+    top: -1px;
+    left: -1px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-radius: 3px 0 0 0;
+  }
+
+  .hud-mini::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+    border-radius: 0 0 3px 0;
+  }
+
+  .hud-frame {
+    position: relative;
+  }
+
+  /* Аватар: без цветного квадрата — тонкая «бегущая» пунктирная обводка SVG + киноплёнка */
   .avatar-terminal-group {
     width: 268px;
     max-width: 100%;
@@ -454,43 +617,40 @@
     width: 100%;
     border-radius: 18px;
     isolation: isolate;
+    background: radial-gradient(ellipse at 30% 20%, rgba(30, 41, 59, 0.5) 0%, #020617 70%);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
   }
 
-  .avatar-terminal-rotator {
+  .avatar-terminal-border-loader {
     position: absolute;
     inset: 0;
-    border-radius: 18px;
-    z-index: 0;
-    background: conic-gradient(
-      from 0deg,
-      rgba(34, 197, 94, 0.15) 0%,
-      #22c55e 18%,
-      #38bdf8 42%,
-      rgba(6, 182, 212, 0.35) 58%,
-      rgba(34, 197, 94, 0.12) 78%,
-      #22c55e 100%
-    );
-    animation: avatar-terminal-spin 2.8s linear infinite;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
+    z-index: 0;
   }
 
-  @keyframes avatar-terminal-spin {
+  .avatar-terminal-border-loader__rect {
+    animation: avatar-border-dash 2.2s linear infinite;
+  }
+
+  @keyframes avatar-border-dash {
     to {
-      transform: rotate(360deg);
+      stroke-dashoffset: -18;
     }
   }
 
   .avatar-terminal-inner {
     position: absolute;
-    inset: 5px;
+    inset: 6px;
     z-index: 1;
     border-radius: 14px;
     overflow: hidden;
     background: #070b12;
-    border: 2px dashed rgba(74, 222, 128, 0.92);
+    border: 2px dashed rgba(74, 222, 128, 0.88);
     box-shadow:
-      inset 0 0 0 1px rgba(56, 189, 248, 0.1),
-      0 0 0 1px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(56, 189, 248, 0.08),
+      0 0 0 1px rgba(0, 0, 0, 0.55),
       0 14px 36px -20px rgba(0, 0, 0, 0.85);
     box-sizing: border-box;
   }
@@ -528,53 +688,78 @@
     opacity: 0.75;
   }
 
-  .avatar-terminal-visuals {
+  .avatar-terminal-film-window {
     position: relative;
     z-index: 1;
     width: 100%;
     height: 100%;
     min-height: 0;
-    aspect-ratio: 1;
+    overflow: hidden;
   }
 
-  .avatar-terminal-retro,
-  .avatar-terminal-natural {
+  .avatar-terminal-film-strip {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 200%;
+    transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+
+  .avatar-terminal-film-frame {
+    position: relative;
+    flex: 0 0 50%;
+    height: 50%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .avatar-terminal-film-img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transform: scale(1);
-    transform-origin: center;
   }
 
-  .avatar-terminal-retro {
-    z-index: 1;
+  .avatar-terminal-film-img--retro {
     image-rendering: crisp-edges;
-    filter: contrast(1.08) saturate(1.05);
-    opacity: 1;
-    transition:
-      opacity 0.5s steps(8, end),
-      filter 0.45s ease,
-      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: contrast(1.08) saturate(1.04);
   }
 
-  .avatar-terminal-natural {
-    z-index: 2;
-    opacity: 0;
-    clip-path: inset(0 0 100% 0);
-    filter: saturate(1.06) contrast(1.05) brightness(1.02);
-    transition:
-      clip-path 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.35s steps(1, end),
-      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  .avatar-terminal-film-perf {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 7px;
+    z-index: 6;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 5px,
+      rgba(74, 222, 128, 0.55) 5px,
+      rgba(74, 222, 128, 0.55) 6px,
+      transparent 6px,
+      transparent 11px
+    );
+    opacity: 0.55;
+    mix-blend-mode: screen;
+  }
+
+  .avatar-terminal-film-perf--left {
+    left: 1px;
+  }
+
+  .avatar-terminal-film-perf--right {
+    right: 1px;
   }
 
   .avatar-terminal-crt {
     position: absolute;
     inset: 0;
-    z-index: 3;
+    z-index: 4;
     pointer-events: none;
     background: repeating-linear-gradient(
       0deg,
@@ -583,7 +768,7 @@
       transparent 1px,
       transparent 3px
     );
-    opacity: 0.42;
+    opacity: 0.38;
     mix-blend-mode: multiply;
     transition: opacity 0.55s ease;
   }
@@ -591,14 +776,14 @@
   .avatar-terminal-glitch {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: 5;
     pointer-events: none;
     opacity: 0;
     background: repeating-linear-gradient(
       90deg,
       transparent 0,
       transparent 40%,
-      rgba(56, 189, 248, 0.15) 50%,
+      rgba(56, 189, 248, 0.14) 50%,
       transparent 60%,
       transparent 100%
     );
@@ -606,18 +791,9 @@
     mix-blend-mode: screen;
   }
 
-  .avatar-terminal-group:hover .avatar-terminal-retro,
-  .avatar-terminal-group:focus-within .avatar-terminal-retro {
-    opacity: 0;
-    filter: blur(3px) contrast(1.35) hue-rotate(-8deg);
-    transform: scale(1.03);
-  }
-
-  .avatar-terminal-group:hover .avatar-terminal-natural,
-  .avatar-terminal-group:focus-within .avatar-terminal-natural {
-    opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: scale(1.04);
+  .avatar-terminal-group:hover .avatar-terminal-film-strip,
+  .avatar-terminal-group:focus-within .avatar-terminal-film-strip {
+    transform: translateY(-50%);
   }
 
   .avatar-terminal-group:hover .avatar-terminal-crt,
@@ -627,7 +803,7 @@
 
   .avatar-terminal-group:hover .avatar-terminal-glitch,
   .avatar-terminal-group:focus-within .avatar-terminal-glitch {
-    animation: avatar-terminal-decode-glitch 0.62s steps(6, end) 1;
+    animation: avatar-terminal-decode-glitch 0.58s steps(5, end) 1;
   }
 
   @keyframes avatar-terminal-decode-glitch {
@@ -635,23 +811,18 @@
       opacity: 0;
       transform: translateX(0);
     }
-    15% {
-      opacity: 0.55;
+    20% {
+      opacity: 0.5;
       transform: translateX(-2%);
-      filter: hue-rotate(70deg);
+      filter: hue-rotate(60deg);
     }
-    35% {
-      opacity: 0.35;
+    45% {
+      opacity: 0.3;
       transform: translateX(1.5%);
     }
-    55% {
-      opacity: 0.5;
-      transform: translateX(-1%);
-      filter: hue-rotate(-40deg);
-    }
-    80% {
-      opacity: 0.2;
-      transform: translateX(0.5%);
+    70% {
+      opacity: 0.45;
+      transform: translateX(-0.8%);
     }
     100% {
       opacity: 0;
@@ -678,22 +849,27 @@
   .contact-terminal-card {
     min-height: 100%;
     border-radius: 12px;
-    border: 1px solid #1f2937;
-    background: linear-gradient(165deg, rgba(15, 23, 42, 0.95), rgba(17, 24, 39, 0.88));
+    border: 1px dashed rgba(74, 222, 128, 0.28);
+    background: linear-gradient(165deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.88));
     padding: 0.85rem 1rem;
-    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.04);
+    box-shadow:
+      inset 0 0 0 1px rgba(56, 189, 248, 0.05),
+      inset 0 -12px 24px -20px rgba(0, 0, 0, 0.35);
     transition:
-      border-color 200ms ease,
-      box-shadow 200ms ease,
-      transform 200ms ease;
+      border-color 0.22s ease,
+      box-shadow 0.22s ease,
+      transform 0.22s ease,
+      background-color 0.22s ease;
   }
 
   .contact-terminal-card:hover {
-    border-color: rgba(34, 197, 94, 0.45);
+    border-color: rgba(74, 222, 128, 0.55);
     box-shadow:
-      inset 0 0 0 1px rgba(56, 189, 248, 0.08),
-      0 0 0 1px rgba(34, 197, 94, 0.15);
-    transform: translateY(-1px);
+      inset 0 0 0 1px rgba(56, 189, 248, 0.1),
+      0 0 0 1px rgba(74, 222, 128, 0.18),
+      0 10px 28px -18px rgba(74, 222, 128, 0.12);
+    transform: translateY(-2px);
+    background: linear-gradient(165deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.92));
   }
 
   .contact-terminal-card--telegram {
@@ -726,13 +902,18 @@
     color: #e5e7eb;
     text-decoration: none;
     word-break: break-word;
-    border-bottom: 1px solid transparent;
-    transition: color 160ms ease, border-color 160ms ease;
+    padding-bottom: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.55), rgba(74, 222, 128, 0.55)) 0 100% / 0 1px
+      no-repeat;
+    transition:
+      color 0.18s ease,
+      background-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .contact-terminal-link:hover {
+  .contact-terminal-link:hover,
+  .contact-terminal-link:focus-visible {
     color: #fff;
-    border-bottom-color: rgba(56, 189, 248, 0.55);
+    background-size: 100% 1px;
   }
 
   .contact-terminal-handle {
@@ -745,9 +926,20 @@
     height: 64px;
     border-radius: 10px;
     overflow: hidden;
-    border: 1px solid rgba(34, 197, 94, 0.35);
-    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.12);
+    border: 1px dashed rgba(74, 222, 128, 0.45);
+    box-shadow:
+      inset 0 0 0 1px rgba(56, 189, 248, 0.1),
+      0 0 12px -6px rgba(74, 222, 128, 0.2);
     background: #020617;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .contact-terminal-card--telegram:hover .contact-terminal-qr {
+    border-color: rgba(74, 222, 128, 0.75);
+    transform: scale(1.04);
   }
 
   /* Путь успеха — вертикальная линия по сетке */
@@ -830,14 +1022,20 @@
 
   .tech-stack-card {
     border-radius: 10px;
-    border: 1px solid #1f2937;
+    border: 1px dashed rgba(74, 222, 128, 0.12);
     background: #0f172a;
     padding: 0.65rem 0.75rem;
-    transition: border-color 180ms ease;
+    box-shadow: inset 2px 0 0 0 rgba(56, 189, 248, 0.05);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .tech-stack-card:hover {
-    border-color: rgba(56, 189, 248, 0.35);
+    border-color: rgba(74, 222, 128, 0.38);
+    box-shadow:
+      inset 2px 0 0 0 rgba(56, 189, 248, 0.12),
+      0 0 0 1px rgba(74, 222, 128, 0.08);
   }
 
   .tech-stack-card__label {
@@ -872,9 +1070,14 @@
 
   .core-stats-cell {
     border-radius: 10px;
-    border: 1px solid #1f2937;
+    border: 1px dashed rgba(74, 222, 128, 0.16);
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.75));
     padding: 0.55rem 0.65rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .core-stats-cell:hover {
+    border-color: rgba(74, 222, 128, 0.4);
   }
 
   .core-stats-cell__label {
@@ -947,16 +1150,23 @@
   }
 
   .terminal-log {
-    border: 1px solid #1f2933;
+    border: 1px dashed rgba(74, 222, 128, 0.14);
     border-radius: 10px;
     padding: 0.7rem 0.8rem;
     background: #0f172a;
-    transition: border-color 180ms ease, box-shadow 180ms ease;
+    box-shadow: inset 2px 0 0 0 rgba(56, 189, 248, 0.06);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
   }
 
   .terminal-log:hover {
-    border-color: rgba(34, 197, 94, 0.45);
-    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
+    border-color: rgba(74, 222, 128, 0.42);
+    box-shadow:
+      inset 2px 0 0 0 rgba(56, 189, 248, 0.12),
+      0 0 0 1px rgba(74, 222, 128, 0.12);
+    transform: translateY(-1px);
   }
 
   .boot-line {
@@ -992,37 +1202,22 @@
     scroll-behavior: auto !important;
   }
 
-  .avatar-terminal-rotator {
-    opacity: 0.4;
+  .avatar-terminal-border-loader__rect {
+    animation: none !important;
   }
 
-  .avatar-terminal-retro,
-  .avatar-terminal-natural {
-    transition: opacity 0.2s ease !important;
+  .terminal-header__track {
+    animation: none !important;
+    opacity: 0.35;
   }
 
-  .avatar-terminal-natural {
-    clip-path: none !important;
-    opacity: 0 !important;
+  .avatar-terminal-film-strip {
+    transition: transform 0.2s ease !important;
   }
 
-  .avatar-terminal-retro {
-    opacity: 1 !important;
-    filter: none !important;
-    transform: none !important;
-  }
-
-  .avatar-terminal-group:hover .avatar-terminal-natural,
-  .avatar-terminal-group:focus-within .avatar-terminal-natural {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .avatar-terminal-group:hover .avatar-terminal-retro,
-  .avatar-terminal-group:focus-within .avatar-terminal-retro {
-    opacity: 0 !important;
-    transform: none !important;
-    filter: none !important;
+  .avatar-terminal-group:hover .avatar-terminal-film-strip,
+  .avatar-terminal-group:focus-within .avatar-terminal-film-strip {
+    transform: translateY(-50%) !important;
   }
 
   .avatar-terminal-crt {

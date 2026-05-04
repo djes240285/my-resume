@@ -32,34 +32,64 @@ const boot = t.bootLines;
           tabindex="0"
           aria-label={
             lang === 'ru'
-              ? 'Фото профиля: в терминальном режиме показан пиксельный кадр; наведите курсор или сфокусируйте блок, чтобы плавно показать фото в высоком разрешении.'
-              : 'Profile photo: low-fi preview by default; hover or focus this block to reveal the high-resolution photo with a terminal-style decode effect.'
+              ? 'Фото профиля: пиксельный кадр как по умолчанию; наведите или сфокусируйте блок — кадр как на киноплёнке сменится на фото в высоком разрешении.'
+              : 'Profile photo: pixel preview by default; hover or focus to slide the film strip to the high-resolution frame.'
           }
         >
           <div class="avatar-terminal-frame">
-            <div class="avatar-terminal-rotator" aria-hidden="true" />
-            <div class="avatar-terminal-inner">
+            <svg
+              class="avatar-terminal-border-loader"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class="avatar-terminal-border-loader__rect"
+                x="1.5"
+                y="1.5"
+                width="97"
+                height="97"
+                rx="14"
+                ry="14"
+                fill="none"
+                stroke="rgba(74, 222, 128, 0.55)"
+                stroke-width="1.25"
+                stroke-dasharray="5 4"
+                pathLength="100"
+                vector-effect="non-scaling-stroke"
+              />
+            </svg>
+            <div class="avatar-terminal-inner hud-frame">
               <div class="avatar-terminal-deco" aria-hidden="true" />
-              <div class="avatar-terminal-visuals">
-                <img
-                  class="avatar-terminal-retro"
-                  src="/avatar-retro-pixel.png"
-                  alt=""
-                  width="256"
-                  height="256"
-                  loading="eager"
-                  decoding="async"
-                />
-                <img
-                  class="avatar-terminal-natural"
-                  data-avatar-natural
-                  src="/avatar-natural-im.png"
-                  alt=""
-                  width="256"
-                  height="256"
-                  loading="eager"
-                  decoding="async"
-                />
+              <div class="avatar-terminal-film-window">
+                <div class="avatar-terminal-film-strip">
+                  <div class="avatar-terminal-film-frame">
+                    <img
+                      class="avatar-terminal-film-img avatar-terminal-film-img--retro"
+                      src="/avatar-retro-pixel.png"
+                      alt=""
+                      width="256"
+                      height="256"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                  <div class="avatar-terminal-film-frame">
+                    <img
+                      class="avatar-terminal-film-img"
+                      data-avatar-natural
+                      src="/avatar-natural-im.png"
+                      alt=""
+                      width="256"
+                      height="256"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+                <div class="avatar-terminal-film-perf avatar-terminal-film-perf--left" aria-hidden="true" />
+                <div class="avatar-terminal-film-perf avatar-terminal-film-perf--right" aria-hidden="true" />
                 <div class="avatar-terminal-crt" aria-hidden="true" />
                 <div class="avatar-terminal-glitch" aria-hidden="true" />
               </div>
@@ -74,7 +104,7 @@ const boot = t.bootLines;
         <p class="mt-2 font-mono text-base uppercase tracking-wide text-cyan-300 sm:text-lg">{t.role}</p>
         <p class="mt-4 max-w-3xl text-pretty text-slate-300">{t.summary}</p>
         <div class="contact-terminal-grid mt-6">
-          <div class="contact-terminal-card">
+          <div class="contact-terminal-card hud-mini">
             <p class="contact-terminal-tag">{L.email}</p>
             <ul class="contact-terminal-emails mt-2 space-y-1.5">
               {
@@ -89,7 +119,7 @@ const boot = t.bootLines;
             </ul>
           </div>
           <a
-            class="contact-terminal-card contact-terminal-card--telegram"
+            class="contact-terminal-card contact-terminal-card--telegram hud-mini"
             href="https://t.me/DJES240285"
             target="_blank"
             rel="noreferrer noopener"
@@ -103,7 +133,7 @@ const boot = t.bootLines;
             </div>
           </a>
           <a
-            class="contact-terminal-card"
+            class="contact-terminal-card hud-mini"
             href={t.contact.linkedinHref}
             target="_blank"
             rel="noreferrer noopener"
