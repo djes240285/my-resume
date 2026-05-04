@@ -457,15 +457,6 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       }
     </div>
   </section>
-  <div
-    id="contact-copy-toast"
-    class="contact-copy-toast"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    hidden
-  >
-  </div>
 </main>
 
 <script define:vars={{
@@ -709,31 +700,70 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     render();
 
     (function initContactCopyButtons() {
-      var toast = document.getElementById('contact-copy-toast');
-      var toastHideOuter = null;
-      var toastHideInner = null;
-      function showCopyToast() {
-        if (!toast) return;
-        if (toastHideOuter) {
-          window.clearTimeout(toastHideOuter);
-          toastHideOuter = null;
+      var bubbleEl = null;
+      var bubbleTAuto = null;
+      var bubbleTRemove = null;
+
+      function clearBubbleHard() {
+        if (bubbleTAuto) {
+          window.clearTimeout(bubbleTAuto);
+          bubbleTAuto = null;
         }
-        if (toastHideInner) {
-          window.clearTimeout(toastHideInner);
-          toastHideInner = null;
+        if (bubbleTRemove) {
+          window.clearTimeout(bubbleTRemove);
+          bubbleTRemove = null;
         }
-        toast.textContent = contactCopyToast;
-        toast.removeAttribute('hidden');
-        toast.classList.add('contact-copy-toast--visible');
-        toastHideOuter = window.setTimeout(function () {
-          toast.classList.remove('contact-copy-toast--visible');
-          toastHideOuter = null;
-          toastHideInner = window.setTimeout(function () {
-            toast.setAttribute('hidden', '');
-            toast.textContent = '';
-            toastHideInner = null;
-          }, 280);
-        }, 2200);
+        if (bubbleEl && bubbleEl.parentNode) {
+          bubbleEl.parentNode.removeChild(bubbleEl);
+        }
+        bubbleEl = null;
+      }
+
+      function hideBubbleAnimate() {
+        if (!bubbleEl) return;
+        bubbleEl.classList.remove('contact-copy-bubble--visible');
+        if (bubbleTRemove) {
+          window.clearTimeout(bubbleTRemove);
+          bubbleTRemove = null;
+        }
+        bubbleTRemove = window.setTimeout(function () {
+          if (bubbleEl && bubbleEl.parentNode) {
+            bubbleEl.parentNode.removeChild(bubbleEl);
+          }
+          bubbleEl = null;
+          bubbleTRemove = null;
+        }, 220);
+      }
+
+      function showCopyBubble(anchorBtn, text) {
+        clearBubbleHard();
+        var bubble = document.createElement('div');
+        bubble.className = 'contact-copy-bubble';
+        bubble.textContent = text;
+        bubble.setAttribute('role', 'status');
+        bubble.style.visibility = 'hidden';
+        document.body.appendChild(bubble);
+        var r = anchorBtn.getBoundingClientRect();
+        var bw = bubble.offsetWidth;
+        var bh = bubble.offsetHeight;
+        var pad = 8;
+        var left = r.left + r.width / 2 - bw / 2;
+        left = Math.max(pad, Math.min(left, window.innerWidth - bw - pad));
+        var top = r.top - bh - pad;
+        if (top < pad) {
+          top = r.bottom + pad;
+        }
+        if (top + bh > window.innerHeight - pad) {
+          top = Math.max(pad, r.top - bh - pad);
+        }
+        bubble.style.left = left + 'px';
+        bubble.style.top = top + 'px';
+        bubble.style.visibility = '';
+        bubbleEl = bubble;
+        window.requestAnimationFrame(function () {
+          bubble.classList.add('contact-copy-bubble--visible');
+        });
+        bubbleTAuto = window.setTimeout(hideBubbleAnimate, 2400);
       }
 
       function writeClipboard(text) {
@@ -770,7 +800,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         ev.stopPropagation();
         writeClipboard(text)
           .then(function () {
-            showCopyToast();
+            showCopyBubble(btn, contactCopyToast);
             btn.classList.add('contact-copy-btn--ok');
             if (!btn.dataset.copyAriaDefault) {
               btn.dataset.copyAriaDefault = btn.getAttribute('aria-label') || '';
