@@ -71,6 +71,8 @@ export type TerminalLabels = {
   approach: string;
   /** Подпись строки «статус» в HUD hero (живое значение по времени МСК) */
   hudStatus: string;
+  /** Заголовок «окна» над столбцом контактов (декор в стиле концепта) */
+  contactWindowTitle: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -217,6 +219,7 @@ export const cv: Record<Lang, CVContent> = {
       tech: '[ТЕХНОСТЕК]',
       approach: '[ПОДХОД К РАБОТЕ]',
       hudStatus: 'СТАТУС',
+      contactWindowTitle: 'СИСТЕМА: КОНТАКТЫ.CFG',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -505,6 +508,7 @@ export const cv: Record<Lang, CVContent> = {
       tech: '[TECH STACK]',
       approach: '[WORK APPROACH]',
       hudStatus: 'STATUS',
+      contactWindowTitle: 'SYSTEM: CONTACTS.CFG',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },
