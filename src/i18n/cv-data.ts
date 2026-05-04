@@ -75,6 +75,11 @@ export type TerminalLabels = {
   heroWindowTitle: string;
   /** Заголовок мини-«окна» над столбцом контактов в hero (декор) */
   contactWindowTitle: string;
+  /** Кнопка «вернуть» блок контактов после закрытия */
+  contactRestore: string;
+  contactWinMinAria: string;
+  contactWinMaxAria: string;
+  contactWinCloseAria: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -223,6 +228,10 @@ export const cv: Record<Lang, CVContent> = {
       hudStatus: 'СТАТУС',
       heroWindowTitle: 'СИСТЕМА: EUGENE_ZHUKOV.EXE',
       contactWindowTitle: 'СИСТЕМА: КОНТАКТЫ.CFG',
+      contactRestore: 'Показать КОНТАКТЫ.CFG',
+      contactWinMinAria: 'Свернуть блок контактов',
+      contactWinMaxAria: 'Развернуть блок контактов в колонке',
+      contactWinCloseAria: 'Скрыть блок контактов',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -513,6 +522,10 @@ export const cv: Record<Lang, CVContent> = {
       hudStatus: 'STATUS',
       heroWindowTitle: 'SYSTEM: EUGENE_ZHUKOV.EXE',
       contactWindowTitle: 'SYSTEM: CONTACTS.CFG',
+      contactRestore: 'Show CONTACTS.CFG',
+      contactWinMinAria: 'Minimize contact block',
+      contactWinMaxAria: 'Maximize contact block within column',
+      contactWinCloseAria: 'Hide contact block',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },

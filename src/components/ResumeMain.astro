@@ -93,7 +93,10 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
               <p class="hero-hud-fact__label">{L.hudStatus}</p>
               <p class="hero-hud-fact__value" aria-live="polite">
                 <span class="hero-hud-fact__prompt">&gt;</span>
-                <span id="hero-live-status">—</span>
+                <span class="hero-live-status-row">
+                  <span class="hero-live-status__dot" id="hero-live-status-dot" aria-hidden="true"></span>
+                  <span id="hero-live-status">—</span>
+                </span>
               </p>
             </div>
             {
@@ -126,9 +129,11 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           <div class="hero-console__viewport" data-hero-console-viewport aria-live="polite"></div>
         </div>
       </div>
-      <div class="hero-terminal-contacts min-w-0">
+      <div class="hero-terminal-contacts min-w-0" data-contact-root>
         <div
+          id="contact-window-panel"
           class="contact-window-frame"
+          data-contact-window
           role="group"
           aria-label={
             lang === 'ru'
@@ -136,15 +141,31 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
               : 'Contact channels: email, messengers, LinkedIn'
           }
         >
-          <div class="contact-window-titlebar" aria-hidden="true">
-            <p class="contact-window-title">{L.contactWindowTitle}</p>
+          <div
+            class="contact-window-titlebar"
+            role="toolbar"
+            aria-label={lang === 'ru' ? 'Управление окном контактов' : 'Contact window controls'}
+          >
+            <p class="contact-window-title" aria-hidden="true">{L.contactWindowTitle}</p>
             <div class="terminal-window-controls">
-              <span class="terminal-window-btn terminal-window-btn--min"></span>
-              <span class="terminal-window-btn terminal-window-btn--max"></span>
-              <span class="terminal-window-btn terminal-window-btn--close"></span>
+              <button
+                type="button"
+                class="terminal-window-btn terminal-window-btn--min"
+                aria-label={L.contactWinMinAria}
+                data-contact-win-min></button>
+              <button
+                type="button"
+                class="terminal-window-btn terminal-window-btn--max"
+                aria-label={L.contactWinMaxAria}
+                data-contact-win-max></button>
+              <button
+                type="button"
+                class="terminal-window-btn terminal-window-btn--close"
+                aria-label={L.contactWinCloseAria}
+                data-contact-win-close></button>
             </div>
           </div>
-          <div class="contact-window-body">
+          <div class="contact-window-body" data-contact-window-body>
         <div class="contact-terminal-stack">
           <div class="contact-terminal-card contact-terminal-card--email contact-terminal-card--concept hud-mini">
             <div class="contact-concept-head">
@@ -260,6 +281,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         </div>
           </div>
         </div>
+        <button
+          type="button"
+          class="contact-window-restore-btn"
+          hidden
+          data-contact-restore
+          aria-label={L.contactRestore}
+        >
+          {L.contactRestore}
+        </button>
       </div>
     </div>
     </div>
@@ -441,9 +471,13 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       }
       function paintLiveStatus() {
         var el = document.getElementById('hero-live-status');
+        var dot = document.getElementById('hero-live-status-dot');
         if (!el || !msgs) return;
         var k = liveStatusKey();
         el.textContent = msgs[k] || msgs.available;
+        if (dot) {
+          dot.className = 'hero-live-status__dot hero-live-status__dot--' + k;
+        }
       }
       paintLiveStatus();
       window.setInterval(paintLiveStatus, 60000);
@@ -641,5 +675,62 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     });
 
     render();
+
+    (function initContactWindowChrome() {
+      var root = document.querySelector('[data-contact-root]');
+      var panel = document.getElementById('contact-window-panel');
+      var restore = document.querySelector('[data-contact-restore]');
+      var minBtn = document.querySelector('[data-contact-win-min]');
+      var maxBtn = document.querySelector('[data-contact-win-max]');
+      var closeBtn = document.querySelector('[data-contact-win-close]');
+      if (!root || !panel || !restore || !minBtn || !maxBtn || !closeBtn) return;
+
+      function isMax() {
+        return panel.classList.contains('contact-window-frame--max');
+      }
+      function clearLayoutModes() {
+        panel.classList.remove('contact-window-frame--min', 'contact-window-frame--max');
+        root.classList.remove('hero-terminal-contacts--contact-max');
+      }
+
+      minBtn.addEventListener('click', function () {
+        if (panel.hasAttribute('hidden')) return;
+        if (isMax()) {
+          root.classList.remove('hero-terminal-contacts--contact-max');
+          panel.classList.remove('contact-window-frame--max');
+        }
+        panel.classList.toggle('contact-window-frame--min');
+      });
+
+      maxBtn.addEventListener('click', function () {
+        if (panel.hasAttribute('hidden')) return;
+        panel.classList.remove('contact-window-frame--min');
+        if (isMax()) {
+          panel.classList.remove('contact-window-frame--max');
+          root.classList.remove('hero-terminal-contacts--contact-max');
+        } else {
+          panel.classList.add('contact-window-frame--max');
+          root.classList.add('hero-terminal-contacts--contact-max');
+        }
+      });
+
+      closeBtn.addEventListener('click', function () {
+        clearLayoutModes();
+        panel.classList.remove('contact-window-frame--min');
+        panel.setAttribute('hidden', '');
+        restore.removeAttribute('hidden');
+        try {
+          restore.focus();
+        } catch (e) {
+          /* ignore */
+        }
+      });
+
+      restore.addEventListener('click', function () {
+        panel.removeAttribute('hidden');
+        restore.setAttribute('hidden', '');
+        clearLayoutModes();
+      });
+    })();
   });
 </script>
