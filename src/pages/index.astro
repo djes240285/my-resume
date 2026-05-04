@@ -1,0 +1,72 @@
+---
+export const prerender = true;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>…</title>
+    <script is:inline>
+      (function () {
+        function go(path) {
+          try {
+            location.replace(path);
+          } catch (e) {
+            location.href = path;
+          }
+        }
+        function fromCookie() {
+          var m = document.cookie.match(/(?:^|; )site_lang=(ru|en)(?:;|$)/);
+          return m ? m[1] : null;
+        }
+        function fromNavigator() {
+          var n = (navigator.language || 'en').slice(0, 2).toLowerCase();
+          return n === 'ru' ? 'ru' : 'en';
+        }
+        var c = fromCookie();
+        if (c === 'ru' || c === 'en') {
+          go('/' + c + '/');
+          return;
+        }
+        fetch('https://ipapi.co/country_code/', { cache: 'no-store' })
+          .then(function (r) {
+            return r.text();
+          })
+          .then(function (text) {
+            var cc = (text || '').trim().toUpperCase();
+            var cis = {
+              RU: 1,
+              BY: 1,
+              KZ: 1,
+              UA: 1,
+              AM: 1,
+              AZ: 1,
+              GE: 1,
+              MD: 1,
+              TJ: 1,
+              TM: 1,
+              UZ: 1,
+              KG: 1,
+            };
+            go(cis[cc] ? '/ru/' : '/en/');
+          })
+          .catch(function () {
+            go(fromNavigator() === 'ru' ? '/ru/' : '/en/');
+          });
+      })();
+    </script>
+    <noscript>
+      <meta http-equiv="refresh" content="0;url=/en/" />
+    </noscript>
+  </head>
+  <body style="font-family: system-ui; margin: 0; padding: 2rem; background: #f8fafc; color: #0f172a">
+    <p style="max-width: 40rem; line-height: 1.6">
+      Перенаправление по языку… Если страница не обновилась,
+      <a href="/ru/">откройте русскую версию</a>
+      или
+      <a href="/en/">English version</a>.
+    </p>
+  </body>
+</html>

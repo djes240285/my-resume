@@ -1,0 +1,103 @@
+---
+import '../styles/global.css';
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+import SiteHeader from '../components/SiteHeader.astro';
+import { UI_FLAGS } from '../config/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description?: string;
+}
+
+const { lang, title, description } = Astro.props;
+const t = getCv(lang);
+const canonical = Astro.url.href;
+const ogLocale = lang === 'ru' ? 'ru_RU' : 'en_US';
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: t.name,
+  jobTitle: t.role,
+  email: t.contact.emails[0],
+  sameAs: [t.contact.linkedinHref],
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:image" content={`${Astro.url.origin}/profile.png`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:image" content={`${Astro.url.origin}/profile.png`} />
+    <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="min-h-screen bg-white font-sans text-slate-800"
+    data-avatar-ring={UI_FLAGS.avatarGoldRing}
+    data-theme={UI_FLAGS.theme}
+  >
+    <div class="ambient-bg-2026" aria-hidden="true"></div>
+    <div class="pixel-grid-2026" aria-hidden="true"></div>
+    <SiteHeader lang={lang} />
+    <slot />
+    <footer class="bg-navy-900 py-8 text-center text-sm italic text-white/95">
+      <div class="mx-auto max-w-3xl px-4">
+        <span class="text-3xl leading-none text-white/30">“</span>
+        <p class="-mt-2">{t.footerQuote}</p>
+      </div>
+    </footer>
+    <script is:inline>
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          document.querySelectorAll('.reveal-2026').forEach(function (el) {
+            el.classList.add('is-in');
+          });
+          return;
+        }
+        var elements = document.querySelectorAll('.reveal-2026');
+        if (!('IntersectionObserver' in window) || !elements.length) {
+          elements.forEach(function (el) {
+            el.classList.add('is-in');
+          });
+          return;
+        }
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+        );
+        elements.forEach(function (el) {
+          observer.observe(el);
+        });
+      })();
+    </script>
+  </body>
+</html>

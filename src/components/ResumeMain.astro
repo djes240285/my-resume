@@ -1,0 +1,224 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+import SectionIcon from './SectionIcon.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getCv(lang);
+const s = t.sections;
+---
+
+<main class="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+  <section class="reveal-2026 flex flex-col gap-6 border-b border-slate-200 pb-10 sm:flex-row sm:items-start sm:gap-12">
+    <div class="shrink-0">
+      <div
+        class="avatar-sync-2026 avatar-gold-ring-2026 relative mx-auto h-80 w-80 overflow-hidden rounded-full border-4 border-navy-900/10 bg-surface-muted shadow-sm ring-1 ring-slate-200 sm:mx-0 sm:h-[26rem] sm:w-[26rem]"
+        style="--reveal-delay: 80ms"
+      >
+        <img
+          src="/profile.png"
+          alt=""
+          width="288"
+          height="288"
+          class="h-full w-full object-cover object-center"
+          loading="eager"
+        />
+      </div>
+    </div>
+    <div class="min-w-0 flex-1 text-center sm:text-left">
+      <h1 class="retro-heading-soft text-2xl font-bold uppercase tracking-[0.12em] text-navy-900 sm:text-3xl">
+        {t.name}
+      </h1>
+      <p class="mt-2 text-sm font-bold uppercase tracking-wide text-navy-800 sm:text-base">
+        {t.role}
+      </p>
+      <p class="mx-auto mt-4 max-w-2xl text-pretty text-sm leading-relaxed text-slate-600 sm:mx-0 sm:text-base">
+        {t.summary}
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="retro-panel-soft reveal-2026 relative left-1/2 mt-8 w-screen -translate-x-1/2 overflow-visible border-y border-slate-200/90 bg-white/80 px-4 py-4 shadow-lg shadow-navy-900/5 ring-1 ring-white/70 backdrop-blur-sm sm:px-8 sm:py-6 lg:px-16 xl:px-24"
+    style="--reveal-delay: 120ms"
+  >
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_20%,rgba(13,79,140,0.08),transparent_38%),radial-gradient(circle_at_82%_75%,rgba(0,43,91,0.07),transparent_44%)]"></div>
+    <div class="mx-auto flex max-w-7xl flex-col gap-4 rounded-2xl bg-navy-900 px-4 py-5 text-sm text-white shadow-md sm:px-6">
+      <div class="info-rail-2026">
+        <div class="info-rail-item-2026 info-rail-item-double-2026">
+          <span class="info-rail-icon-2026" aria-hidden="true">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+          </span>
+          <span class="info-rail-content-2026">
+            <span class="info-rail-label-2026">EMAIL</span>
+            {t.contact.emails.map((email) => {
+              const [local, domain] = email.split('@');
+              return (
+                <a
+                    class="info-rail-value-2026 info-rail-value-link-2026 info-rail-chip-2026"
+                  href={`mailto:${email}`}
+                  aria-label={`Email ${email}`}
+                  title={email}
+                >
+                  <span class="email-local truncate">{local}</span><span class="email-domain">@{domain}</span>
+                </a>
+              );
+            })}
+          </span>
+        </div>
+        <span class="info-rail-sep-2026" aria-hidden="true"></span>
+        <a
+          class="info-rail-item-2026"
+          href="https://t.me/DJES240285"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <span class="info-rail-icon-2026" aria-hidden="true">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21.93 4.57a1.5 1.5 0 0 0-1.64-.23L3.7 11.69a1.5 1.5 0 0 0 .17 2.82l4.1 1.3 1.3 4.1a1.5 1.5 0 0 0 2.82.17l7.35-16.6a1.5 1.5 0 0 0-.23-1.64Z" />
+            </svg>
+          </span>
+          <span class="info-rail-content-2026">
+            <span class="info-rail-label-2026">TELEGRAM</span>
+            <span class="info-rail-value-2026 info-rail-value-link-2026 info-rail-chip-2026">@DJES240285</span>
+          </span>
+          <span class="info-rail-qr-wrap-2026" aria-hidden="true">
+            <img src="/telegram-qr.png" alt="" class="info-rail-qr-2026" loading="lazy" />
+          </span>
+        </a>
+        <span class="info-rail-sep-2026" aria-hidden="true"></span>
+        <a
+          class="info-rail-item-2026"
+          href={t.contact.linkedinHref}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <span class="info-rail-icon-2026" aria-hidden="true">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.649a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+            </svg>
+          </span>
+          <span class="info-rail-content-2026">
+            <span class="info-rail-label-2026">LINKEDIN</span>
+            <span class="info-rail-value-2026 truncate">{t.contact.linkedinLabel}</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <article class="retro-panel-soft mt-10 space-y-12 rounded-3xl border border-slate-200/80 bg-white/85 p-5 shadow-lg shadow-slate-900/5 ring-1 ring-white/75 backdrop-blur-sm sm:p-8">
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 40ms">
+      <header class="mb-4 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="user" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.about.title}</h2>
+      </header>
+      <p class="max-w-prose text-pretty leading-relaxed text-slate-700">{s.about.body}</p>
+    </section>
+
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 70ms">
+      <header class="mb-4 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="workflow" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.collaboration.title}</h2>
+      </header>
+      <p class="max-w-prose text-pretty leading-relaxed text-slate-700">{s.collaboration.body}</p>
+    </section>
+
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 100ms">
+      <header class="mb-4 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="target" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.help.title}</h2>
+      </header>
+      <ul class="list-inside list-disc space-y-2 text-slate-700 marker:text-navy-800">
+        {s.help.items.map((item) => (
+          <li class="ps-1 leading-relaxed">{item}</li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 130ms">
+      <header class="mb-6 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="code" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.tech.title}</h2>
+      </header>
+      <div class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        {s.tech.groups.map((g) => (
+          <div class="flex flex-col gap-1 px-4 py-4 sm:flex-row sm:items-baseline sm:gap-8 sm:px-5">
+            <div class="w-40 shrink-0 text-xs font-bold uppercase tracking-wide text-navy-900">{g.label}</div>
+            <p class="text-sm leading-relaxed text-slate-700">{g.value}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 160ms">
+      <header class="mb-4 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="briefcase" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.experience.title}</h2>
+      </header>
+      <p class="mb-6 rounded-lg border border-navy-900/20 bg-navy-900/5 p-4 text-sm leading-relaxed text-slate-700">
+        {s.experience.partnerNote}
+      </p>
+      <ul class="mb-8 list-inside list-disc space-y-2 text-slate-700 marker:text-navy-800">
+        {s.experience.highlights.map((h) => (
+          <li class="ps-1 leading-relaxed">{h}</li>
+        ))}
+      </ul>
+      <h3 class="mb-4 text-xs font-bold uppercase tracking-wide text-navy-800">
+        {s.experience.selectedTitle}
+      </h3>
+      <ul class="space-y-5">
+        {s.experience.projects.map((p) => (
+          <li class="lift-2026 rounded-lg border border-slate-200 bg-surface-muted/40 p-4 sm:p-5">
+            {p.href ? (
+              <a
+                href={p.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                class="font-semibold text-navy-900 underline decoration-slate-300 underline-offset-4 hover:decoration-navy-800"
+              >
+                {p.name}
+              </a>
+            ) : (
+              <p class="font-semibold text-navy-900">{p.name}</p>
+            )}
+            <p class="mt-1 text-sm leading-relaxed text-slate-700">{p.detail}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="reveal-2026 border-t border-slate-200 pt-10" style="--reveal-delay: 190ms">
+      <header class="mb-6 flex items-center gap-3 text-navy-900">
+        <span class="retro-badge-soft inline-flex h-9 w-9 items-center justify-center rounded-full border border-navy-900/20 bg-navy-900/10 text-navy-900 shadow-sm">
+          <SectionIcon name="workflow" class="h-5 w-5" />
+        </span>
+        <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider">{s.approach.title}</h2>
+      </header>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {s.approach.pillars.map((p) => (
+          <div class="lift-2026 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+            <p class="text-sm font-bold text-navy-900">{p.title}</p>
+            <p class="mt-2 text-sm leading-relaxed text-slate-600">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </article>
+</main>

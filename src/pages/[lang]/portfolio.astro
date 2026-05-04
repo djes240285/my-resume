@@ -1,0 +1,21 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PortfolioMain from '../../components/PortfolioMain.astro';
+import { SUPPORTED_LANGS, getCv, isLang } from '../../i18n/cv-data';
+
+export function getStaticPaths() {
+  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const { lang: raw } = Astro.params;
+if (!isLang(raw)) {
+  return Astro.redirect('/en/portfolio', 302);
+}
+
+const lang = raw;
+const p = getCv(lang).portfolio;
+---
+
+<SiteLayout lang={lang} title={p.metaTitle} description={p.metaDescription}>
+  <PortfolioMain lang={lang} />
+</SiteLayout>

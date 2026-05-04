@@ -1,0 +1,75 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getCv(lang);
+const path = Astro.url.pathname;
+const rest = path.replace(/^\/(ru|en)/, '') || '/';
+const suffix = rest === '/' ? '/' : rest;
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md"
+>
+  <div class="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <a href={`/${lang}/`} class="text-sm font-semibold tracking-wide text-navy-900">
+      EZ
+    </a>
+    <nav class="flex flex-wrap items-center gap-4 text-sm font-medium text-slate-600">
+      <a
+        href={`/${lang}/`}
+        class:list={[
+          'transition hover:text-navy-900',
+          path === `/${lang}` || path === `/${lang}/` ? 'text-navy-900' : '',
+        ]}
+      >
+        {t.navResume}
+      </a>
+      <a
+        href={`/${lang}/portfolio`}
+        class:list={[
+          'transition hover:text-navy-900',
+          path.includes('/portfolio') ? 'text-navy-900' : '',
+        ]}
+      >
+        {t.navPortfolio}
+      </a>
+    </nav>
+    <div class="flex items-center gap-1 rounded-full border border-slate-200 bg-surface-muted px-1 py-0.5 text-xs font-semibold text-navy-900">
+      <a
+        href={`/ru${suffix === '/' ? '/' : suffix}`}
+        class:list={[
+          'rounded-full px-2 py-1 transition',
+          lang === 'ru' ? 'bg-white shadow-sm' : 'text-slate-500 hover:text-navy-900',
+        ]}
+        data-lang-set="ru"
+      >
+        RU
+      </a>
+      <a
+        href={`/en${suffix === '/' ? '/' : suffix}`}
+        class:list={[
+          'rounded-full px-2 py-1 transition',
+          lang === 'en' ? 'bg-white shadow-sm' : 'text-slate-500 hover:text-navy-900',
+        ]}
+        data-lang-set="en"
+      >
+        EN
+      </a>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  document.querySelectorAll('[data-lang-set]').forEach(function (el) {
+    el.addEventListener('click', function () {
+      var v = el.getAttribute('data-lang-set');
+      if (v) document.cookie = 'site_lang=' + v + ';path=/;max-age=31536000;SameSite=Lax';
+    });
+  });
+</script>
