@@ -26,7 +26,16 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
 ---
 
 <main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
-  <section class="terminal-module reveal-2026 p-5 sm:p-7" style="--reveal-delay: 80ms">
+  <section class="terminal-module terminal-module--window reveal-2026" style="--reveal-delay: 80ms">
+    <header class="terminal-module-windowbar" aria-hidden="true">
+      <p class="terminal-module-windowbar__title">{L.heroWindowTitle}</p>
+      <div class="terminal-window-controls">
+        <span class="terminal-window-btn terminal-window-btn--min"></span>
+        <span class="terminal-window-btn terminal-window-btn--max"></span>
+        <span class="terminal-window-btn terminal-window-btn--close"></span>
+      </div>
+    </header>
+    <div class="terminal-module__shell p-5 sm:p-7">
     {
       boot.map((line, i) => (
         <p class="boot-line">
@@ -117,25 +126,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           <div class="hero-console__viewport" data-hero-console-viewport aria-live="polite"></div>
         </div>
       </div>
-      <div class="hero-terminal-contacts min-w-0">
-        <div
-          class="contact-window-frame"
-          role="group"
-          aria-label={
-            lang === 'ru'
-              ? 'Каналы связи: email, мессенджеры, LinkedIn'
-              : 'Contact channels: email, messengers, LinkedIn'
-          }
-        >
-          <div class="contact-window-titlebar" aria-hidden="true">
-            <p class="contact-window-title">{L.contactWindowTitle}</p>
-            <div class="contact-window-controls">
-              <span class="contact-window-btn contact-window-btn--min"></span>
-              <span class="contact-window-btn contact-window-btn--max"></span>
-              <span class="contact-window-btn contact-window-btn--close"></span>
-            </div>
-          </div>
-          <div class="contact-window-body">
+      <div
+        class="hero-terminal-contacts min-w-0"
+        role="group"
+        aria-label={
+          lang === 'ru'
+            ? 'Каналы связи: email, мессенджеры, LinkedIn'
+            : 'Contact channels: email, messengers, LinkedIn'
+        }
+      >
         <div class="contact-terminal-stack">
           <div class="contact-terminal-card contact-terminal-card--email contact-terminal-card--concept hud-mini">
             <div class="contact-concept-head">
@@ -249,9 +248,8 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
             <div class="contact-terminal-linkedin-meter" aria-hidden="true" />
           </a>
         </div>
-          </div>
-        </div>
       </div>
+    </div>
     </div>
   </section>
 

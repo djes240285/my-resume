@@ -533,6 +533,40 @@
       inset 3px 0 0 -1px rgba(74, 222, 128, 0.12);
   }
 
+  /* Первый блок hero: строка «окна» сверху (заголовок слева, кнопки справа) */
+  .terminal-module--window {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .terminal-module-windowbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.42rem 0.55rem 0.42rem 0.65rem;
+    border-bottom: 1px solid rgba(59, 175, 253, 0.2);
+    background: rgba(2, 6, 23, 0.72);
+  }
+
+  .terminal-module-windowbar__title {
+    margin: 0;
+    min-width: 0;
+    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-size: 0.42rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .terminal-module__shell {
+    min-width: 0;
+  }
+
   /* Шапка: «живой» HUD — штрих снизу, скобки у ссылок */
   .terminal-header {
     position: relative;
@@ -888,49 +922,15 @@
     }
   }
 
-  /* «Окно» над столбцом контактов — декор в духе концепта (кнопки без действия) */
-  .contact-window-frame {
-    border-radius: 12px;
-    border: 1px dashed rgba(59, 175, 253, 0.22);
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(2, 6, 23, 0.35) 100%);
-    box-shadow:
-      inset 0 0 0 1px rgba(59, 175, 253, 0.06),
-      0 8px 28px -16px rgba(0, 0, 0, 0.45);
-    overflow: hidden;
-  }
-
-  .contact-window-titlebar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.4rem 0.55rem 0.42rem 0.65rem;
-    border-bottom: 1px solid rgba(59, 175, 253, 0.18);
-    background: rgba(2, 6, 23, 0.5);
-  }
-
-  .contact-window-title {
-    margin: 0;
-    min-width: 0;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
-    font-size: 0.42rem;
-    line-height: 1.5;
-    letter-spacing: 0.04em;
-    color: #4ade80;
-    text-shadow: 0 0 10px rgba(74, 222, 128, 0.2);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .contact-window-controls {
+  /* Декоративные кнопки «окна» (без действия) — в шапке terminal-module--window */
+  .terminal-window-controls {
     display: flex;
     align-items: center;
     gap: 0.3rem;
     flex-shrink: 0;
   }
 
-  .contact-window-btn {
+  .terminal-window-btn {
     position: relative;
     display: block;
     width: 13px;
@@ -948,7 +948,7 @@
       background-color 0.18s ease;
   }
 
-  .contact-window-btn:hover {
+  .terminal-window-btn:hover {
     transform: scale(1.12);
     border-color: rgba(226, 232, 240, 0.85);
     box-shadow:
@@ -956,12 +956,11 @@
       0 0 0 1px rgba(59, 175, 253, 0.35);
   }
 
-  .contact-window-btn:active {
+  .terminal-window-btn:active {
     transform: scale(0.94);
   }
 
-  /* свернуть: полоска внизу */
-  .contact-window-btn--min::after {
+  .terminal-window-btn--min::after {
     content: "";
     position: absolute;
     left: 2px;
@@ -972,8 +971,7 @@
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
   }
 
-  /* развернуть: вложенный квадрат */
-  .contact-window-btn--max::after {
+  .terminal-window-btn--max::after {
     content: "";
     position: absolute;
     inset: 3px;
@@ -981,13 +979,12 @@
     box-sizing: border-box;
   }
 
-  /* закрыть: крестик */
-  .contact-window-btn--close {
+  .terminal-window-btn--close {
     border-color: rgba(248, 113, 113, 0.55);
   }
 
-  .contact-window-btn--close::before,
-  .contact-window-btn--close::after {
+  .terminal-window-btn--close::before,
+  .terminal-window-btn--close::after {
     content: "";
     position: absolute;
     left: 50%;
@@ -1000,21 +997,21 @@
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
   }
 
-  .contact-window-btn--close::before {
+  .terminal-window-btn--close::before {
     transform: rotate(45deg);
   }
 
-  .contact-window-btn--close::after {
+  .terminal-window-btn--close::after {
     transform: rotate(-45deg);
   }
 
-  .contact-window-btn--close:hover {
+  .terminal-window-btn--close:hover {
     border-color: rgba(248, 113, 113, 0.95);
     background: rgba(127, 29, 29, 0.35);
-    animation: contact-window-close-glow 0.9s ease-in-out infinite;
+    animation: terminal-window-close-glow 0.9s ease-in-out infinite;
   }
 
-  @keyframes contact-window-close-glow {
+  @keyframes terminal-window-close-glow {
     0%,
     100% {
       box-shadow:
@@ -1026,16 +1023,6 @@
       box-shadow:
         inset 0 0 0 1px rgba(0, 0, 0, 0.2),
         0 0 10px 1px rgba(249, 115, 22, 0.45);
-    }
-  }
-
-  .contact-window-body {
-    padding: 0.55rem 0.5rem 0.65rem;
-  }
-
-  @media (min-width: 640px) {
-    .contact-window-body {
-      padding: 0.6rem 0.55rem 0.7rem;
     }
   }
 
