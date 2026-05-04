@@ -599,12 +599,13 @@
     position: relative;
   }
 
-  /* Аватар: без цветного квадрата — тонкая «бегущая» пунктирная обводка SVG + киноплёнка */
+  /* Аватар: статичная пунктирная рамка, прицел при hover, клик — смена кадра стека */
   .avatar-terminal-group {
     width: 268px;
     max-width: 100%;
     border-radius: 18px;
     outline: none;
+    cursor: pointer;
   }
 
   .avatar-terminal-group:focus-visible {
@@ -621,25 +622,6 @@
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
   }
 
-  .avatar-terminal-border-loader {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .avatar-terminal-border-loader__rect {
-    animation: avatar-border-dash 2.2s linear infinite;
-  }
-
-  @keyframes avatar-border-dash {
-    to {
-      stroke-dashoffset: -18;
-    }
-  }
-
   .avatar-terminal-inner {
     position: absolute;
     inset: 6px;
@@ -647,9 +629,9 @@
     border-radius: 14px;
     overflow: hidden;
     background: #070b12;
-    border: 2px dashed rgba(74, 222, 128, 0.88);
+    border: 2px dashed rgba(74, 222, 128, 0.72);
     box-shadow:
-      inset 0 0 0 1px rgba(56, 189, 248, 0.08),
+      inset 0 0 0 1px rgba(56, 189, 248, 0.06),
       0 0 0 1px rgba(0, 0, 0, 0.55),
       0 14px 36px -20px rgba(0, 0, 0, 0.85);
     box-sizing: border-box;
@@ -660,6 +642,7 @@
     inset: -12%;
     z-index: 0;
     pointer-events: none;
+    opacity: 0.55;
   }
 
   .avatar-terminal-deco::before {
@@ -670,9 +653,8 @@
     top: -8%;
     right: -14%;
     border-radius: 22px;
-    background: linear-gradient(140deg, rgba(56, 189, 248, 0.42), rgba(6, 182, 212, 0.12));
+    background: linear-gradient(140deg, rgba(56, 189, 248, 0.35), rgba(6, 182, 212, 0.1));
     transform: rotate(-14deg);
-    opacity: 0.85;
   }
 
   .avatar-terminal-deco::after {
@@ -683,12 +665,11 @@
     bottom: -12%;
     left: -12%;
     border-radius: 22px;
-    background: linear-gradient(320deg, rgba(22, 101, 52, 0.55), rgba(34, 197, 94, 0.22));
+    background: linear-gradient(320deg, rgba(22, 101, 52, 0.45), rgba(34, 197, 94, 0.18));
     transform: rotate(11deg);
-    opacity: 0.75;
   }
 
-  .avatar-terminal-film-window {
+  .avatar-terminal-slot-window {
     position: relative;
     z-index: 1;
     width: 100%;
@@ -697,30 +678,20 @@
     overflow: hidden;
   }
 
-  .avatar-terminal-film-strip {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 200%;
-    transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-  }
-
-  .avatar-terminal-film-frame {
-    position: relative;
-    flex: 0 0 50%;
-    height: 50%;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .avatar-terminal-film-img {
+  .avatar-terminal-slot-img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
+    transition:
+      opacity 0.18s ease,
+      filter 0.2s ease;
+  }
+
+  .avatar-terminal-group.avatar-terminal-group--switching .avatar-terminal-slot-img {
+    opacity: 0.55;
   }
 
   .avatar-terminal-film-img--retro {
@@ -728,107 +699,101 @@
     filter: contrast(1.08) saturate(1.04);
   }
 
-  .avatar-terminal-film-perf {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 7px;
-    z-index: 6;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 5px,
-      rgba(74, 222, 128, 0.55) 5px,
-      rgba(74, 222, 128, 0.55) 6px,
-      transparent 6px,
-      transparent 11px
-    );
-    opacity: 0.55;
-    mix-blend-mode: screen;
-  }
-
-  .avatar-terminal-film-perf--left {
-    left: 1px;
-  }
-
-  .avatar-terminal-film-perf--right {
-    right: 1px;
+  .avatar-terminal-slot-img:not(.avatar-terminal-film-img--retro) {
+    filter: saturate(1.05) contrast(1.03);
   }
 
   .avatar-terminal-crt {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: 3;
     pointer-events: none;
     background: repeating-linear-gradient(
       0deg,
-      rgba(0, 0, 0, 0.12) 0,
-      rgba(0, 0, 0, 0.12) 1px,
+      rgba(0, 0, 0, 0.1) 0,
+      rgba(0, 0, 0, 0.1) 1px,
       transparent 1px,
       transparent 3px
     );
-    opacity: 0.38;
+    opacity: 0.28;
     mix-blend-mode: multiply;
-    transition: opacity 0.55s ease;
-  }
-
-  .avatar-terminal-glitch {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    opacity: 0;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent 0,
-      transparent 40%,
-      rgba(56, 189, 248, 0.14) 50%,
-      transparent 60%,
-      transparent 100%
-    );
-    background-size: 180% 100%;
-    mix-blend-mode: screen;
-  }
-
-  .avatar-terminal-group:hover .avatar-terminal-film-strip,
-  .avatar-terminal-group:focus-within .avatar-terminal-film-strip {
-    transform: translateY(-50%);
+    transition: opacity 0.35s ease;
   }
 
   .avatar-terminal-group:hover .avatar-terminal-crt,
   .avatar-terminal-group:focus-within .avatar-terminal-crt {
-    opacity: 0.1;
+    opacity: 0.12;
   }
 
-  .avatar-terminal-group:hover .avatar-terminal-glitch,
-  .avatar-terminal-group:focus-within .avatar-terminal-glitch {
-    animation: avatar-terminal-decode-glitch 0.58s steps(5, end) 1;
+  /* Прицел (FPS / терминал) */
+  .avatar-terminal-crosshair {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.22s ease;
   }
 
-  @keyframes avatar-terminal-decode-glitch {
-    0% {
-      opacity: 0;
-      transform: translateX(0);
-    }
-    20% {
-      opacity: 0.5;
-      transform: translateX(-2%);
-      filter: hue-rotate(60deg);
-    }
-    45% {
-      opacity: 0.3;
-      transform: translateX(1.5%);
-    }
-    70% {
-      opacity: 0.45;
-      transform: translateX(-0.8%);
-    }
-    100% {
-      opacity: 0;
-      transform: translateX(0);
-      filter: none;
-    }
+  .avatar-terminal-group:hover .avatar-terminal-crosshair,
+  .avatar-terminal-group:focus-within .avatar-terminal-crosshair {
+    opacity: 1;
+  }
+
+  .avatar-terminal-crosshair__line {
+    position: absolute;
+    background: rgba(74, 222, 128, 0.75);
+    box-shadow: 0 0 8px rgba(74, 222, 128, 0.45);
+  }
+
+  .avatar-terminal-crosshair__line--h {
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .avatar-terminal-crosshair__line--v {
+    top: 8%;
+    bottom: 8%;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+
+  .avatar-terminal-crosshair__ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 38%;
+    height: 38%;
+    transform: translate(-50%, -50%);
+    border: 1px solid rgba(56, 189, 248, 0.55);
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 1px rgba(74, 222, 128, 0.25),
+      inset 0 0 12px rgba(0, 0, 0, 0.35);
+  }
+
+  .avatar-stack-hint {
+    max-width: 16rem;
+  }
+
+  .avatar-stack-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.45rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    border: 1px dashed rgba(74, 222, 128, 0.35);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #86efac;
+    background: rgba(15, 23, 42, 0.75);
   }
 
   /* Контакты: три равные ячейки по сетке */
@@ -1202,26 +1167,17 @@
     scroll-behavior: auto !important;
   }
 
-  .avatar-terminal-border-loader__rect {
-    animation: none !important;
-  }
-
   .terminal-header__track {
     animation: none !important;
     opacity: 0.35;
   }
 
-  .avatar-terminal-film-strip {
-    transition: transform 0.2s ease !important;
-  }
-
-  .avatar-terminal-group:hover .avatar-terminal-film-strip,
-  .avatar-terminal-group:focus-within .avatar-terminal-film-strip {
-    transform: translateY(-50%) !important;
-  }
-
   .avatar-terminal-crt {
     opacity: 0.12 !important;
+  }
+
+  .avatar-terminal-crosshair {
+    opacity: 0.3 !important;
   }
 
   .reveal-2026 {

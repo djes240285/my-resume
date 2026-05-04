@@ -1,7 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { AVATAR_NATURAL_POOL, AVATAR_RETRO_CONCEPT } from '../config/avatar-experience';
+import { AVATAR_STACK_SLIDES, avatarSlideLabel } from '../config/avatar-experience';
 
 interface Props {
   lang: Lang;
@@ -12,7 +12,11 @@ const t = getCv(lang);
 const s = t.sections;
 const L = t.terminalLabels;
 const boot = t.bootLines;
-const naturalPool = [...AVATAR_NATURAL_POOL];
+const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
+  id: slide.id,
+  src: slide.src,
+  label: avatarSlideLabel(slide, lang),
+}));
 ---
 
 <main
@@ -31,72 +35,48 @@ const naturalPool = [...AVATAR_NATURAL_POOL];
       <div class="flex justify-center lg:justify-start">
         <div
           class="avatar-terminal-group"
+          role="button"
           tabindex="0"
+          data-avatar-stack
           aria-label={
             lang === 'ru'
-              ? 'Фото профиля: пиксельный кадр как по умолчанию; наведите или сфокусируйте блок — кадр как на киноплёнке сменится на фото в высоком разрешении.'
-              : 'Profile photo: pixel preview by default; hover or focus to slide the film strip to the high-resolution frame.'
+              ? 'Фото профиля: кадр стека. Наведите — прицел. Клик или Enter — следующий кадр.'
+              : 'Profile stack photo: hover for reticle. Click or Enter for next frame.'
           }
         >
           <div class="avatar-terminal-frame">
-            <svg
-              class="avatar-terminal-border-loader"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <rect
-                class="avatar-terminal-border-loader__rect"
-                x="1.5"
-                y="1.5"
-                width="97"
-                height="97"
-                rx="14"
-                ry="14"
-                fill="none"
-                stroke="rgba(74, 222, 128, 0.55)"
-                stroke-width="1.25"
-                stroke-dasharray="5 4"
-                pathLength="100"
-                vector-effect="non-scaling-stroke"
-              />
-            </svg>
             <div class="avatar-terminal-inner hud-frame">
               <div class="avatar-terminal-deco" aria-hidden="true" />
-              <div class="avatar-terminal-film-window">
-                <div class="avatar-terminal-film-strip">
-                  <div class="avatar-terminal-film-frame">
-                    <img
-                      class="avatar-terminal-film-img avatar-terminal-film-img--retro"
-                      src={AVATAR_RETRO_CONCEPT}
-                      alt=""
-                      width="256"
-                      height="256"
-                      loading="eager"
-                      decoding="async"
-                    />
-                  </div>
-                  <div class="avatar-terminal-film-frame">
-                    <img
-                      class="avatar-terminal-film-img"
-                      data-avatar-natural
-                      src="/avatar-natural-im.png"
-                      alt=""
-                      width="256"
-                      height="256"
-                      loading="eager"
-                      decoding="async"
-                    />
-                  </div>
+              <div class="avatar-terminal-slot-window">
+                <img
+                  class="avatar-terminal-slot-img avatar-terminal-film-img--retro"
+                  data-avatar-slot
+                  src={AVATAR_STACK_SLIDES[0].src}
+                  alt=""
+                  width="256"
+                  height="256"
+                  loading="eager"
+                  decoding="async"
+                />
+                <div class="avatar-terminal-crosshair" aria-hidden="true">
+                  <span class="avatar-terminal-crosshair__line avatar-terminal-crosshair__line--h" />
+                  <span class="avatar-terminal-crosshair__line avatar-terminal-crosshair__line--v" />
+                  <span class="avatar-terminal-crosshair__ring" />
                 </div>
-                <div class="avatar-terminal-film-perf avatar-terminal-film-perf--left" aria-hidden="true" />
-                <div class="avatar-terminal-film-perf avatar-terminal-film-perf--right" aria-hidden="true" />
                 <div class="avatar-terminal-crt" aria-hidden="true" />
-                <div class="avatar-terminal-glitch" aria-hidden="true" />
               </div>
             </div>
           </div>
+          <p class="avatar-stack-hint mt-2 font-mono text-[0.7rem] leading-snug text-slate-500">
+            {
+              lang === 'ru'
+                ? 'Наведите — прицел · клик — следующий кадр стека'
+                : 'Hover — reticle · click — next stack frame'
+            }
+          </p>
+          <p class="avatar-stack-chip" data-avatar-chip aria-live="polite">
+            {avatarSlideLabel(AVATAR_STACK_SLIDES[0], lang)}
+          </p>
         </div>
       </div>
       <div class="min-w-0">
@@ -293,22 +273,31 @@ const naturalPool = [...AVATAR_NATURAL_POOL];
   </section>
 </main>
 
-<script define:vars={{ naturalPool }}>
+<script define:vars={{ stackSlides }}>
   document.addEventListener('DOMContentLoaded', function () {
-    var natural = document.querySelector('[data-avatar-natural]');
-    if (natural instanceof HTMLImageElement && naturalPool.length) {
-      natural.src = naturalPool[Math.floor(Math.random() * naturalPool.length)];
+    var group = document.querySelector('[data-avatar-stack]');
+    var slot = document.querySelector('[data-avatar-slot]');
+    var chip = document.querySelector('[data-avatar-chip]');
+    if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
+
+    var idx = 0;
+
+    function applyRetroClass() {
+      var id = stackSlides[idx] && stackSlides[idx].id;
+      slot.classList.toggle('avatar-terminal-film-img--retro', id === 'retro');
     }
 
-    var group = document.querySelector('.avatar-terminal-group');
-    if (!group) return;
+    function render() {
+      var s = stackSlides[idx];
+      if (!s) return;
+      slot.src = s.src;
+      slot.dataset.stackId = s.id;
+      if (chip) chip.textContent = s.label;
+      applyRetroClass();
+    }
 
-    var lastBlip = 0;
-    function playTerminalBlip() {
+    function playClickBlip() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var now = Date.now();
-      if (now - lastBlip < 2000) return;
-      lastBlip = now;
       try {
         var AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return;
@@ -319,21 +308,47 @@ const naturalPool = [...AVATAR_NATURAL_POOL];
         var osc = ctx.createOscillator();
         var gn = ctx.createGain();
         osc.type = 'square';
-        osc.frequency.setValueAtTime(660, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.035);
-        osc.frequency.exponentialRampToValueAtTime(330, ctx.currentTime + 0.095);
+        osc.frequency.setValueAtTime(520, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1040, ctx.currentTime + 0.03);
+        osc.frequency.exponentialRampToValueAtTime(260, ctx.currentTime + 0.07);
         gn.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gn.gain.exponentialRampToValueAtTime(0.032, ctx.currentTime + 0.012);
-        gn.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+        gn.gain.exponentialRampToValueAtTime(0.028, ctx.currentTime + 0.01);
+        gn.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
         osc.connect(gn);
         gn.connect(ctx.destination);
         osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.11);
+        osc.stop(ctx.currentTime + 0.09);
       } catch (e) {
-        /* no audio — тихо игнорируем */
+        /* ignore */
       }
     }
 
-    group.addEventListener('pointerenter', playTerminalBlip, { passive: true });
+    function bump() {
+      group.classList.add('avatar-terminal-group--switching');
+      window.setTimeout(function () {
+        group.classList.remove('avatar-terminal-group--switching');
+      }, 140);
+    }
+
+    function nextSlide() {
+      idx = (idx + 1) % stackSlides.length;
+      bump();
+      render();
+      playClickBlip();
+    }
+
+    group.addEventListener('click', function (ev) {
+      if (ev.target.closest('a, button')) return;
+      nextSlide();
+    });
+
+    group.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        nextSlide();
+      }
+    });
+
+    render();
   });
 </script>
