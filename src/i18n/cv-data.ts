@@ -80,6 +80,9 @@ export type TerminalLabels = {
   contactWinMinAria: string;
   contactWinMaxAria: string;
   contactWinCloseAria: string;
+  contactCopyEmailAria: string;
+  contactCopyPhoneAria: string;
+  contactCopied: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -125,8 +128,10 @@ export type CVContent = {
     linkedinHref: string;
     /** Ссылка на профиль в мессенджере MAX */
     maxHref: string;
-    /** Телефон под тегом [МАХ]/[MAX] (отображение; набор — tel:+79781604974 в разметке) */
+    /** Телефон под тегом [МАХ]/[MAX] (отображение) */
     maxInvite: string;
+    /** Номер для tel: и копирования (E.164, без пробелов) */
+    maxTel: string;
   };
   sections: {
     about: { title: string; body: string };
@@ -176,6 +181,7 @@ export const cv: Record<Lang, CVContent> = {
       maxHref:
         'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
       maxInvite: '+7 978 160 49 74',
+      maxTel: '+79781604974',
     },
     heroHudFacts: [
       { label: 'ФОРМАТ РАБОТЫ', value: 'УДАЛЁННО' },
@@ -232,6 +238,9 @@ export const cv: Record<Lang, CVContent> = {
       contactWinMinAria: 'Свернуть блок контактов',
       contactWinMaxAria: 'Развернуть блок контактов в колонке',
       contactWinCloseAria: 'Скрыть блок контактов',
+      contactCopyEmailAria: 'Копировать email в буфер',
+      contactCopyPhoneAria: 'Копировать номер в буфер',
+      contactCopied: 'Скопировано',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -470,6 +479,7 @@ export const cv: Record<Lang, CVContent> = {
       maxHref:
         'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
       maxInvite: '+7 978 160 49 74',
+      maxTel: '+79781604974',
     },
     heroHudFacts: [
       { label: 'WORK FORMAT', value: 'REMOTE' },
@@ -526,6 +536,9 @@ export const cv: Record<Lang, CVContent> = {
       contactWinMinAria: 'Minimize contact block',
       contactWinMaxAria: 'Maximize contact block within column',
       contactWinCloseAria: 'Hide contact block',
+      contactCopyEmailAria: 'Copy email to clipboard',
+      contactCopyPhoneAria: 'Copy phone number to clipboard',
+      contactCopied: 'Copied',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },

@@ -8,6 +8,7 @@ import {
   avatarSlideLabel,
 } from '../config/avatar-experience';
 import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
+import ContactCopyIcon from './ContactCopyIcon.astro';
 
 interface Props {
   lang: Lang;
@@ -189,6 +190,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
                       <a href={`mailto:${email}`} class="contact-terminal-email-link">
                         {email}
                       </a>
+                      <button
+                        type="button"
+                        class="contact-copy-btn"
+                        data-copy-value={email}
+                        aria-label={L.contactCopyEmailAria}
+                        title={email}
+                      >
+                        <ContactCopyIcon class="contact-copy-btn__glyph" />
+                      </button>
                     </li>
                   ))
                 }
@@ -235,12 +245,23 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
                   />
                   <p class="contact-concept-tag">{L.max}</p>
                 </div>
-                <a
-                  href="tel:+79781604974"
-                  class="contact-terminal-phone-link mt-2 font-mono text-sm font-semibold text-slate-200"
-                >
-                  {t.contact.maxInvite}
-                </a>
+                <div class="contact-terminal-phone-row mt-2">
+                  <a
+                    href={`tel:${t.contact.maxTel}`}
+                    class="contact-terminal-phone-link font-mono text-sm font-semibold text-slate-200"
+                  >
+                    {t.contact.maxInvite}
+                  </a>
+                  <button
+                    type="button"
+                    class="contact-copy-btn"
+                    data-copy-value={t.contact.maxTel}
+                    aria-label={L.contactCopyPhoneAria}
+                    title={t.contact.maxTel}
+                  >
+                    <ContactCopyIcon class="contact-copy-btn__glyph" />
+                  </button>
+                </div>
                 <a
                   class="contact-messenger-profile-link"
                   href={t.contact.maxHref}
@@ -444,6 +465,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   shutterCutMs: AVATAR_SHUTTER_PLAY_MS,
   heroLiveStatus: t.heroLiveStatus,
   heroConsole: t.heroConsole,
+  contactCopied: L.contactCopied,
 }}>
   document.addEventListener('DOMContentLoaded', function () {
     (function initHeroLiveAndTypewriter() {
@@ -675,6 +697,58 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     });
 
     render();
+
+    (function initContactCopyButtons() {
+      function writeClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            if (document.execCommand('copy')) resolve();
+            else reject(new Error('execCommand'));
+          } catch (e) {
+            reject(e);
+          } finally {
+            document.body.removeChild(ta);
+          }
+        });
+      }
+
+      document.addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (!t || !t.closest) return;
+        var btn = t.closest('button[data-copy-value]');
+        if (!btn) return;
+        var text = btn.getAttribute('data-copy-value');
+        if (!text) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        writeClipboard(text)
+          .then(function () {
+            btn.classList.add('contact-copy-btn--ok');
+            if (!btn.dataset.copyAriaDefault) {
+              btn.dataset.copyAriaDefault = btn.getAttribute('aria-label') || '';
+            }
+            btn.setAttribute('aria-label', contactCopied);
+            window.setTimeout(function () {
+              btn.classList.remove('contact-copy-btn--ok');
+              var d = btn.dataset.copyAriaDefault;
+              if (d !== undefined) btn.setAttribute('aria-label', d);
+            }, 1600);
+          })
+          .catch(function () {
+            /* ignore */
+          });
+      });
+    })();
 
     (function initContactWindowChrome() {
       var root = document.querySelector('[data-contact-root]');
