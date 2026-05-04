@@ -286,6 +286,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     /** Один плеер + таймер обрезки: длинный MP3 не играет до конца после одного клика */
     var shutterAudio = null;
     var shutterCutTimer = null;
+    var shutterPlayingHandler = null;
 
     function applyRetroClass() {
       var id = stackSlides[idx] && stackSlides[idx].id;
@@ -301,19 +302,14 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       applyRetroClass();
     }
 
-    function stopShutterSlice() {
+    function clearShutterCutTimer() {
       if (shutterCutTimer) {
         clearTimeout(shutterCutTimer);
         shutterCutTimer = null;
       }
-      if (shutterAudio) {
-        shutterAudio.pause();
-        shutterAudio.currentTime = 0;
-      }
     }
 
     function playShutterSound() {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (!shutterSrc) return;
       try {
         if (!shutterAudio) {
@@ -321,19 +317,45 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           shutterAudio.preload = 'auto';
           shutterAudio.volume = 0.95;
         }
-        stopShutterSlice();
+        clearShutterCutTimer();
+        if (shutterPlayingHandler && shutterAudio) {
+          shutterAudio.removeEventListener('playing', shutterPlayingHandler);
+          shutterPlayingHandler = null;
+        }
         shutterAudio.pause();
         shutterAudio.currentTime = 0;
-        var p = shutterAudio.play();
-        if (p && typeof p.catch === 'function') void p.catch(function () {});
 
-        var ms = typeof shutterCutMs === 'number' && shutterCutMs > 0 ? shutterCutMs : 480;
-        shutterCutTimer = window.setTimeout(function () {
-          shutterCutTimer = null;
-          if (!shutterAudio) return;
-          shutterAudio.pause();
-          shutterAudio.currentTime = 0;
-        }, ms);
+        var ms = Number(shutterCutMs);
+        if (!(ms > 0)) ms = 900;
+
+        function armCutAfterPlaying() {
+          clearShutterCutTimer();
+          shutterCutTimer = window.setTimeout(function () {
+            shutterCutTimer = null;
+            if (!shutterAudio) return;
+            shutterAudio.pause();
+            shutterAudio.currentTime = 0;
+          }, ms);
+        }
+
+        shutterPlayingHandler = function () {
+          if (!shutterAudio || !shutterPlayingHandler) return;
+          shutterAudio.removeEventListener('playing', shutterPlayingHandler);
+          shutterPlayingHandler = null;
+          armCutAfterPlaying();
+        };
+        shutterAudio.addEventListener('playing', shutterPlayingHandler);
+
+        var p = shutterAudio.play();
+        if (p && typeof p.then === 'function') {
+          void p.catch(function () {
+            if (shutterAudio && shutterPlayingHandler) {
+              shutterAudio.removeEventListener('playing', shutterPlayingHandler);
+              shutterPlayingHandler = null;
+            }
+            clearShutterCutTimer();
+          });
+        }
       } catch (e) {
         /* ignore */
       }
