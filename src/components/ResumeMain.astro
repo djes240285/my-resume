@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
+import { AVATAR_NATURAL_POOL, AVATAR_RETRO_CONCEPT } from '../config/avatar-experience';
 
 interface Props {
   lang: Lang;
@@ -11,6 +12,7 @@ const t = getCv(lang);
 const s = t.sections;
 const L = t.terminalLabels;
 const boot = t.bootLines;
+const naturalPool = [...AVATAR_NATURAL_POOL];
 ---
 
 <main
@@ -67,7 +69,7 @@ const boot = t.bootLines;
                   <div class="avatar-terminal-film-frame">
                     <img
                       class="avatar-terminal-film-img avatar-terminal-film-img--retro"
-                      src="/avatar-retro-pixel.png"
+                      src={AVATAR_RETRO_CONCEPT}
                       alt=""
                       width="256"
                       height="256"
@@ -291,11 +293,47 @@ const boot = t.bootLines;
   </section>
 </main>
 
-<script is:inline>
+<script define:vars={{ naturalPool }}>
   document.addEventListener('DOMContentLoaded', function () {
     var natural = document.querySelector('[data-avatar-natural]');
-    if (!natural || !(natural instanceof HTMLImageElement)) return;
-    var pool = ['/avatar-natural-im.png', '/profile.png'];
-    natural.src = pool[Math.floor(Math.random() * pool.length)];
+    if (natural instanceof HTMLImageElement && naturalPool.length) {
+      natural.src = naturalPool[Math.floor(Math.random() * naturalPool.length)];
+    }
+
+    var group = document.querySelector('.avatar-terminal-group');
+    if (!group) return;
+
+    var lastBlip = 0;
+    function playTerminalBlip() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var now = Date.now();
+      if (now - lastBlip < 2000) return;
+      lastBlip = now;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        var w = window;
+        if (!w.__avatarAudioCtx) w.__avatarAudioCtx = new AC();
+        var ctx = w.__avatarAudioCtx;
+        if (ctx.state === 'suspended') void ctx.resume();
+        var osc = ctx.createOscillator();
+        var gn = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(660, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1320, ctx.currentTime + 0.035);
+        osc.frequency.exponentialRampToValueAtTime(330, ctx.currentTime + 0.095);
+        gn.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gn.gain.exponentialRampToValueAtTime(0.032, ctx.currentTime + 0.012);
+        gn.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+        osc.connect(gn);
+        gn.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.11);
+      } catch (e) {
+        /* no audio — тихо игнорируем */
+      }
+    }
+
+    group.addEventListener('pointerenter', playTerminalBlip, { passive: true });
   });
 </script>
