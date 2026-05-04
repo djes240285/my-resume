@@ -296,7 +296,8 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       applyRetroClass();
     }
 
-    function playClickBlip() {
+    /** Процедурный «затвор» SLR: корпус → шторка 1 → шторка 2 (без семплов, лицензий) */
+    function playShutterSound() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       try {
         var AC = window.AudioContext || window.webkitAudioContext;
@@ -305,19 +306,73 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         if (!w.__avatarAudioCtx) w.__avatarAudioCtx = new AC();
         var ctx = w.__avatarAudioCtx;
         if (ctx.state === 'suspended') void ctx.resume();
-        var osc = ctx.createOscillator();
-        var gn = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(520, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1040, ctx.currentTime + 0.03);
-        osc.frequency.exponentialRampToValueAtTime(260, ctx.currentTime + 0.07);
-        gn.gain.setValueAtTime(0.0001, ctx.currentTime);
-        gn.gain.exponentialRampToValueAtTime(0.028, ctx.currentTime + 0.01);
-        gn.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
-        osc.connect(gn);
-        gn.connect(ctx.destination);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.09);
+
+        var t0 = ctx.currentTime;
+        var master = ctx.createGain();
+        master.gain.value = 0.55;
+        master.connect(ctx.destination);
+
+        function noiseBurst(start, durationMs, peak, freq, q) {
+          var len = Math.max(1, Math.floor(ctx.sampleRate * (durationMs / 1000)));
+          var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+          var ch = buf.getChannelData(0);
+          for (var i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+          var src = ctx.createBufferSource();
+          src.buffer = buf;
+          var bp = ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.value = freq;
+          bp.Q.value = q;
+          var g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, start);
+          g.gain.exponentialRampToValueAtTime(peak, start + 0.0018);
+          g.gain.exponentialRampToValueAtTime(0.0001, start + durationMs / 1000);
+          src.connect(bp);
+          bp.connect(g);
+          g.connect(master);
+          src.start(start);
+          src.stop(start + durationMs / 1000 + 0.02);
+        }
+
+        /* Низкий «удар» корпуса / зеркала */
+        var body = ctx.createOscillator();
+        body.type = 'triangle';
+        body.frequency.setValueAtTime(82, t0);
+        body.frequency.exponentialRampToValueAtTime(58, t0 + 0.024);
+        var bodyG = ctx.createGain();
+        bodyG.gain.setValueAtTime(0.0001, t0);
+        bodyG.gain.exponentialRampToValueAtTime(0.07, t0 + 0.003);
+        bodyG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.05);
+        body.connect(bodyG);
+        bodyG.connect(master);
+        body.start(t0);
+        body.stop(t0 + 0.06);
+
+        /* Две «шторки» — характерный двойной щелчок плоскостного затвора */
+        noiseBurst(t0 + 0.01, 38, 0.11, 3100, 1.15);
+        noiseBurst(t0 + 0.032, 22, 0.055, 4800, 1.35);
+
+        /* Лёгкий металлический щёлк — фиксация ламелей */
+        var latch = ctx.createOscillator();
+        latch.type = 'sine';
+        latch.frequency.setValueAtTime(4200, t0 + 0.008);
+        latch.frequency.exponentialRampToValueAtTime(900, t0 + 0.014);
+        var latchG = ctx.createGain();
+        latchG.gain.setValueAtTime(0.0001, t0 + 0.008);
+        latchG.gain.exponentialRampToValueAtTime(0.018, t0 + 0.009);
+        latchG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.018);
+        latch.connect(latchG);
+        latchG.connect(master);
+        latch.start(t0 + 0.008);
+        latch.stop(t0 + 0.022);
+
+        window.setTimeout(function () {
+          try {
+            master.disconnect();
+          } catch (e2) {
+            /* ignore */
+          }
+        }, 220);
       } catch (e) {
         /* ignore */
       }
@@ -334,7 +389,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       idx = (idx + 1) % stackSlides.length;
       bump();
       render();
-      playClickBlip();
+      playShutterSound();
     }
 
     group.addEventListener('click', function (ev) {
