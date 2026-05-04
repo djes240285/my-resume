@@ -73,6 +73,8 @@ export type TerminalLabels = {
   hudStatus: string;
   /** Заголовок строки «окна» в правом верхнем углу первого terminal-module (декор) */
   heroWindowTitle: string;
+  /** Заголовок мини-«окна» над столбцом контактов в hero (декор) */
+  contactWindowTitle: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -220,6 +222,7 @@ export const cv: Record<Lang, CVContent> = {
       approach: '[ПОДХОД К РАБОТЕ]',
       hudStatus: 'СТАТУС',
       heroWindowTitle: 'СИСТЕМА: EUGENE_ZHUKOV.EXE',
+      contactWindowTitle: 'СИСТЕМА: КОНТАКТЫ.CFG',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -509,6 +512,7 @@ export const cv: Record<Lang, CVContent> = {
       approach: '[WORK APPROACH]',
       hudStatus: 'STATUS',
       heroWindowTitle: 'SYSTEM: EUGENE_ZHUKOV.EXE',
+      contactWindowTitle: 'SYSTEM: CONTACTS.CFG',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },

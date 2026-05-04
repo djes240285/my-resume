@@ -922,7 +922,52 @@
     }
   }
 
-  /* Декоративные кнопки «окна» (без действия) — в шапке terminal-module--window */
+  /* Мини-«окно» над столбцом контактов (рядом с hero — дублирует вайб titlebar) */
+  .contact-window-frame {
+    border-radius: 12px;
+    border: 1px dashed rgba(59, 175, 253, 0.22);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(2, 6, 23, 0.35) 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(59, 175, 253, 0.06),
+      0 8px 28px -16px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+  }
+
+  .contact-window-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.45rem;
+    padding: 0.38rem 0.5rem 0.38rem 0.55rem;
+    border-bottom: 1px solid rgba(59, 175, 253, 0.18);
+    background: rgba(2, 6, 23, 0.55);
+  }
+
+  .contact-window-title {
+    margin: 0;
+    min-width: 0;
+    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-size: 0.38rem;
+    line-height: 1.45;
+    letter-spacing: 0.04em;
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.18);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .contact-window-body {
+    padding: 0.55rem 0.5rem 0.65rem;
+  }
+
+  @media (min-width: 640px) {
+    .contact-window-body {
+      padding: 0.6rem 0.55rem 0.7rem;
+    }
+  }
+
+  /* Декоративные кнопки «окна» (без действия) — шапка hero-модуля и мини-окно контактов */
   .terminal-window-controls {
     display: flex;
     align-items: center;
