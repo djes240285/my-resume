@@ -457,6 +457,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       }
     </div>
   </section>
+  <div
+    id="contact-copy-toast"
+    class="contact-copy-toast"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    hidden
+  >
+  </div>
 </main>
 
 <script define:vars={{
@@ -466,6 +475,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   heroLiveStatus: t.heroLiveStatus,
   heroConsole: t.heroConsole,
   contactCopied: L.contactCopied,
+  contactCopyToast: L.contactCopyToast,
 }}>
   document.addEventListener('DOMContentLoaded', function () {
     (function initHeroLiveAndTypewriter() {
@@ -699,6 +709,33 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     render();
 
     (function initContactCopyButtons() {
+      var toast = document.getElementById('contact-copy-toast');
+      var toastHideOuter = null;
+      var toastHideInner = null;
+      function showCopyToast() {
+        if (!toast) return;
+        if (toastHideOuter) {
+          window.clearTimeout(toastHideOuter);
+          toastHideOuter = null;
+        }
+        if (toastHideInner) {
+          window.clearTimeout(toastHideInner);
+          toastHideInner = null;
+        }
+        toast.textContent = contactCopyToast;
+        toast.removeAttribute('hidden');
+        toast.classList.add('contact-copy-toast--visible');
+        toastHideOuter = window.setTimeout(function () {
+          toast.classList.remove('contact-copy-toast--visible');
+          toastHideOuter = null;
+          toastHideInner = window.setTimeout(function () {
+            toast.setAttribute('hidden', '');
+            toast.textContent = '';
+            toastHideInner = null;
+          }, 280);
+        }, 2200);
+      }
+
       function writeClipboard(text) {
         if (navigator.clipboard && window.isSecureContext) {
           return navigator.clipboard.writeText(text);
@@ -733,6 +770,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         ev.stopPropagation();
         writeClipboard(text)
           .then(function () {
+            showCopyToast();
             btn.classList.add('contact-copy-btn--ok');
             if (!btn.dataset.copyAriaDefault) {
               btn.dataset.copyAriaDefault = btn.getAttribute('aria-label') || '';
