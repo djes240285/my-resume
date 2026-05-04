@@ -209,6 +209,99 @@
     text-shadow: 0 0 0 rgba(56, 189, 248, 0.2), 1px 1px 0 rgba(34, 197, 94, 0.18);
   }
 
+  /* Консольный питч под ролью: зелёный вывод, «>», курсор */
+  .hero-console {
+    border: 1px dashed rgba(74, 222, 128, 0.32);
+    border-radius: 12px;
+    background: linear-gradient(165deg, rgba(2, 6, 23, 0.72), rgba(15, 23, 42, 0.55));
+    padding: 0.65rem 0.85rem 0.75rem;
+    box-shadow:
+      inset 0 0 0 1px rgba(56, 189, 248, 0.06),
+      inset 0 -10px 22px -18px rgba(0, 0, 0, 0.45);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    transition: opacity 0.2s ease;
+  }
+
+  .hero-console[data-booting] {
+    opacity: 0;
+  }
+
+  .hero-console__title-line {
+    font-size: clamp(0.58rem, 0.42rem + 0.55vw, 0.72rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #86efac;
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
+    border-bottom: 1px dashed rgba(74, 222, 128, 0.22);
+    text-shadow: 0 0 14px rgba(74, 222, 128, 0.12);
+    min-height: 1.35em;
+  }
+
+  .hero-console__viewport {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+  }
+
+  .hero-console__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: clamp(0.66rem, 0.38rem + 0.95vw, 0.82rem);
+    line-height: 1.52;
+    color: #86efac;
+  }
+
+  .hero-console__gt {
+    flex-shrink: 0;
+    margin-top: 0.06em;
+    font-weight: 800;
+    color: #22c55e;
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+  }
+
+  .hero-console__txt {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: #86efac;
+    text-wrap: pretty;
+    text-shadow: 0 0 12px rgba(74, 222, 128, 0.08);
+  }
+
+  .hero-console__caret {
+    display: inline-block;
+    width: 0.42ch;
+    min-height: 0.95em;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    border-left: 2px solid rgba(74, 222, 128, 0.85);
+    animation: hero-console-caret-blink 0.95s steps(1, end) infinite;
+  }
+
+  .hero-console--done .hero-console__caret {
+    opacity: 0.55;
+  }
+
+  @keyframes hero-console-caret-blink {
+    0%,
+    48% {
+      opacity: 1;
+    }
+    50%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-console__caret {
+      animation: none;
+      opacity: 0.6;
+    }
+  }
+
   body[data-theme="retro-soft"] .retro-panel-soft {
     border-color: rgba(31, 41, 51, 1);
     box-shadow:
@@ -418,6 +511,8 @@
 
   /* Сетка страницы (шаг 22px — как фоновая сетка темы) */
   .terminal-page-root {
+    width: 100%;
+    max-width: min(100%, 94rem);
     background-image:
       linear-gradient(rgba(56, 189, 248, 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(34, 197, 94, 0.045) 1px, transparent 1px);
@@ -601,7 +696,7 @@
 
   /* Аватар: статичная пунктирная рамка, прицел при hover, клик — смена кадра стека */
   .avatar-terminal-group {
-    width: 268px;
+    width: 320px;
     max-width: 100%;
     border-radius: 18px;
     outline: none;
@@ -761,19 +856,97 @@
     background: rgba(15, 23, 42, 0.75);
   }
 
-  /* Контакты: три равные ячейки по сетке */
-  .contact-terminal-grid {
-    display: grid;
-    gap: 12px;
-    grid-template-columns: 1fr;
+  .hero-terminal-avatar-hud {
+    flex-shrink: 0;
   }
 
-  @media (min-width: 640px) {
-    .contact-terminal-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      align-items: stretch;
+  /* Hero: аватар | имя и текст | контакты столбиком */
+  .hero-terminal-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-terminal-grid {
+      grid-template-columns: minmax(0, 21rem) minmax(0, 1fr) minmax(19rem, 28rem);
+      gap: 1.5rem 1.75rem;
     }
+  }
+
+  /* Контакты в правой колонке — вертикальный стек */
+  .contact-terminal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .contact-terminal-stack {
+      gap: 14px;
+    }
+  }
+
+  /* HUD-наполнение в стиле концепта (статус / локация / опыт / доступность) */
+  .hero-hud-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 0;
+  }
+
+  .hero-hud-card.contact-terminal-card {
+    min-height: 0;
+  }
+
+  .hero-hud-fact {
+    margin: 0;
+  }
+
+  .hero-hud-fact__label {
+    margin: 0 0 0.12rem;
+    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-size: 0.48rem;
+    line-height: 1.45;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #4ade80;
+  }
+
+  .hero-hud-fact__value {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.28rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: #e2e8f0;
+    text-shadow: 0 0 12px rgba(226, 232, 240, 0.07);
+  }
+
+  .hero-hud-fact__prompt {
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .hero-hud-card__meter {
+    margin-top: 0.2rem;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(148, 163, 184, 0.22) 0%,
+      rgba(56, 189, 248, 0.45) 42%,
+      rgba(226, 232, 240, 0.32) 76%,
+      rgba(34, 197, 94, 0.28) 100%
+    );
+    opacity: 0.88;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
   }
 
   .contact-terminal-card {
@@ -802,14 +975,276 @@
     background: linear-gradient(165deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.92));
   }
 
-  .contact-terminal-card--telegram {
+  .contact-terminal-card--email {
+    min-width: 0;
+  }
+
+  /* Контакты в духе концепта: акцент #3BAFFD, плоские иконки, без «второго» слоя вокруг лого */
+  .contact-terminal-card--concept {
+    border-color: rgba(59, 175, 253, 0.22);
+    box-shadow:
+      inset 0 0 0 1px rgba(59, 175, 253, 0.06),
+      inset 0 -12px 24px -20px rgba(0, 0, 0, 0.35);
+  }
+
+  .contact-terminal-card--concept:hover {
+    border-color: rgba(59, 175, 253, 0.48);
+    box-shadow:
+      inset 0 0 0 1px rgba(59, 175, 253, 0.12),
+      0 0 0 1px rgba(59, 175, 253, 0.14),
+      0 10px 28px -18px rgba(59, 175, 253, 0.12);
+    background: linear-gradient(165deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.92));
+  }
+
+  .contact-concept-head {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.45rem;
+    margin-bottom: 0.15rem;
+    min-width: 0;
+  }
+
+  .contact-messenger-col .contact-concept-head {
+    justify-content: center;
+    text-align: left;
+  }
+
+  .contact-concept-icon {
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .contact-concept-icon--max {
+    width: 1.35rem;
+    height: 1.35rem;
+  }
+
+  .contact-concept-tag {
+    margin: 0;
+    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-size: 0.52rem;
+    line-height: 1.4;
+    color: #3baffd;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 14px rgba(59, 175, 253, 0.18);
+  }
+
+  .contact-terminal-card--concept .contact-terminal-email-body {
+    border-left-color: rgba(59, 175, 253, 0.55);
+    background: rgba(2, 6, 23, 0.38);
+    box-shadow: inset 0 0 0 1px rgba(59, 175, 253, 0.05);
+  }
+
+  .contact-terminal-card--concept .contact-terminal-email-row::before {
+    color: #3baffd;
+  }
+
+  .contact-terminal-card--concept .contact-terminal-linkedin-meter {
+    background: linear-gradient(
+      90deg,
+      rgba(59, 175, 253, 0.15) 0%,
+      rgba(59, 175, 253, 0.45) 42%,
+      rgba(226, 232, 240, 0.28) 76%,
+      rgba(59, 175, 253, 0.22) 100%
+    );
+    box-shadow: 0 0 10px rgba(59, 175, 253, 0.08);
+  }
+
+  .contact-messenger-profile-link {
+    display: inline-block;
+    margin-top: 0.45rem;
+    align-self: center;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #7dd3fc;
+    text-decoration: none;
+    padding-bottom: 1px;
+    background: linear-gradient(90deg, rgba(59, 175, 253, 0.55), rgba(125, 211, 252, 0.45)) 0 100% / 0 1px
+      no-repeat;
+    transition:
+      color 0.18s ease,
+      background-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .contact-messenger-profile-link:hover,
+  .contact-messenger-profile-link:focus-visible {
+    color: #e0f2fe;
+    background-size: 100% 1px;
+  }
+
+  .contact-messenger-profile-link:focus-visible {
+    outline: 2px solid rgba(59, 175, 253, 0.55);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .contact-terminal-email-body {
+    margin-top: 0.5rem;
+    padding: 0.55rem 0.65rem 0.55rem 0.7rem;
+    border-left: 2px solid rgba(34, 197, 94, 0.55);
+    border-radius: 0 10px 10px 0;
+    background: rgba(2, 6, 23, 0.45);
+    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.06);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .contact-terminal-email-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .contact-terminal-email-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .contact-terminal-email-row::before {
+    content: ">";
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #4ade80;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+
+  .contact-terminal-email-link,
+  .contact-terminal-log-value {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    text-decoration: none;
+    word-break: normal;
+    overflow-wrap: normal;
+    padding-bottom: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.55), rgba(74, 222, 128, 0.55)) 0 100% / 0 1px
+      no-repeat;
+    transition:
+      color 0.18s ease,
+      background-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .contact-terminal-email-link:hover,
+  .contact-terminal-email-link:focus-visible {
+    color: #fff;
+    background-size: 100% 1px;
+  }
+
+  .contact-terminal-card--linkedin:hover .contact-terminal-log-value,
+  .contact-terminal-card--linkedin:focus-visible .contact-terminal-log-value {
+    color: #fff;
+    background-size: 100% 1px;
+  }
+
+  @media (min-width: 640px) {
+    .contact-terminal-email-link,
+    .contact-terminal-log-value {
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+  }
+
+  .contact-terminal-card--linkedin {
+    display: flex;
+    flex-direction: column;
     text-decoration: none;
     color: inherit;
+    min-width: 0;
+  }
+
+  .contact-terminal-linkedin-meter {
+    margin-top: 0.5rem;
+    height: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(51, 65, 85, 0.55) 0%,
+      rgba(148, 163, 184, 0.42) 38%,
+      rgba(226, 232, 240, 0.28) 72%,
+      rgba(51, 65, 85, 0.45) 100%
+    );
+    opacity: 0.88;
+  }
+
+  .contact-terminal-card--messengers {
+    display: block;
+    padding: 0.75rem 0.65rem 0.85rem;
+  }
+
+  .contact-messengers-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 0.5rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 520px) {
+    .contact-messengers-cols {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 0.55rem;
+    }
+
+    .contact-messenger-col {
+      width: 100%;
+      max-width: 16.5rem;
+    }
+  }
+
+  .contact-messenger-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+    padding: 0.35rem 0.2rem 0.25rem;
+    border-radius: 10px;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .contact-messenger-col:hover,
+  .contact-messenger-col:focus-visible {
+    background: rgba(2, 6, 23, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.08);
+  }
+
+  .contact-messenger-col:focus-visible {
+    outline: 2px solid rgba(74, 222, 128, 0.55);
+    outline-offset: 2px;
+  }
+
+  .contact-terminal-phone-link {
+    text-decoration: none;
+    color: inherit;
+    word-break: break-all;
+  }
+
+  .contact-terminal-phone-link:hover,
+  .contact-terminal-phone-link:focus-visible {
+    color: #ddd6fe;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .contact-terminal-card-main {
@@ -852,14 +1287,14 @@
 
   .contact-terminal-qr {
     flex-shrink: 0;
-    width: 64px;
-    height: 64px;
-    border-radius: 10px;
+    width: 144px;
+    height: 144px;
+    border-radius: 14px;
     overflow: hidden;
     border: 1px dashed rgba(74, 222, 128, 0.45);
     box-shadow:
       inset 0 0 0 1px rgba(56, 189, 248, 0.1),
-      0 0 12px -6px rgba(74, 222, 128, 0.2);
+      0 0 14px -5px rgba(74, 222, 128, 0.22);
     background: #020617;
     transition:
       border-color 0.2s ease,
@@ -867,9 +1302,11 @@
       transform 0.2s ease;
   }
 
-  .contact-terminal-card--telegram:hover .contact-terminal-qr {
-    border-color: rgba(74, 222, 128, 0.75);
-    transform: scale(1.04);
+  .contact-terminal-qr-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* Путь успеха — вертикальная линия по сетке */

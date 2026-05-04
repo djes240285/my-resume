@@ -25,9 +25,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
 }));
 ---
 
-<main
-  class="terminal-page-root mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12"
->
+<main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
   <section class="terminal-module reveal-2026 p-5 sm:p-7" style="--reveal-delay: 80ms">
     {
       boot.map((line, i) => (
@@ -37,8 +35,8 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         </p>
       ))
     }
-    <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,280px)_1fr] lg:gap-x-8">
-      <div class="flex justify-center lg:justify-start">
+    <div class="hero-terminal-grid mt-6">
+      <div class="hero-terminal-avatar flex flex-col items-center lg:items-start">
         <div
           class="avatar-terminal-group"
           role="button"
@@ -80,52 +78,157 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
             {avatarSlideLabel(AVATAR_STACK_SLIDES[0], lang)}
           </p>
         </div>
+        <div class="hero-terminal-avatar-hud mt-4 w-full max-w-[320px]">
+          <div class="contact-terminal-card hero-hud-card hud-mini">
+            <div class="hero-hud-fact">
+              <p class="hero-hud-fact__label">{L.hudStatus}</p>
+              <p class="hero-hud-fact__value" aria-live="polite">
+                <span class="hero-hud-fact__prompt">&gt;</span>
+                <span id="hero-live-status">—</span>
+              </p>
+            </div>
+            {
+              t.heroHudFacts.map((row) => (
+                <div class="hero-hud-fact">
+                  <p class="hero-hud-fact__label">{row.label}</p>
+                  <p class="hero-hud-fact__value">
+                    <span class="hero-hud-fact__prompt">&gt;</span>
+                    <span id="hero-hud-fact-value">{row.value}</span>
+                  </p>
+                </div>
+              ))
+            }
+            <div class="hero-hud-card__meter" aria-hidden="true" />
+          </div>
+        </div>
       </div>
-      <div class="min-w-0">
+      <div class="hero-terminal-intro min-w-0">
         <h1 class="retro-heading-soft text-2xl font-bold uppercase leading-snug text-slate-100 sm:text-3xl">
           {t.name}
         </h1>
         <p class="mt-2 font-mono text-base uppercase tracking-wide text-cyan-300 sm:text-lg">{t.role}</p>
-        <p class="mt-4 max-w-3xl text-pretty text-slate-300">{t.summary}</p>
-        <div class="contact-terminal-grid mt-6">
-          <div class="contact-terminal-card hud-mini">
-            <p class="contact-terminal-tag">{L.email}</p>
-            <ul class="contact-terminal-emails mt-2 space-y-1.5">
-              {
-                t.contact.emails.map((email) => (
-                  <li>
-                    <a href={`mailto:${email}`} class="contact-terminal-link">
-                      {email}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
+        <div
+          class="hero-console mt-4"
+          data-hero-console
+          data-booting
+          aria-label={t.summary}
+        >
+          <div class="hero-console__title-line" data-hero-console-title></div>
+          <div class="hero-console__viewport" data-hero-console-viewport aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="hero-terminal-contacts min-w-0">
+        <div class="contact-terminal-stack">
+          <div class="contact-terminal-card contact-terminal-card--email contact-terminal-card--concept hud-mini">
+            <div class="contact-concept-head">
+              <img
+                class="contact-concept-icon"
+                src="/logo-mail.svg"
+                alt=""
+                width="20"
+                height="20"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+              <p class="contact-concept-tag">{L.email}</p>
+            </div>
+            <div class="contact-terminal-email-body">
+              <ul class="contact-terminal-email-rows">
+                {
+                  t.contact.emails.map((email) => (
+                    <li class="contact-terminal-email-row">
+                      <a href={`mailto:${email}`} class="contact-terminal-email-link">
+                        {email}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+          <div class="contact-terminal-card contact-terminal-card--messengers contact-terminal-card--concept hud-mini">
+            <div class="contact-messengers-cols">
+              <a
+                class="contact-messenger-col"
+                href="https://t.me/DJES240285"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={lang === 'ru' ? 'Открыть Telegram, @DJES240285' : 'Open Telegram, @DJES240285'}
+              >
+                <div class="contact-concept-head">
+                  <img
+                    class="contact-concept-icon"
+                    src="/logo-telegram.svg"
+                    alt=""
+                    width="20"
+                    height="20"
+                    loading="lazy"
+                    decoding="async"
+                    aria-hidden="true"
+                  />
+                  <p class="contact-concept-tag">{L.telegram}</p>
+                </div>
+                <p class="contact-terminal-handle mt-2 font-mono text-sm font-semibold text-slate-200">
+                  @DJES240285
+                </p>
+              </a>
+              <div class="contact-messenger-col contact-messenger-col--max">
+                <div class="contact-concept-head">
+                  <img
+                    class="contact-concept-icon contact-concept-icon--max"
+                    src="/logo-max.svg"
+                    alt=""
+                    width="20"
+                    height="20"
+                    loading="lazy"
+                    decoding="async"
+                    aria-hidden="true"
+                  />
+                  <p class="contact-concept-tag">{L.max}</p>
+                </div>
+                <a
+                  href="tel:+79781604974"
+                  class="contact-terminal-phone-link mt-2 font-mono text-sm font-semibold text-slate-200"
+                >
+                  {t.contact.maxInvite}
+                </a>
+                <a
+                  class="contact-messenger-profile-link"
+                  href={t.contact.maxHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {L.maxProfileLink}
+                </a>
+              </div>
+            </div>
           </div>
           <a
-            class="contact-terminal-card contact-terminal-card--telegram hud-mini"
-            href="https://t.me/DJES240285"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <div class="contact-terminal-card-main">
-              <p class="contact-terminal-tag">{L.telegram}</p>
-              <p class="contact-terminal-handle mt-2 font-mono text-sm font-semibold text-cyan-200">@DJES240285</p>
-            </div>
-            <div class="contact-terminal-qr">
-              <img src="/telegram-qr.png" alt="" width="64" height="64" class="h-16 w-16 object-cover" loading="lazy" />
-            </div>
-          </a>
-          <a
-            class="contact-terminal-card hud-mini"
+            class="contact-terminal-card contact-terminal-card--linkedin contact-terminal-card--concept hud-mini"
             href={t.contact.linkedinHref}
             target="_blank"
             rel="noreferrer noopener"
           >
-            <p class="contact-terminal-tag">{L.linkedin}</p>
-            <p class="contact-terminal-handle mt-2 font-mono text-xs font-medium leading-relaxed text-slate-200 sm:text-sm">
-              {t.contact.linkedinLabel}
-            </p>
+            <div class="contact-concept-head">
+              <img
+                class="contact-concept-icon"
+                src="/logo-linkedin.svg"
+                alt=""
+                width="20"
+                height="20"
+                loading="lazy"
+                decoding="async"
+                aria-hidden="true"
+              />
+              <p class="contact-concept-tag">{L.linkedin}</p>
+            </div>
+            <div class="contact-terminal-email-body">
+              <div class="contact-terminal-email-row">
+                <span class="contact-terminal-log-value">{t.contact.linkedinLabel}</span>
+              </div>
+            </div>
+            <div class="contact-terminal-linkedin-meter" aria-hidden="true" />
           </a>
         </div>
       </div>
@@ -275,8 +378,128 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   </section>
 </main>
 
-<script define:vars={{ stackSlides, shutterSrc: AVATAR_SHUTTER_MP3, shutterCutMs: AVATAR_SHUTTER_PLAY_MS }}>
+<script define:vars={{
+  stackSlides,
+  shutterSrc: AVATAR_SHUTTER_MP3,
+  shutterCutMs: AVATAR_SHUTTER_PLAY_MS,
+  heroLiveStatus: t.heroLiveStatus,
+  heroConsole: t.heroConsole,
+}}>
   document.addEventListener('DOMContentLoaded', function () {
+    (function initHeroLiveAndTypewriter() {
+      var msgs = heroLiveStatus;
+      function mskTotalMinutes() {
+        var parts = new Intl.DateTimeFormat('en-GB', {
+          timeZone: 'Europe/Moscow',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: false,
+        }).formatToParts(new Date());
+        var h = 0;
+        var m = 0;
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].type === 'hour') h = parseInt(parts[i].value, 10) || 0;
+          if (parts[i].type === 'minute') m = parseInt(parts[i].value, 10) || 0;
+        }
+        return h * 60 + m;
+      }
+      function liveStatusKey() {
+        var t = mskTotalMinutes();
+        if (t >= 22 * 60 || t < 7 * 60) return 'unavailable';
+        if (t >= 12 * 60 && t < 14 * 60) return 'lunch';
+        return 'available';
+      }
+      function paintLiveStatus() {
+        var el = document.getElementById('hero-live-status');
+        if (!el || !msgs) return;
+        var k = liveStatusKey();
+        el.textContent = msgs[k] || msgs.available;
+      }
+      paintLiveStatus();
+      window.setInterval(paintLiveStatus, 60000);
+
+      var hc = heroConsole;
+      var con = document.querySelector('[data-hero-console]');
+      var conTitle = con && con.querySelector('[data-hero-console-title]');
+      var conView = con && con.querySelector('[data-hero-console-viewport]');
+      if (hc && con && conTitle && conView && hc.commands && hc.title) {
+        var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        function revealConsole() {
+          con.removeAttribute('data-booting');
+        }
+        function makeCaret() {
+          var c = document.createElement('span');
+          c.className = 'hero-console__caret';
+          c.setAttribute('aria-hidden', 'true');
+          return c;
+        }
+        function typeInto(parent, text, keepCaret, onDone) {
+          var i = 0;
+          var caret = makeCaret();
+          parent.appendChild(caret);
+          function tick() {
+            if (i >= text.length) {
+              if (!keepCaret) {
+                parent.removeChild(caret);
+              }
+              if (onDone) onDone();
+              return;
+            }
+            caret.insertAdjacentText('beforebegin', text.charAt(i++));
+            window.setTimeout(tick, 8 + Math.random() * 34);
+          }
+          window.setTimeout(tick, 40);
+        }
+        if (!motionOk) {
+          conTitle.textContent = hc.title;
+          hc.commands.forEach(function (line) {
+            var row = document.createElement('div');
+            row.className = 'hero-console__row';
+            var gt = document.createElement('span');
+            gt.className = 'hero-console__gt';
+            gt.textContent = '>';
+            var txt = document.createElement('span');
+            txt.className = 'hero-console__txt';
+            txt.textContent = line;
+            row.appendChild(gt);
+            row.appendChild(txt);
+            conView.appendChild(row);
+          });
+          revealConsole();
+        } else {
+          typeInto(conTitle, hc.title, false, function () {
+            var li = 0;
+            function nextRow() {
+              if (li >= hc.commands.length) {
+                con.classList.add('hero-console--done');
+                revealConsole();
+                return;
+              }
+              var row = document.createElement('div');
+              row.className = 'hero-console__row';
+              var gt = document.createElement('span');
+              gt.className = 'hero-console__gt';
+              gt.textContent = '>';
+              var txt = document.createElement('span');
+              txt.className = 'hero-console__txt';
+              row.appendChild(gt);
+              row.appendChild(txt);
+              conView.appendChild(row);
+              var isLast = li === hc.commands.length - 1;
+              typeInto(txt, hc.commands[li], isLast, function () {
+                li++;
+                window.setTimeout(nextRow, 120 + Math.random() * 140);
+              });
+            }
+            window.setTimeout(nextRow, 160);
+          });
+          window.setTimeout(revealConsole, 80);
+        }
+      } else if (con) {
+        con.removeAttribute('data-booting');
+      }
+    })();
+
     var group = document.querySelector('[data-avatar-stack]');
     var slot = document.querySelector('[data-avatar-slot]');
     var chip = document.querySelector('[data-avatar-chip]');

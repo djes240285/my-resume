@@ -52,6 +52,9 @@ export type CoreStat = {
 export type TerminalLabels = {
   email: string;
   telegram: string;
+  max: string;
+  /** Текст ссылки на профиль MAX (под телефоном) */
+  maxProfileLink: string;
   linkedin: string;
   about: string;
   collaboration: string;
@@ -66,6 +69,21 @@ export type TerminalLabels = {
   coreStats: string;
   tech: string;
   approach: string;
+  /** Подпись строки «статус» в HUD hero (живое значение по времени МСК) */
+  hudStatus: string;
+};
+
+/** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
+export type HeroLiveStatus = {
+  available: string;
+  unavailable: string;
+  lunch: string;
+};
+
+/** Консольный «питч» в hero: заголовок + строки после «>» (печать по одной) */
+export type HeroConsoleScript = {
+  title: string;
+  commands: string[];
 };
 
 export type CVContent = {
@@ -84,12 +102,22 @@ export type CVContent = {
   coreStats: CoreStat[];
   /** Визуальный «путь успеха» — этапы карьеры */
   careerPath: CareerMilestone[];
+  /** Короткие HUD-строки в правой колонке hero (наполнение в стиле концепта; без строки статуса — она живёт отдельно) */
+  heroHudFacts: { label: string; value: string }[];
+  /** Статус «на связи» по времени МСК: 07–12, 14–22 — available; 22–07 — unavailable; 12–14 — lunch */
+  heroLiveStatus: HeroLiveStatus;
+  /** Блок «консоль» под ролью: зелёные строки с «>» и эффект печати */
+  heroConsole: HeroConsoleScript;
   contact: {
     emails: string[];
     /** Если пусто — блок локации не показываем */
     location?: string;
     linkedinLabel: string;
     linkedinHref: string;
+    /** Ссылка на профиль в мессенджере MAX */
+    maxHref: string;
+    /** Телефон под тегом [МАХ]/[MAX] (отображение; набор — tel:+79781604974 в разметке) */
+    maxInvite: string;
   };
   sections: {
     about: { title: string; body: string };
@@ -131,11 +159,38 @@ export const cv: Record<Lang, CVContent> = {
     name: 'Евгений Жуков',
     role: 'Fullstack разработчик / архитектор решений',
     summary:
-      'Помогаю бизнесу закрывать сложные технические задачи: от стабилизации легаси до масштабируемых платформ и роста конверсии. Строю решения, которые можно сопровождать и развивать годами.',
+      'Инициализация решения: инженерная чистота против хаоса, цифровой актив вместо сметы по часам; три этапа и готовность к масштабированию.',
     contact: {
       emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
       linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
+      maxHref:
+        'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
+      maxInvite: '+7 978 160 49 74',
+    },
+    heroHudFacts: [
+      { label: 'ФОРМАТ РАБОТЫ', value: 'УДАЛЁННО' },
+      { label: 'ОПЫТ', value: '15+ ЛЕТ' },
+      { label: 'ДОСТУПНОСТЬ', value: 'ОТКРЫТ К ПРОЕКТАМ' },
+    ],
+    heroLiveStatus: {
+      available: 'ONLINE · НА СВЯЗИ',
+      unavailable: 'OFFLINE · НЕ ДОСТУПЕН (МСК 22–07)',
+      lunch: 'AWAY · ОБЕД · МОГУ ОТСУТСТВОВАТЬ (12–14 МСК)',
+    },
+    heroConsole: {
+      title: 'ИНИЦИАЛИЗАЦИЯ РЕШЕНИЯ...',
+      commands: [
+        'Инженерная чистота против технического хаоса.',
+        'Вместо бесконечной сметы «по часам» я создаю цифровой актив: система, которая работает на вас, а не требует постоянного внимания.',
+        '[01/03] ЛИКВИДАЦИЯ ХАОСА',
+        'Реанимация сложных систем и стабилизация легаси. Превращаю накопленный техдолг в надёжный фундамент, готовый к нагрузкам.',
+        '[02/03] АРХИТЕКТУРА РОСТА',
+        'Масштабируемые платформы и внедрение ИИ-контуров. Использую AI-агентов для кратного ускорения разработки и поставки решений.',
+        '[03/03] ЭКОНОМИКА РЕЗУЛЬТАТА',
+        'Фокус на конверсии и автономности. Вы получаете архитектуру, которая приносит прибыль и не требует переписывания «с нуля» каждый квартал.',
+        '[STATUS] СИСТЕМА ГОТОВА К МАСШТАБИРОВАНИЮ',
+      ],
     },
     bootLines: [
       '> инициализация профиля...',
@@ -145,6 +200,8 @@ export const cv: Record<Lang, CVContent> = {
     terminalLabels: {
       email: '[EMAIL]',
       telegram: '[TELEGRAM]',
+      max: '[МАХ]',
+      maxProfileLink: 'Профиль в MAX →',
       linkedin: '[LINKEDIN]',
       about: '[ОБО МНЕ]',
       collaboration: '[ФОРМАТ РАБОТЫ]',
@@ -159,6 +216,7 @@ export const cv: Record<Lang, CVContent> = {
       coreStats: '[ЯДРО МЕТРИК]',
       tech: '[ТЕХНОСТЕК]',
       approach: '[ПОДХОД К РАБОТЕ]',
+      hudStatus: 'СТАТУС',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -389,11 +447,38 @@ export const cv: Record<Lang, CVContent> = {
     name: 'Eugene Zhukov',
     role: 'Fullstack developer / solution architect',
     summary:
-      'I help businesses solve hard technical problems—from stabilizing legacy systems to scalable platforms and conversion growth. I build solutions that are maintainable and evolve for years.',
+      'Solution init: engineering clarity vs chaos, a digital asset instead of open-ended hours; three stages and readiness to scale.',
     contact: {
       emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
       linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
+      maxHref:
+        'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
+      maxInvite: '+7 978 160 49 74',
+    },
+    heroHudFacts: [
+      { label: 'WORK FORMAT', value: 'REMOTE' },
+      { label: 'EXPERIENCE', value: '15+ YEARS' },
+      { label: 'AVAILABILITY', value: 'OPEN TO PROJECTS' },
+    ],
+    heroLiveStatus: {
+      available: 'ONLINE · AVAILABLE',
+      unavailable: 'OFFLINE · UNAVAILABLE (MSK 22–07)',
+      lunch: 'AWAY · LUNCH · MAY BE AFK (12–14 MSK)',
+    },
+    heroConsole: {
+      title: 'INITIALIZING SOLUTION...',
+      commands: [
+        'Engineering clarity vs technical chaos.',
+        'Instead of an endless hourly tab, I build a digital asset: a system that works for you—not one that demands constant babysitting.',
+        '[01/03] CHAOS LIQUIDATION',
+        'Reviving complex systems and stabilizing legacy. I turn accumulated tech debt into a load-ready foundation.',
+        '[02/03] GROWTH ARCHITECTURE',
+        'Scalable platforms and AI-augmented delivery. I use AI agents to multiply development and shipping speed.',
+        '[03/03] OUTCOME ECONOMICS',
+        'Focus on conversion and autonomy. You get architecture that drives profit—without a full rewrite every quarter.',
+        '[STATUS] SYSTEM READY TO SCALE',
+      ],
     },
     bootLines: [
       '> initializing profile...',
@@ -403,6 +488,8 @@ export const cv: Record<Lang, CVContent> = {
     terminalLabels: {
       email: '[EMAIL]',
       telegram: '[TELEGRAM]',
+      max: '[MAX]',
+      maxProfileLink: 'MAX profile →',
       linkedin: '[LINKEDIN]',
       about: '[ABOUT ME]',
       collaboration: '[ENGAGEMENT]',
@@ -417,6 +504,7 @@ export const cv: Record<Lang, CVContent> = {
       coreStats: '[CORE STATS]',
       tech: '[TECH STACK]',
       approach: '[WORK APPROACH]',
+      hudStatus: 'STATUS',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },
