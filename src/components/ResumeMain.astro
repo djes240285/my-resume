@@ -309,8 +309,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
 
         var t0 = ctx.currentTime;
         var master = ctx.createGain();
-        master.gain.value = 0.55;
-        master.connect(ctx.destination);
+        master.gain.value = 1.65;
+        var comp = ctx.createDynamicsCompressor();
+        comp.threshold.setValueAtTime(-18, t0);
+        comp.knee.setValueAtTime(18, t0);
+        comp.ratio.setValueAtTime(3.2, t0);
+        comp.attack.setValueAtTime(0.001, t0);
+        comp.release.setValueAtTime(0.08, t0);
+        master.connect(comp);
+        comp.connect(ctx.destination);
 
         function noiseBurst(start, durationMs, peak, freq, q) {
           var len = Math.max(1, Math.floor(ctx.sampleRate * (durationMs / 1000)));
@@ -325,7 +332,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           bp.Q.value = q;
           var g = ctx.createGain();
           g.gain.setValueAtTime(0.0001, start);
-          g.gain.exponentialRampToValueAtTime(peak, start + 0.0018);
+          g.gain.exponentialRampToValueAtTime(peak, start + 0.0014);
           g.gain.exponentialRampToValueAtTime(0.0001, start + durationMs / 1000);
           src.connect(bp);
           bp.connect(g);
@@ -341,7 +348,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         body.frequency.exponentialRampToValueAtTime(58, t0 + 0.024);
         var bodyG = ctx.createGain();
         bodyG.gain.setValueAtTime(0.0001, t0);
-        bodyG.gain.exponentialRampToValueAtTime(0.07, t0 + 0.003);
+        bodyG.gain.exponentialRampToValueAtTime(0.22, t0 + 0.0025);
         bodyG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.05);
         body.connect(bodyG);
         bodyG.connect(master);
@@ -349,8 +356,8 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         body.stop(t0 + 0.06);
 
         /* Две «шторки» — характерный двойной щелчок плоскостного затвора */
-        noiseBurst(t0 + 0.01, 38, 0.11, 3100, 1.15);
-        noiseBurst(t0 + 0.032, 22, 0.055, 4800, 1.35);
+        noiseBurst(t0 + 0.01, 38, 0.32, 3100, 1.15);
+        noiseBurst(t0 + 0.032, 22, 0.2, 4800, 1.35);
 
         /* Лёгкий металлический щёлк — фиксация ламелей */
         var latch = ctx.createOscillator();
@@ -359,7 +366,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
         latch.frequency.exponentialRampToValueAtTime(900, t0 + 0.014);
         var latchG = ctx.createGain();
         latchG.gain.setValueAtTime(0.0001, t0 + 0.008);
-        latchG.gain.exponentialRampToValueAtTime(0.018, t0 + 0.009);
+        latchG.gain.exponentialRampToValueAtTime(0.07, t0 + 0.009);
         latchG.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.018);
         latch.connect(latchG);
         latchG.connect(master);
@@ -368,6 +375,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
 
         window.setTimeout(function () {
           try {
+            comp.disconnect();
             master.disconnect();
           } catch (e2) {
             /* ignore */
