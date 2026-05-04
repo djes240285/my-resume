@@ -13,6 +13,9 @@ import type { Lang } from '../i18n/cv-data';
 /** Локальный MP3 щелчка затвора — проверьте лицензию источника перед публичным коммерческим использованием */
 export const AVATAR_SHUTTER_MP3 = '/sounds/avatar-shutter.mp3';
 
+/** Сколько мс играть с начала файла; дальше принудительный стоп (длинный MP3 не «тянется» после клика) */
+export const AVATAR_SHUTTER_PLAY_MS = 480;
+
 export const AVATAR_RETRO_CONCEPT = '/avatar-retro-concept.png';
 
 export type AvatarStackSlide = {

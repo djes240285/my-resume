@@ -1,7 +1,12 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { AVATAR_SHUTTER_MP3, AVATAR_STACK_SLIDES, avatarSlideLabel } from '../config/avatar-experience';
+import {
+  AVATAR_SHUTTER_MP3,
+  AVATAR_SHUTTER_PLAY_MS,
+  AVATAR_STACK_SLIDES,
+  avatarSlideLabel,
+} from '../config/avatar-experience';
 import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
 
 interface Props {
@@ -270,7 +275,7 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   </section>
 </main>
 
-<script define:vars={{ stackSlides, shutterSrc: AVATAR_SHUTTER_MP3 }}>
+<script define:vars={{ stackSlides, shutterSrc: AVATAR_SHUTTER_MP3, shutterCutMs: AVATAR_SHUTTER_PLAY_MS }}>
   document.addEventListener('DOMContentLoaded', function () {
     var group = document.querySelector('[data-avatar-stack]');
     var slot = document.querySelector('[data-avatar-slot]');
@@ -278,8 +283,9 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
 
     var idx = 0;
-    /** Один плеер: перед каждым кликом стоп + с начала — без наслоения длинного MP3 */
+    /** Один плеер + таймер обрезки: длинный MP3 не играет до конца после одного клика */
     var shutterAudio = null;
+    var shutterCutTimer = null;
 
     function applyRetroClass() {
       var id = stackSlides[idx] && stackSlides[idx].id;
@@ -295,6 +301,17 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
       applyRetroClass();
     }
 
+    function stopShutterSlice() {
+      if (shutterCutTimer) {
+        clearTimeout(shutterCutTimer);
+        shutterCutTimer = null;
+      }
+      if (shutterAudio) {
+        shutterAudio.pause();
+        shutterAudio.currentTime = 0;
+      }
+    }
+
     function playShutterSound() {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       if (!shutterSrc) return;
@@ -304,10 +321,19 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           shutterAudio.preload = 'auto';
           shutterAudio.volume = 0.95;
         }
+        stopShutterSlice();
         shutterAudio.pause();
         shutterAudio.currentTime = 0;
         var p = shutterAudio.play();
         if (p && typeof p.catch === 'function') void p.catch(function () {});
+
+        var ms = typeof shutterCutMs === 'number' && shutterCutMs > 0 ? shutterCutMs : 480;
+        shutterCutTimer = window.setTimeout(function () {
+          shutterCutTimer = null;
+          if (!shutterAudio) return;
+          shutterAudio.pause();
+          shutterAudio.currentTime = 0;
+        }, ms);
       } catch (e) {
         /* ignore */
       }
