@@ -24,6 +24,50 @@ export type PortfolioCard = {
   href?: string;
 };
 
+/** Опциональный «лог» проекта как на концепте: статус / действие / итог */
+export type ProjectLogLine = {
+  status: string;
+  action: string;
+  result: string;
+};
+
+export type ProjectEntry = {
+  name: string;
+  detail: string;
+  href?: string;
+  log?: ProjectLogLine;
+};
+
+export type CareerMilestone = {
+  phase: string;
+  title: string;
+  detail: string;
+};
+
+export type CoreStat = {
+  label: string;
+  value: string;
+};
+
+export type TerminalLabels = {
+  email: string;
+  telegram: string;
+  linkedin: string;
+  about: string;
+  collaboration: string;
+  help: string;
+  projects: string;
+  successPath: string;
+  highlights: string;
+  partnerNote: string;
+  logStatus: string;
+  logAction: string;
+  logResult: string;
+  coreStats: string;
+  tech: string;
+  approach: string;
+};
+
 export type CVContent = {
   metaTitle: string;
   metaDescription: string;
@@ -32,6 +76,14 @@ export type CVContent = {
   name: string;
   role: string;
   summary: string;
+  /** Строки «boot» в шапке резюме */
+  bootLines: string[];
+  /** Подписи секций в стиле [BRACKETS] для терминального UI */
+  terminalLabels: TerminalLabels;
+  /** Короткие метрики «ядра» опыта */
+  coreStats: CoreStat[];
+  /** Визуальный «путь успеха» — этапы карьеры */
+  careerPath: CareerMilestone[];
   contact: {
     emails: string[];
     /** Если пусто — блок локации не показываем */
@@ -49,7 +101,7 @@ export type CVContent = {
       partnerNote: string;
       highlights: string[];
       selectedTitle: string;
-      projects: { name: string; detail: string; href?: string }[];
+      projects: ProjectEntry[];
     };
     approach: {
       title: string;
@@ -85,6 +137,63 @@ export const cv: Record<Lang, CVContent> = {
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
       linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
     },
+    bootLines: [
+      '> инициализация профиля...',
+      '> загрузка опыта...',
+      '> система готова',
+    ],
+    terminalLabels: {
+      email: '[EMAIL]',
+      telegram: '[TELEGRAM]',
+      linkedin: '[LINKEDIN]',
+      about: '[ОБО МНЕ]',
+      collaboration: '[ФОРМАТ РАБОТЫ]',
+      help: '[ЧЕМ ПОЛЕЗЕН]',
+      projects: '[ЖУРНАЛ ПРОЕКТОВ]',
+      successPath: '[ПУТЬ РОСТА]',
+      highlights: '[СИГНАЛЫ СИСТЕМЫ]',
+      partnerNote: '[ПАРТНЁР · ВИТРИНА]',
+      logStatus: 'СТАТУС',
+      logAction: 'КОНТЕКСТ',
+      logResult: 'ИТОГ',
+      coreStats: '[ЯДРО МЕТРИК]',
+      tech: '[ТЕХНОСТЕК]',
+      approach: '[ПОДХОД К РАБОТЕ]',
+    },
+    coreStats: [
+      { label: 'Лет в продакшене', value: '15+' },
+      { label: 'Задач и релизов', value: '1000+' },
+      { label: 'Домены', value: 'E-com · корп · NDA' },
+      { label: 'Миграции Magento', value: 'M1→2 · M2.4' },
+      { label: 'Интеграции', value: 'API · webhooks · банки' },
+    ],
+    careerPath: [
+      {
+        phase: '2009–2012',
+        title: 'Старт: веб и e-commerce',
+        detail: 'Вёрстка, PHP, первые коммерческие и корпоративные сайты, работа с заказчиком напрямую.',
+      },
+      {
+        phase: '2013–2016',
+        title: 'Крупные витрины и легаси',
+        detail: 'Magento, долгие релизы, платёжные и складские сценарии, сопровождение под нагрузкой.',
+      },
+      {
+        phase: '2017–2020',
+        title: 'Архитектура и миграции',
+        detail: 'Платформенные переходы, профилирование, кеш и поиск, ответственность за контуры системы.',
+      },
+      {
+        phase: '2021–2024',
+        title: 'Корпоративные контуры',
+        detail: 'NDA, документооборот, многорольевые кабинеты, мониторинг и эксплуатация.',
+      },
+      {
+        phase: '2025–',
+        title: 'ИИ-инструменты и качество',
+        detail: 'LLM в рутине и ревью, фокус на измеримом эффекте и устойчивой архитектуре.',
+      },
+    ],
     sections: {
       about: {
         title: 'Обо мне',
@@ -109,11 +218,31 @@ export const cv: Record<Lang, CVContent> = {
       tech: {
         title: 'Технологии',
         groups: [
-          { label: 'Backend', value: 'PHP (Laravel, Zend), Python, Bash' },
-          { label: 'Frontend', value: 'JavaScript (Vue, React), HTML, CSS, jQuery' },
-          { label: 'Инфраструктура', value: 'Docker, Nginx, Redis, ElasticSearch, CI/CD, Zabbix' },
-          { label: 'Базы данных', value: 'MySQL, PostgreSQL, MongoDB, MS SQL' },
-          { label: 'Инструменты', value: 'Git, Composer, NPM, WebStorm, VS Code, Postman' },
+          {
+            label: 'Backend',
+            value:
+              'PHP: Magento 1/2, Laravel, Zend/Laminas — модули, интеграции, performance. Python: asyncio, aiogram/Telegram-боты, скрипты и утилиты под задачу; при необходимости REST (FastAPI-уровень по сценарию). Bash для автоматизации и деплоя.',
+          },
+          {
+            label: 'Frontend',
+            value:
+              'HTML/CSS, JavaScript (Vue, React), сборки NPM/Vite, jQuery и легаси-интерфейсы без «ломания продакшена». Внимание к скорости загрузки, критическому CSS и практичной доступности.',
+          },
+          {
+            label: 'Инфраструктура',
+            value:
+              'Docker / docker-compose, Nginx, Redis, Elasticsearch/OpenSearch, очереди и фоновые воркеры, CI/CD (GitLab/GitHub), Zabbix/мониторинг, логирование и алерты.',
+          },
+          {
+            label: 'Базы данных',
+            value:
+              'MySQL/MariaDB (индексы, репликации, миграции схем), PostgreSQL, MongoDB, MS SQL — проектирование запросов, миграции данных, бэкапы и восстановление.',
+          },
+          {
+            label: 'Инструменты и практики',
+            value:
+              'Git (flow, rebase при необходимости), Composer, NPM, WebStorm/VS Code, Postman/HTTP-клиенты, OpenAPI-контракты. Code review, документация для онбординга, работа с Jira/трекерами.',
+          },
         ],
       },
       experience: {
@@ -130,10 +259,30 @@ export const cv: Record<Lang, CVContent> = {
           {
             name: 'windowcleaner.com (США)',
             detail: '5+ лет разработки и сопровождения; миграция Magento 1 → 2.',
+            log: {
+              status: 'PROD',
+              action: 'Magento 1 → 2, релизы, платежи и операционные сценарии',
+              result: 'Долгосрочная стабильная витрина и бизнес-процессы',
+            },
           },
           {
             name: 'gratisiskolan.se (Швеция)',
             detail: 'Миграция на Magento 2.4, кастомные модули и интеграции.',
+            log: {
+              status: 'OK',
+              action: 'Magento 2.4, кастомные модули, внешние интеграции',
+              result: 'Миграция и развитие в продакшене',
+            },
+          },
+          {
+            name: 'AI Telegram-бот: напоминания и микро-коучинг (Python)',
+            detail:
+              'Собственная разработка: бот напоминает о задачах и «мыслях», которые пользователь сам помечает важными, задаёт уточняющие вопросы по настраиваемому сценарию. Значительное время ушло на проработку UX диалога и устойчивого состояния.',
+            log: {
+              status: 'OK',
+              action: 'Python · aiogram · FSM · асинхронные сценарии опроса',
+              result: 'Рабочий прототип для личного использования; сильный опыт проектирования диалогов',
+            },
           },
           {
             name: 'КПСК (страхование) — кейс партнёра',
@@ -246,6 +395,63 @@ export const cv: Record<Lang, CVContent> = {
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
       linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
     },
+    bootLines: [
+      '> initializing profile...',
+      '> loading experience...',
+      '> system ready',
+    ],
+    terminalLabels: {
+      email: '[EMAIL]',
+      telegram: '[TELEGRAM]',
+      linkedin: '[LINKEDIN]',
+      about: '[ABOUT ME]',
+      collaboration: '[ENGAGEMENT]',
+      help: '[HOW I HELP]',
+      projects: '[PROJECT LOG]',
+      successPath: '[SUCCESS PATH]',
+      highlights: '[SYSTEM SIGNALS]',
+      partnerNote: '[PARTNER · SHOWCASE]',
+      logStatus: 'STATUS',
+      logAction: 'CONTEXT',
+      logResult: 'OUTCOME',
+      coreStats: '[CORE STATS]',
+      tech: '[TECH STACK]',
+      approach: '[WORK APPROACH]',
+    },
+    coreStats: [
+      { label: 'Years in production', value: '15+' },
+      { label: 'Tasks & releases', value: '1000+' },
+      { label: 'Domains', value: 'E-com · enterprise · NDA' },
+      { label: 'Magento migrations', value: 'M1→2 · M2.4' },
+      { label: 'Integrations', value: 'API · webhooks · banks' },
+    ],
+    careerPath: [
+      {
+        phase: '2009–2012',
+        title: 'Start: web & e-commerce',
+        detail: 'Markup, PHP, first commercial and corporate sites, direct client collaboration.',
+      },
+      {
+        phase: '2013–2016',
+        title: 'Large storefronts & legacy',
+        detail: 'Magento, long release cycles, payments/warehouse flows, production support.',
+      },
+      {
+        phase: '2017–2020',
+        title: 'Architecture & migrations',
+        detail: 'Platform moves, profiling, cache & search, owning broader system boundaries.',
+      },
+      {
+        phase: '2021–2024',
+        title: 'Enterprise layers',
+        detail: 'NDA work, document workflows, multi-role portals, monitoring and operations.',
+      },
+      {
+        phase: '2025–',
+        title: 'AI tooling & quality',
+        detail: 'LLMs for routine/review, focus on measurable impact and durable architecture.',
+      },
+    ],
     sections: {
       about: {
         title: 'About me',
@@ -270,11 +476,31 @@ export const cv: Record<Lang, CVContent> = {
       tech: {
         title: 'Tech stack',
         groups: [
-          { label: 'Backend', value: 'PHP (Laravel, Zend), Python, Bash' },
-          { label: 'Frontend', value: 'JavaScript (Vue, React), HTML, CSS, jQuery' },
-          { label: 'Infrastructure', value: 'Docker, Nginx, Redis, ElasticSearch, CI/CD, Zabbix' },
-          { label: 'Databases', value: 'MySQL, PostgreSQL, MongoDB, MS SQL' },
-          { label: 'Tools', value: 'Git, Composer, NPM, WebStorm, VS Code, Postman' },
+          {
+            label: 'Backend',
+            value:
+              'PHP: Magento 1/2, Laravel, Zend/Laminas — modules, integrations, performance work. Python: asyncio, aiogram/Telegram bots, scripting; REST-style services when the project calls for it (e.g. FastAPI-level patterns). Bash for automation and deploy glue.',
+          },
+          {
+            label: 'Frontend',
+            value:
+              'HTML/CSS, JavaScript (Vue, React), NPM/Vite builds, jQuery/legacy UIs evolved without breaking production. Practical performance (critical paths, payload) and sensible accessibility defaults.',
+          },
+          {
+            label: 'Infrastructure',
+            value:
+              'Docker / compose, Nginx, Redis, Elasticsearch/OpenSearch, queues & background workers, CI/CD (GitLab/GitHub), Zabbix/monitoring, logging and alerting.',
+          },
+          {
+            label: 'Databases',
+            value:
+              'MySQL/MariaDB (indexes, replication-aware design, schema migrations), PostgreSQL, MongoDB, MS SQL — query design, data migrations, backup/restore discipline.',
+          },
+          {
+            label: 'Tools & practices',
+            value:
+              'Git (team flows, rebase when it helps), Composer, NPM, WebStorm/VS Code, Postman/HTTP clients, OpenAPI-style contracts. Code review, onboarding docs, Jira/issue trackers.',
+          },
         ],
       },
       experience: {
@@ -291,10 +517,30 @@ export const cv: Record<Lang, CVContent> = {
           {
             name: 'windowcleaner.com (USA)',
             detail: '5+ years of development and support; Magento 1 → 2 migration.',
+            log: {
+              status: 'PROD',
+              action: 'Magento 1 → 2, releases, payments and operational flows',
+              result: 'Long-running stable storefront and business operations',
+            },
           },
           {
             name: 'gratisiskolan.se (Sweden)',
             detail: 'Magento 2.4 migration, custom modules and integrations.',
+            log: {
+              status: 'OK',
+              action: 'Magento 2.4, custom modules, external integrations',
+              result: 'Shipped migration and ongoing production evolution',
+            },
+          },
+          {
+            name: 'AI Telegram bot: reminders & micro-coaching (Python)',
+            detail:
+              'Personal build: reminders for tasks and “thoughts” the user marks as important, follow-up questions driven by configurable flows. Significant time spent on dialog UX and durable conversation state.',
+            log: {
+              status: 'OK',
+              action: 'Python · aiogram · FSM · async prompting flows',
+              result: 'Working personal prototype; strong dialog design and state-handling experience',
+            },
           },
           {
             name: 'KPSK (insurance) — partner case page',

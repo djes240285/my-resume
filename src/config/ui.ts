@@ -1,6 +1,6 @@
 export const UI_FLAGS = {
-  // Переключатель золотой подсветки аватара: 'on' | 'off'
-  avatarGoldRing: 'on' as 'on' | 'off',
+  // В терминальной теме кольцо аватара — зелёный «лоader», не золото
+  avatarGoldRing: 'off' as 'on' | 'off',
   // Тема интерфейса: 'default' | 'retro-soft'
   theme: 'retro-soft' as 'default' | 'retro-soft',
 };
