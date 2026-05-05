@@ -1418,6 +1418,36 @@
     min-width: 0;
   }
 
+  /* Email-строки: «выделение файла» при hover/focus ссылки (не подчёркивание) */
+  .contact-terminal-card--email .contact-terminal-email-row {
+    position: relative;
+    border-radius: 7px;
+    isolation: isolate;
+  }
+
+  .contact-terminal-card--email .contact-terminal-email-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(59, 175, 253, 0.12);
+    box-shadow: inset 3px 0 0 rgba(59, 175, 253, 0.9);
+    opacity: 0;
+    transition: opacity 0.16s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .contact-terminal-card--email .contact-terminal-email-row:has(.contact-terminal-email-link:hover)::after,
+  .contact-terminal-card--email .contact-terminal-email-row:has(.contact-terminal-email-link:focus-visible)::after {
+    opacity: 1;
+  }
+
+  .contact-terminal-card--email .contact-terminal-email-row > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .contact-terminal-phone-row {
     display: flex;
     flex-wrap: wrap;
@@ -1527,6 +1557,11 @@
     text-decoration: none;
     word-break: normal;
     overflow-wrap: normal;
+    transition: color 0.16s ease;
+  }
+
+  /* Подчёркивание только у LinkedIn (и прочих не-email полей), не у email */
+  .contact-terminal-log-value {
     padding-bottom: 1px;
     background: linear-gradient(90deg, rgba(56, 189, 248, 0.55), rgba(74, 222, 128, 0.55)) 0 100% / 0 1px
       no-repeat;
@@ -1535,8 +1570,13 @@
       background-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .contact-terminal-email-link:hover,
-  .contact-terminal-email-link:focus-visible {
+  .contact-terminal-card--email .contact-terminal-email-link:hover,
+  .contact-terminal-card--email .contact-terminal-email-link:focus-visible {
+    color: #fff;
+  }
+
+  .contact-terminal-log-value:hover,
+  .contact-terminal-log-value:focus-visible {
     color: #fff;
     background-size: 100% 1px;
   }
