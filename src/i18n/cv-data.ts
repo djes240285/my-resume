@@ -1,3 +1,5 @@
+import { TECH_STACK_DOC_HREFS } from '../config/tech-stack-docs';
+
 export type Lang = 'ru' | 'en';
 
 export const SUPPORTED_LANGS: Lang[] = ['ru', 'en'];
@@ -31,11 +33,29 @@ export type ProjectLogLine = {
   result: string;
 };
 
+export type ProjectOutboundKind = 'partner' | 'customer' | 'website';
+
+export type ProjectOutbound = {
+  href: string;
+  kind: ProjectOutboundKind;
+};
+
 export type ProjectEntry = {
   name: string;
   detail: string;
+  /** Одна внешняя ссылка (по умолчанию подпись «Сайт»). Не используйте вместе с links. */
   href?: string;
+  /** Несколько ссылок с разными подписями (кейс партнёра, сайт заказчика). */
+  links?: ProjectOutbound[];
   log?: ProjectLogLine;
+};
+
+/** Проекты сгруппированы по периоду работы (в данных — от новых к старым). Внутри группы порядок = от более значимого. */
+export type ExperienceProjectGroup = {
+  period: string;
+  /** Одна строка: зачем этот срез по времени (снижает ощущение «устаревшего» опыта). */
+  context?: string;
+  projects: ProjectEntry[];
 };
 
 export type CareerMilestone = {
@@ -47,6 +67,23 @@ export type CareerMilestone = {
 export type CoreStat = {
   label: string;
   value: string;
+};
+
+/** Строка «файла» в блоке техностека (иконка = slug simple-icons v13) */
+export type TechStackFileEntry = {
+  name: string;
+  ext: string;
+  icon?: string;
+  hint?: string;
+  /** Прямая ссылка на документацию; если не задана, подставляется из `TECH_STACK_DOC_HREFS` по `name`, когда есть */
+  docHref?: string;
+};
+
+/** Ветка роадмапа: блоки без нумераии (CMS → рантайм → UI → …) */
+export type TechRoadmapLane = {
+  title: string;
+  summary: string;
+  files: TechStackFileEntry[];
 };
 
 export type TerminalLabels = {
@@ -61,6 +98,8 @@ export type TerminalLabels = {
   help: string;
   projects: string;
   successPath: string;
+  /** Неоновый бейдж у этапа «путь роста» (концепт SUCCESS / локализация) */
+  successPathBadge: string;
   highlights: string;
   partnerNote: string;
   logStatus: string;
@@ -87,6 +126,13 @@ export type TerminalLabels = {
   contactCopyToast: string;
   /** Копировать URL (Telegram, MAX, LinkedIn) */
   contactCopyLinkAria: string;
+  /** Маленькая подпись у блока периода в списке проектов («эпоха») */
+  projectEraBadge: string;
+  projectLinkPartner: string;
+  projectLinkCustomer: string;
+  projectLinkWebsite: string;
+  partnerShowcaseLinkAria: string;
+  partnerShowcaseCta: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -141,13 +187,17 @@ export type CVContent = {
     about: { title: string; body: string };
     collaboration: { title: string; body: string };
     help: { title: string; items: string[] };
-    tech: { title: string; groups: { label: string; value: string }[] };
+    tech: { title: string; lanes: TechRoadmapLane[] };
     experience: {
       title: string;
       partnerNote: string;
+      /** Явная ссылка на витрину партнёра (под текстом блока). */
+      partnerShowcase?: { href: string; label: string };
       highlights: string[];
       selectedTitle: string;
-      projects: ProjectEntry[];
+      /** Подпись под заголовком: хронология / эпохи */
+      timelineLead?: string;
+      projectGroups: ExperienceProjectGroup[];
     };
     approach: {
       title: string;
@@ -227,12 +277,13 @@ export const cv: Record<Lang, CVContent> = {
       help: '[ЧЕМ ПОЛЕЗЕН]',
       projects: '[ЖУРНАЛ ПРОЕКТОВ]',
       successPath: '[ПУТЬ РОСТА]',
+      successPathBadge: 'УСПЕХ',
       highlights: '[СИГНАЛЫ СИСТЕМЫ]',
       partnerNote: '[ПАРТНЁР · ВИТРИНА]',
       logStatus: 'СТАТУС',
       logAction: 'КОНТЕКСТ',
       logResult: 'ИТОГ',
-      coreStats: '[ЯДРО МЕТРИК]',
+      coreStats: '[СНИМОК ПРАКТИКИ]',
       tech: '[ТЕХНОСТЕК]',
       approach: '[ПОДХОД К РАБОТЕ]',
       hudStatus: 'СТАТУС',
@@ -247,13 +298,22 @@ export const cv: Record<Lang, CVContent> = {
       contactCopied: 'Скопировано',
       contactCopyToast: 'Скопировано в буфер обмена',
       contactCopyLinkAria: 'Копировать ссылку',
+      projectEraBadge: 'эпоха',
+      projectLinkPartner: 'Кейс партнёра',
+      projectLinkCustomer: 'Сайт заказчика',
+      projectLinkWebsite: 'Сайт',
+      partnerShowcaseLinkAria: 'Сайт партнёра — витрина кейсов (новая вкладка)',
+      partnerShowcaseCta: 'Витрина партнёра',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
-      { label: 'Задач и релизов', value: '1000+' },
-      { label: 'Домены', value: 'E-com · корп · NDA' },
-      { label: 'Миграции Magento', value: 'M1→2 · M2.4' },
-      { label: 'Интеграции', value: 'API · webhooks · банки' },
+      {
+        label: 'Горизонт ответственности',
+        value: 'продукт · интеграции · эксплуатация',
+      },
+      { label: 'Обычные поля', value: 'E-com · корп · NDA' },
+      { label: 'Характерные зоны', value: 'Laravel · новые системы с нуля · редизайн · переход на другие платформы до результата · Magento — легаси и миграции' },
+      { label: 'Стыки с внешним миром', value: 'API · webhooks · банки' },
     ],
     careerPath: [
       {
@@ -286,129 +346,504 @@ export const cv: Record<Lang, CVContent> = {
       about: {
         title: 'Обо мне',
         body:
-          'Более 15 лет в веб-разработке: e-commerce, корпоративные системы и высоконагруженные решения. Подключаюсь к проектам на этапе «всё горит»: восстановление стабильности, миграции платформ, оптимизация узких мест. Системно смотрю на продукт — от архитектуры до эксплуатации. Активно использую современные инструменты и ИИ-помощников, чтобы ускорять рутину и повышать качество решений.',
+          'Когда прод и выручку уже нельзя «поставить на паузу», а любое изменение ощущается как лотерея — я подключаюсь за спокойной диагностикой и исправлениями, которые переживут следующий релиз, а не красивым обещанием «переписать всё». Более 15 лет в e-commerce, корпоративных контурах и под нагрузкой; смотрю на систему целиком — от архитектуры до эксплуатации. Современный стек и ИИ — только там, где ускоряют работу и не размывают ответственность за качество.',
       },
       collaboration: {
         title: 'Формат сотрудничества',
         body:
-          'Сейчас не веду деятельность как индивидуальный предприниматель по семейным обстоятельствам; коммерческие проекты закрываю через проверенного партнёра с договором и прозрачной отчётностью с его стороны. При необходимости подключаюсь под процесс заказчика или через юрлицо партнёра — формат и документооборот согласуем заранее. Это не влияет на качество и зону ответственности по задачам: сроки, коммуникация и результат остаются на мне.',
+          'Пишите мне напрямую; юридически проект чаще оформляю через проверенного партнёра — договор и отчётность с его стороны. Процесс и документы согласуем до старта — под вашу модель или через юрлицо партнёра. На инженерной стороне ничего не перекладывается: сроки, коммуникация и результат остаются на мне.',
       },
       help: {
         title: 'Чем могу быть полезен',
         items: [
-          'Восстановление и стабилизация сложных легаси-систем',
-          'Миграции платформ и смена технологического стека без остановки бизнеса',
-          'Профилирование и ускорение: базы, кеш, очереди, поиск, фронтенд',
-          'Проектирование архитектуры и контрактов интеграций',
-          'Полный цикл: backend, frontend, инфраструктура, CI/CD, мониторинг',
+          'Легаси: вернуть предсказуемость релизов вместо тушения пожаров',
+          'Миграции и смена стека без остановки витрины и критичных процессов',
+          'Профилирование и ускорение — базы, кеш, очереди, поиск, фронтенд',
+          'Архитектура и контракты интеграций, чтобы связки не ломались при росте',
+          'Полный цикл в одних руках: backend, frontend, инфраструктура, CI/CD, мониторинг',
         ],
       },
       tech: {
         title: 'Технологии',
-        groups: [
+        lanes: [
           {
-            label: 'Backend',
-            value:
-              'PHP: Magento 1/2, Laravel, Zend/Laminas — модули, интеграции, performance. Python: asyncio, aiogram/Telegram-боты, скрипты и утилиты под задачу; при необходимости REST (FastAPI-уровень по сценарию). Bash для автоматизации и деплоя.',
+            title: 'CMS и платформы контента',
+            summary:
+              'Витрины, каталоги, редакционные процессы и интеграции — от классических CMS до headless и облачных контент‑хабов.',
+            files: [
+              {
+                name: 'Magento · Open Source / Adobe Commerce',
+                ext: '.xml',
+                icon: 'magento',
+                hint: 'M1→M2, модули, enterprise-витрины, performance, миграции',
+              },
+              {
+                name: 'WordPress',
+                ext: '.php',
+                icon: 'wordpress',
+                hint: 'темы, плагины, многосайтовость, безопасные обновления',
+              },
+              {
+                name: 'WooCommerce',
+                ext: '.php',
+                icon: 'woocommerce',
+                hint: 'каталоги, оплата, оформление заказов поверх WordPress',
+              },
+              {
+                name: 'Shopify',
+                ext: '.liquid',
+                icon: 'shopify',
+                hint: 'облачные витрины, темы Liquid, app-контуры',
+              },
+              {
+                name: 'Drupal',
+                ext: '.php',
+                icon: 'drupal',
+                hint: 'корпоративные порталы, сложные типы контента',
+              },
+              {
+                name: 'Strapi',
+                ext: '.json',
+                icon: 'strapi',
+                hint: 'headless API, админка, расширения под проект',
+              },
+              {
+                name: 'Contentful',
+                ext: '.graphql',
+                icon: 'contentful',
+                hint: 'облачная модель контента, локали, доставка в каналы',
+              },
+              {
+                name: 'Storyblok',
+                ext: '.json',
+                icon: 'storyblok',
+                hint: 'визуальные блоки, headless для маркетинговых сайтов',
+              },
+              {
+                name: 'OpenCart',
+                ext: '.php',
+                icon: 'opencart',
+                hint: 'витрины, модули, платежи и доставки под проект',
+              },
+              {
+                name: 'Diafan CMS',
+                ext: '.php',
+                icon: 'diafan',
+                hint: 'типовые и кастомные шаблоны, лёгкая структура сайта',
+              },
+              {
+                name: 'Joomla',
+                ext: '.php',
+                icon: 'joomla',
+                hint: 'расширения, ACL, корпоративные и контентные проекты',
+              },
+            ],
           },
           {
-            label: 'Frontend',
-            value:
-              'HTML/CSS, JavaScript (Vue, React), сборки NPM/Vite, jQuery и легаси-интерфейсы без «ломания продакшена». Внимание к скорости загрузки, критическому CSS и практичной доступности.',
+            title: 'Сервисы и рантайм',
+            summary:
+              'Бэкенд, который несёт бизнес-логику, интеграции и устойчивость под нагрузкой.',
+            files: [
+              {
+                name: 'Laravel',
+                ext: '.php',
+                icon: 'laravel',
+                hint: 'API, очереди, админки, интеграционные контуры',
+              },
+              {
+                name: 'Laminas (Zend)',
+                ext: '.php',
+                icon: 'zend',
+                hint: 'корпоративные и легаси-контуры PHP',
+              },
+              {
+                name: 'Python',
+                ext: '.py',
+                icon: 'python',
+                hint: 'asyncio, aiogram / Telegram, скрипты; REST при сценарии (FastAPI-level)',
+              },
+              {
+                name: 'Bash',
+                ext: '.sh',
+                icon: 'gnubash',
+                hint: 'автоматизация, деплой, glue между сервисами',
+              },
+            ],
           },
           {
-            label: 'Инфраструктура',
-            value:
-              'Docker / docker-compose, Nginx, Redis, Elasticsearch/OpenSearch, очереди и фоновые воркеры, CI/CD (GitLab/GitHub), Zabbix/мониторинг, логирование и алерты.',
+            title: 'Интерфейс и витрина',
+            summary:
+              'Скорость загрузки, критический CSS, эволюция легаси без «ломания продакшена», базовая a11y.',
+            files: [
+              {
+                name: 'HTML / CSS',
+                ext: '.html',
+                icon: 'html5',
+                hint: 'семантика, адаптив, практичная доступность',
+              },
+              {
+                name: 'JavaScript · Vue',
+                ext: '.vue',
+                icon: 'vuedotjs',
+                hint: 'витрины и кабинеты, интеграция с API',
+              },
+              {
+                name: 'JavaScript · React',
+                ext: '.tsx',
+                icon: 'react',
+                hint: 'компоненты и сборки под задачу',
+              },
+              {
+                name: 'Vite',
+                ext: '.config.ts',
+                icon: 'vite',
+                hint: 'сборка фронта (в т.ч. рядом с NPM)',
+              },
+              {
+                name: 'jQuery / легаси UI',
+                ext: '.js',
+                icon: 'jquery',
+                hint: 'аккуратные изменения в проде без big-bang',
+              },
+            ],
           },
           {
-            label: 'Базы данных',
-            value:
-              'MySQL/MariaDB (индексы, репликации, миграции схем), PostgreSQL, MongoDB, MS SQL — проектирование запросов, миграции данных, бэкапы и восстановление.',
+            title: 'Данные и кеш',
+            summary:
+              'Запросы, миграции схем и данных, репликации, бэкапы и восстановление.',
+            files: [
+              {
+                name: 'MySQL / MariaDB',
+                ext: '.sql',
+                icon: 'mysql',
+                hint: 'индексы, миграции, репликации',
+              },
+              {
+                name: 'PostgreSQL',
+                ext: '.sql',
+                icon: 'postgresql',
+                hint: 'сложные схемы и отчётность',
+              },
+              {
+                name: 'MongoDB',
+                ext: '.json',
+                icon: 'mongodb',
+                hint: 'документооборот и нетипичные модели',
+              },
+              {
+                name: 'Microsoft SQL Server',
+                ext: '.sql',
+                icon: 'microsoftsqlserver',
+                hint: 'интеграции с корпоративным контуром',
+              },
+              {
+                name: 'Redis',
+                ext: '.conf',
+                icon: 'redis',
+                hint: 'кеш, сессии, rate-limit, быстрые структуры',
+              },
+              {
+                name: 'OpenSearch / Elasticsearch',
+                ext: '.json',
+                icon: 'opensearch',
+                hint: 'поиск по каталогам и аналитике',
+              },
+            ],
           },
           {
-            label: 'Инструменты и практики',
-            value:
-              'Git (flow, rebase при необходимости), Composer, NPM, WebStorm/VS Code, Postman/HTTP-клиенты, OpenAPI-контракты. Code review, документация для онбординга, работа с Jira/трекерами.',
+            title: 'Платформа и эксплуатация',
+            summary:
+              'Контейнеры, прокси, фоновые процессы, CI/CD, мониторинг и алерты.',
+            files: [
+              {
+                name: 'Docker',
+                ext: '.Dockerfile',
+                icon: 'docker',
+                hint: 'образы, compose, воспроизводимые среды',
+              },
+              {
+                name: 'Nginx',
+                ext: '.conf',
+                icon: 'nginx',
+                hint: 'прокси, TLS, статика и бэкенд-апстримы',
+              },
+              {
+                name: 'Очереди и воркеры',
+                ext: '.worker',
+                icon: 'rabbitmq',
+                hint: 'фоновые задания, отложенная обработка',
+              },
+              {
+                name: 'CI/CD',
+                ext: '.yml',
+                icon: 'gitlab',
+                hint: 'GitLab / GitHub — пайплайны, артефакты, релизная дисциплина',
+              },
+              {
+                name: 'Мониторинг / логи',
+                ext: '.cfg',
+                icon: 'zabbix',
+                hint: 'Zabbix и аналоги, логирование, алерты',
+              },
+            ],
+          },
+          {
+            title: 'Инструменты и практики',
+            summary:
+              'Контракты, ревью, онбординг, трекеры — плюс ИИ-инструменты в рутине при контроле качества и архитектуры.',
+            files: [
+              {
+                name: 'Git',
+                ext: '.patch',
+                icon: 'git',
+                hint: 'flow, rebase когда уместно, история для команды',
+              },
+              {
+                name: 'Composer',
+                ext: '.json',
+                icon: 'composer',
+                hint: 'PHP-зависимости и автозагрузка',
+              },
+              {
+                name: 'NPM',
+                ext: '.json',
+                icon: 'npm',
+                hint: 'фронт и утилиты Node',
+              },
+              {
+                name: 'IDE',
+                ext: '.code-workspace',
+                icon: 'visualstudiocode',
+                hint: 'VS Code; WebStorm / JetBrains — по проекту',
+              },
+              {
+                name: 'Cursor',
+                ext: '.cursorrules',
+                icon: 'cursor',
+                hint: 'агентный IDE, рефакторинг и сценарии разработки под задачу',
+              },
+              {
+                name: 'Claude (Anthropic)',
+                ext: '.md',
+                icon: 'claude',
+                hint: 'длинный контекст, ревью, черновики документации и проектирования',
+              },
+              {
+                name: 'Postman / HTTP-клиенты',
+                ext: '.http',
+                icon: 'postman',
+                hint: 'отладка API и интеграций',
+              },
+              {
+                name: 'OpenAPI',
+                ext: '.yaml',
+                icon: 'swagger',
+                hint: 'контракты между сервисами и командами',
+              },
+              {
+                name: 'Jira / трекеры',
+                ext: '.issue',
+                icon: 'jira',
+                hint: 'постановка, статусы, прозрачность поставки',
+              },
+            ],
           },
         ],
       },
       experience: {
         title: 'Опыт и проекты',
         partnerNote:
-          'Часть публичных сайтов и кейсов представлена на портфолио партнёра (webstartechnology.ru): там же описания отраслей и задач клиентов. Ниже — мой вклад в отдельные направления; внутренние системы и NDA-проекты по смыслу совпадают, но без публичной витрины.',
+          'Часть публичных сайтов и кейсов представлена на портфолио партнёра — там же описания отраслей и задач клиентов. Ниже — мой вклад в отдельные направления; внутренние системы и NDA-проекты по смыслу совпадают, но без публичной витрины. Годы у блоков — ориентир по основному контуру участия, не обязательно дата последнего релиза.',
+        partnerShowcase: {
+          href: 'https://webstartechnology.ru/',
+          label: 'webstartechnology.ru',
+        },
         highlights: [
           '1000+ проектов и задач разной сложности',
           'Рост конверсии и скорости работы за счёт архитектурных и продуктовых улучшений',
           'Успешные миграции Magento и долгосрочная поддержка крупных магазинов',
         ],
         selectedTitle: 'Избранные проекты',
-        projects: [
+        timelineLead:
+          'Ось слева: сверху — настоящее, ниже — более ранние эпохи. При прокрутке усиливается тот срез, который в центре внимания — как слои опыта, уходящие в глубину.',
+        projectGroups: [
           {
-            name: 'windowcleaner.com (США)',
-            detail: '5+ лет разработки и сопровождения; миграция Magento 1 → 2.',
-            log: {
-              status: 'PROD',
-              action: 'Magento 1 → 2, релизы, платежи и операционные сценарии',
-              result: 'Долгосрочная стабильная витрина и бизнес-процессы',
-            },
+            period: '2022—н.в.',
+            context: 'Текущий контур: сервисы, интеграции, наработки; в том числе долгие системы, которые продолжаю развивать.',
+            projects: [
+              {
+                name: 'Доставка-ЗПР (dostavka-zpr.ru)',
+                detail:
+                  'Решение с нуля на Laravel под доставку в контуре CDEK: расчёты, работа с API и прикладная логика. Ранее — домен cdek-zpr.ru; актуальная витрина на dostavka-zpr.ru.',
+                href: 'https://dostavka-zpr.ru/',
+              },
+              {
+                name: 'Крымресурс — обучающий центр',
+                detail:
+                  'Внутренний корпоративный пласт: обучение, техники, ответственные лица, менеджеры, документооборот, генерация документов, объединение данных из множества приложений в единую модель. Контур в активной разработке и сопровождении (веду сейчас); публичный krymresurs.ru — витрина, не полное описание системы.',
+                href: 'https://krymresurs.ru/',
+              },
+              {
+                name: 'sechat.ru',
+                detail: 'Развитие коммуникационного продукта по задачам заказчика.',
+                href: 'https://sechat.ru',
+              },
+              {
+                name: 'mozgovnet.com',
+                detail: 'Платёжные интеграции и восстановление легаси.',
+                href: 'https://mozgovnet.com/',
+              },
+              {
+                name: 'biznesmashin.ru',
+                detail: 'Интернет-магазин грузовой техники на «1С-Битрикс».',
+                href: 'https://biznesmashin.ru/',
+              },
+              {
+                name: 'AI Telegram-бот: напоминания и микро-коучинг (Python)',
+                detail:
+                  'Собственная разработка: бот напоминает о задачах и «мыслях», которые пользователь сам помечает важными, задаёт уточняющие вопросы по настраиваемому сценарию. Стек: Python, aiogram, FSM. Значительное время ушло на проработку UX диалога и устойчивого состояния.',
+              },
+              {
+                name: 'layer.cafe',
+                detail: 'Дизайн для ранних этапов публичного сайта продукта.',
+                href: 'https://layer.cafe/',
+              },
+            ],
           },
           {
-            name: 'gratisiskolan.se (Швеция)',
-            detail: 'Миграция на Magento 2.4, кастомные модули и интеграции.',
-            log: {
-              status: 'OK',
-              action: 'Magento 2.4, кастомные модули, внешние интеграции',
-              result: 'Миграция и развитие в продакшене',
-            },
+            period: '2019—2024',
+            context: 'Корпоративные контуры и кейсы с партнёром; крупные миграции Magento 2.x.',
+            projects: [
+              {
+                name: 'gratisiskolan.se (Швеция)',
+                detail: 'Миграция на Magento 2.4; адаптация пользовательских модулей под 2.4.',
+                href: 'https://gratisiskolan.se/',
+              },
+              {
+                name: '102 ПЭС (Минобороны электрических сетей)',
+                detail:
+                  'Корпоративный контур для техников, клиентов, менеджеров и администратора; публичная витрина и рекламная оболочка.',
+                links: [
+                  { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
+                  { kind: 'customer', href: 'https://102pes.ru/' },
+                ],
+              },
+              {
+                name: 'КПСК (страхование) — кейс партнёра',
+                detail:
+                  'Работа с системой банка: развитие и доработка уже существующего проекта под задачи страховой витрины и интеграций.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
+              },
+              {
+                name: 'Фитнес-клуб «Гагарин»',
+                detail: 'Корпоративный сайт: структура, вёрстка, интеграции и сопровождение по процессу партнёра.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
+              },
+              {
+                name: 'Музыкальный театр Крыма, Завод Пневматика, концертный зал ККО',
+                detail:
+                  'Участие в отдельных блоках функциональности и доработках в рамках проектов партнёра (по задачам и этапам).',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+              },
+              {
+                name: 'Медицинский колл-центр (архив)',
+                detail:
+                  'Закрытая система под бизнес заказчика; опиралась на контур КПСК (страховые случаи, больницы). Проект был технически сложным; сейчас не развивается по внешним причинам заказчика.',
+              },
+              {
+                name: 'Корпоративные решения (NDA)',
+                detail: 'Мониторинг, управление и интеграции для энергетики, фитнеса и образования без публичного доступа.',
+              },
+            ],
           },
           {
-            name: 'AI Telegram-бот: напоминания и микро-коучинг (Python)',
-            detail:
-              'Собственная разработка: бот напоминает о задачах и «мыслях», которые пользователь сам помечает важными, задаёт уточняющие вопросы по настраиваемому сценарию. Значительное время ушло на проработку UX диалога и устойчивого состояния.',
-            log: {
-              status: 'OK',
-              action: 'Python · aiogram · FSM · асинхронные сценарии опроса',
-              result: 'Рабочий прототип для личного использования; сильный опыт проектирования диалогов',
-            },
+            period: '≈2012—2021',
+            context: 'Долгие международные витрины, сопровождение под нагрузкой, эволюция платформ.',
+            projects: [
+              {
+                name: 'windowcleaner.com (США)',
+                detail:
+                  'Около пяти лет плотной работы и развития — ключевой клиент и проект. Путь: Magento 1.4 → сопровождение 1.9 → миграция на Magento 2. В том же бизнес-контуре — отдельные витрины и площадки, в т.ч. связанные с SWCR.',
+                href: 'https://windowcleaner.com/',
+              },
+              {
+                name: 'store.finaldraft.com',
+                detail: 'Поддержка и развитие (Magento).',
+                href: 'https://store.finaldraft.com/',
+              },
+              {
+                name: 'microline.ua',
+                detail: 'Поддержка и развитие (Magento).',
+                href: 'https://microline.ua/',
+              },
+              {
+                name: 'nancysbeauty.com (США)',
+                detail: 'Поддержка и развитие витрины.',
+                href: 'https://nancysbeauty.com/',
+              },
+              {
+                name: 'epik.com',
+                detail: 'Поддержка и развитие.',
+                href: 'https://www.epik.com/',
+              },
+              {
+                name: 'cargo.flowers',
+                detail: 'Поддержка и развитие.',
+                href: 'https://cargo.flowers/',
+              },
+              {
+                name: 'kolyom.co.il',
+                detail: 'Поддержка и развитие; фронт на Vue.js.',
+                href: 'https://www.kolyom.co.il/',
+              },
+              {
+                name: 'kurortexpert.com',
+                detail: 'Разработка уникальной системы подсчёта распределённой звёздности.',
+                href: 'https://www.kurortexpert.com/',
+              },
+            ],
           },
           {
-            name: 'КПСК (страхование) — кейс партнёра',
-            detail:
-              'Работа с системой банка: развитие и доработка уже существующего проекта под задачи страховой витрины и интеграций.',
-            href: 'https://webstartechnology.ru/kpsk',
-          },
-          {
-            name: 'Фитнес-клуб «Гагарин»',
-            detail: 'Корпоративный сайт: структура, вёрстка, интеграции и сопровождение по процессу партнёра.',
-            href: 'https://webstartechnology.ru/gagarin',
-          },
-          {
-            name: 'Музыкальный театр Крыма, Завод Пневматика, концертный зал ККО',
-            detail:
-              'Участие в отдельных блоках функциональности и доработках в рамках проектов партнёра (по задачам и этапам).',
-            href: 'https://webstartechnology.ru/muzteatr',
-          },
-          {
-            name: '102 ПЭС',
-            detail:
-              'Отдельный корпоративный контур для техников, клиентов, менеджеров и администратора — под процессы заказчика; публичный сайт — рекламная оболочка поверх решения.',
-            href: 'https://webstartechnology.ru/102pes',
-          },
-          {
-            name: 'Крымресурс — обучающий центр',
-            detail:
-              'Внутренний корпоративный пласт: обучение, техники, ответственные лица, менеджеры, полный документооборот, генерация документов, объединение данных из множества приложений в единую модель; публичный krymresurs.ru — витрина, не финальное описание всей системы.',
-            href: 'https://krymresurs.ru/',
-          },
-          {
-            name: 'Медицинский колл-центр (архив)',
-            detail:
-              'Закрытая система под бизнес заказчика; опиралась на контур КПСК (страховые случаи, больницы). Проект был технически сложным; сейчас не развивается по внешним причинам заказчика.',
-          },
-          {
-            name: 'Корпоративные решения (NDA)',
-            detail: 'Мониторинг, управление и интеграции для энергетики, фитнеса и образования без публичного доступа.',
+            period: '≈2009—2018',
+            context:
+              'Ранние крупные контуры: тип задач и платформы остаются актуальной базой для текущей работы, а не «протухший» стек.',
+            projects: [
+              {
+                name: 'dnforum.com',
+                detail: 'Разработка дополнений.',
+                href: 'https://www.dnforum.com/',
+              },
+              {
+                name: 'terradelyssa.com',
+                detail: 'Разработка дополнений.',
+                href: 'https://terradelyssa.com/',
+              },
+              {
+                name: 'Grungy Gentleman',
+                detail:
+                  'Контур Gluzdov: ювелирная тематика, магазины и франшизы. Публичная витрина со временем сильно менялась; актуальный вид — на сайте бренда.',
+                href: 'https://www.grungygentleman.com/',
+              },
+              {
+                name: 'Accuscore (accuscore.com)',
+                detail:
+                  'Временное подключение к команде: отдельные фрагменты логики по запросу заказчика, без долгого контура сопровождения.',
+                href: 'https://www.accuscore.com',
+              },
+              {
+                name: 'shkafkrovat.com.ua',
+                detail: 'Сайт мебели (для отца товарища).',
+                href: 'https://shkafkrovat.com.ua/',
+              },
+              {
+                name: 'Dikoros-Taiga',
+                detail: 'Интернет-магазин спецодежды; в том числе контур на OpenCart.',
+              },
+              {
+                name: 'rkb-bank',
+                detail: 'Разработка на Magento: банковская прослойка интернет-магазина.',
+              },
+            ],
           },
         ],
       },
@@ -424,7 +859,7 @@ export const cv: Record<Lang, CVContent> = {
             body: 'Связываю бизнес-цели, архитектуру, код и эксплуатацию в одну картину.',
           },
           {
-            title: 'Ownership',
+            title: 'Владение проблемой',
             body: 'Не «отдал таск» — а владею проблемой: ищу корень, предлагаю варианты, внедряю.',
           },
           {
@@ -527,12 +962,13 @@ export const cv: Record<Lang, CVContent> = {
       help: '[HOW I HELP]',
       projects: '[PROJECT LOG]',
       successPath: '[SUCCESS PATH]',
+      successPathBadge: 'SUCCESS',
       highlights: '[SYSTEM SIGNALS]',
       partnerNote: '[PARTNER · SHOWCASE]',
       logStatus: 'STATUS',
       logAction: 'CONTEXT',
       logResult: 'OUTCOME',
-      coreStats: '[CORE STATS]',
+      coreStats: '[PRACTICE SNAPSHOT]',
       tech: '[TECH STACK]',
       approach: '[WORK APPROACH]',
       hudStatus: 'STATUS',
@@ -547,13 +983,26 @@ export const cv: Record<Lang, CVContent> = {
       contactCopied: 'Copied',
       contactCopyToast: 'Copied to clipboard',
       contactCopyLinkAria: 'Copy link',
+      projectEraBadge: 'era',
+      projectLinkPartner: 'Partner case',
+      projectLinkCustomer: 'Customer site',
+      projectLinkWebsite: 'Website',
+      partnerShowcaseLinkAria: 'Partner website — case showcase (opens in a new tab)',
+      partnerShowcaseCta: 'Partner showcase',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },
-      { label: 'Tasks & releases', value: '1000+' },
-      { label: 'Domains', value: 'E-com · enterprise · NDA' },
-      { label: 'Magento migrations', value: 'M1→2 · M2.4' },
-      { label: 'Integrations', value: 'API · webhooks · banks' },
+      {
+        label: 'Ownership span',
+        value: 'product · integrations · operations',
+      },
+      { label: 'Typical contexts', value: 'E-com · enterprise · NDA' },
+      {
+        label: 'Where I’m usually brought in',
+        value:
+          'Laravel · greenfield systems · redesign · platform moves through to outcomes · Magento in legacy/migration work',
+      },
+      { label: 'External boundaries', value: 'API · webhooks · banks' },
     ],
     careerPath: [
       {
@@ -586,129 +1035,504 @@ export const cv: Record<Lang, CVContent> = {
       about: {
         title: 'About me',
         body:
-          '15+ years in web development: e-commerce, enterprise systems, and high-load solutions. I often join when stability is at risk: recovery, platform migrations, and performance bottlenecks. I think end-to-end—from architecture to operations. I actively use modern tooling and AI assistants to speed up routine work and improve quality.',
+          'When production and revenue don’t get a maintenance window—and every deploy feels like a lottery—I step in for calm diagnosis and fixes that survive the next release, not a vanity “rewrite everything” pitch. 15+ years across e-commerce, enterprise boundaries, and real load; I look at the whole system—from architecture to operations. Modern tooling and AI only where they speed delivery without diluting accountability for quality.',
       },
       collaboration: {
         title: 'How engagements work',
         body:
-          'I am not operating as a sole proprietor due to family circumstances; commercial work is delivered through a trusted partner arrangement with contracts and billing on their side. When needed, I onboard under the client’s process or via the partner’s legal entity—paperwork is agreed upfront. This does not change ownership of engineering outcomes: timelines, communication, and delivery remain on me.',
+          'Message me directly; contracts and billing usually run through a trusted partner on their side. We align process and paperwork before kickoff—your workflow or the partner’s legal entity. On the engineering side, nothing gets “handed off”: timelines, communication, and delivery stay with me.',
       },
       help: {
         title: 'How I can help',
         items: [
-          'Recovering and stabilizing complex legacy systems',
-          'Platform migrations and stack changes without stopping the business',
-          'Profiling and acceleration: databases, cache, queues, search, frontend',
-          'Architecture design and integration contracts',
-          'Full cycle: backend, frontend, infrastructure, CI/CD, monitoring',
+          'Legacy: bring back predictable releases instead of constant firefighting',
+          'Platform migrations and stack shifts without storefront or critical-flow downtime',
+          'Profiling and speed: databases, cache, queues, search, frontend',
+          'Architecture and integration contracts that don’t snap under growth',
+          'Full cycle in one ownership line: backend, frontend, infra, CI/CD, monitoring',
         ],
       },
       tech: {
         title: 'Tech stack',
-        groups: [
+        lanes: [
           {
-            label: 'Backend',
-            value:
-              'PHP: Magento 1/2, Laravel, Zend/Laminas — modules, integrations, performance work. Python: asyncio, aiogram/Telegram bots, scripting; REST-style services when the project calls for it (e.g. FastAPI-level patterns). Bash for automation and deploy glue.',
+            title: 'CMS & content platforms',
+            summary:
+              'Storefronts, catalogs, editorial workflows, and integrations—from classic CMS to headless stacks and cloud content hubs.',
+            files: [
+              {
+                name: 'Magento · Open Source / Adobe Commerce',
+                ext: '.xml',
+                icon: 'magento',
+                hint: 'M1→M2, modules, enterprise storefronts, performance, migrations',
+              },
+              {
+                name: 'WordPress',
+                ext: '.php',
+                icon: 'wordpress',
+                hint: 'themes, plugins, multisite, safe upgrade paths',
+              },
+              {
+                name: 'WooCommerce',
+                ext: '.php',
+                icon: 'woocommerce',
+                hint: 'catalogs, payments, checkout flows on WordPress',
+              },
+              {
+                name: 'Shopify',
+                ext: '.liquid',
+                icon: 'shopify',
+                hint: 'cloud storefronts, Liquid themes, app extensions',
+              },
+              {
+                name: 'Drupal',
+                ext: '.php',
+                icon: 'drupal',
+                hint: 'enterprise portals, rich content modeling',
+              },
+              {
+                name: 'Strapi',
+                ext: '.json',
+                icon: 'strapi',
+                hint: 'headless APIs, admin UI, project-specific extensions',
+              },
+              {
+                name: 'Contentful',
+                ext: '.graphql',
+                icon: 'contentful',
+                hint: 'cloud content models, locales, multi-channel delivery',
+              },
+              {
+                name: 'Storyblok',
+                ext: '.json',
+                icon: 'storyblok',
+                hint: 'visual blocks, headless for marketing sites',
+              },
+              {
+                name: 'OpenCart',
+                ext: '.php',
+                icon: 'opencart',
+                hint: 'storefronts, modules, payments and shipping flows',
+              },
+              {
+                name: 'Diafan CMS',
+                ext: '.php',
+                icon: 'diafan',
+                hint: 'templates and custom themes, lightweight site structure',
+              },
+              {
+                name: 'Joomla',
+                ext: '.php',
+                icon: 'joomla',
+                hint: 'extensions, ACL, corporate and editorial builds',
+              },
+            ],
           },
           {
-            label: 'Frontend',
-            value:
-              'HTML/CSS, JavaScript (Vue, React), NPM/Vite builds, jQuery/legacy UIs evolved without breaking production. Practical performance (critical paths, payload) and sensible accessibility defaults.',
+            title: 'Services & runtime',
+            summary:
+              'Backend that carries business logic, integrations, and reliability under load.',
+            files: [
+              {
+                name: 'Laravel',
+                ext: '.php',
+                icon: 'laravel',
+                hint: 'APIs, queues, admin tooling, integration boundaries',
+              },
+              {
+                name: 'Laminas (Zend)',
+                ext: '.php',
+                icon: 'zend',
+                hint: 'enterprise and legacy PHP contours',
+              },
+              {
+                name: 'Python',
+                ext: '.py',
+                icon: 'python',
+                hint: 'asyncio, aiogram / Telegram, scripting; REST when needed (FastAPI-level)',
+              },
+              {
+                name: 'Bash',
+                ext: '.sh',
+                icon: 'gnubash',
+                hint: 'automation, deploy glue between services',
+              },
+            ],
           },
           {
-            label: 'Infrastructure',
-            value:
-              'Docker / compose, Nginx, Redis, Elasticsearch/OpenSearch, queues & background workers, CI/CD (GitLab/GitHub), Zabbix/monitoring, logging and alerting.',
+            title: 'Interface & storefront',
+            summary:
+              'Load speed, critical CSS, legacy UI evolution without breaking prod, pragmatic a11y.',
+            files: [
+              {
+                name: 'HTML / CSS',
+                ext: '.html',
+                icon: 'html5',
+                hint: 'semantics, responsive layout, practical accessibility',
+              },
+              {
+                name: 'JavaScript · Vue',
+                ext: '.vue',
+                icon: 'vuedotjs',
+                hint: 'storefronts and portals wired to APIs',
+              },
+              {
+                name: 'JavaScript · React',
+                ext: '.tsx',
+                icon: 'react',
+                hint: 'components and builds as the project demands',
+              },
+              {
+                name: 'Vite',
+                ext: '.config.ts',
+                icon: 'vite',
+                hint: 'frontend bundling (alongside NPM)',
+              },
+              {
+                name: 'jQuery / legacy UI',
+                ext: '.js',
+                icon: 'jquery',
+                hint: 'careful production changes without a big-bang rewrite',
+              },
+            ],
           },
           {
-            label: 'Databases',
-            value:
-              'MySQL/MariaDB (indexes, replication-aware design, schema migrations), PostgreSQL, MongoDB, MS SQL — query design, data migrations, backup/restore discipline.',
+            title: 'Data & cache',
+            summary:
+              'Query design, schema/data migrations, replication, backups and recovery.',
+            files: [
+              {
+                name: 'MySQL / MariaDB',
+                ext: '.sql',
+                icon: 'mysql',
+                hint: 'indexes, migrations, replication',
+              },
+              {
+                name: 'PostgreSQL',
+                ext: '.sql',
+                icon: 'postgresql',
+                hint: 'rich schemas and reporting',
+              },
+              {
+                name: 'MongoDB',
+                ext: '.json',
+                icon: 'mongodb',
+                hint: 'document models where they fit',
+              },
+              {
+                name: 'Microsoft SQL Server',
+                ext: '.sql',
+                icon: 'microsoftsqlserver',
+                hint: 'enterprise integrations',
+              },
+              {
+                name: 'Redis',
+                ext: '.conf',
+                icon: 'redis',
+                hint: 'cache, sessions, rate limits, fast structures',
+              },
+              {
+                name: 'OpenSearch / Elasticsearch',
+                ext: '.json',
+                icon: 'opensearch',
+                hint: 'catalog/search and analytics indices',
+              },
+            ],
           },
           {
-            label: 'Tools & practices',
-            value:
-              'Git (team flows, rebase when it helps), Composer, NPM, WebStorm/VS Code, Postman/HTTP clients, OpenAPI-style contracts. Code review, onboarding docs, Jira/issue trackers.',
+            title: 'Platform & operations',
+            summary:
+              'Containers, proxies, background processing, CI/CD, monitoring and alerts.',
+            files: [
+              {
+                name: 'Docker',
+                ext: '.Dockerfile',
+                icon: 'docker',
+                hint: 'images, compose, reproducible environments',
+              },
+              {
+                name: 'Nginx',
+                ext: '.conf',
+                icon: 'nginx',
+                hint: 'reverse proxy, TLS, static and upstreams',
+              },
+              {
+                name: 'Queues & workers',
+                ext: '.worker',
+                icon: 'rabbitmq',
+                hint: 'async jobs and deferred processing',
+              },
+              {
+                name: 'CI/CD',
+                ext: '.yml',
+                icon: 'gitlab',
+                hint: 'GitLab / GitHub — pipelines, artifacts, release hygiene',
+              },
+              {
+                name: 'Monitoring / logs',
+                ext: '.cfg',
+                icon: 'zabbix',
+                hint: 'Zabbix-class tooling, logging, alerting',
+              },
+            ],
+          },
+          {
+            title: 'Tooling & practices',
+            summary:
+              'Contracts, review, onboarding, trackers — plus AI tools in the loop with engineering judgment.',
+            files: [
+              {
+                name: 'Git',
+                ext: '.patch',
+                icon: 'git',
+                hint: 'team flows, rebase when it helps, readable history',
+              },
+              {
+                name: 'Composer',
+                ext: '.json',
+                icon: 'composer',
+                hint: 'PHP dependencies and autoloading',
+              },
+              {
+                name: 'NPM',
+                ext: '.json',
+                icon: 'npm',
+                hint: 'frontend and Node-side utilities',
+              },
+              {
+                name: 'IDE',
+                ext: '.code-workspace',
+                icon: 'visualstudiocode',
+                hint: 'VS Code; WebStorm / JetBrains when the team standard says so',
+              },
+              {
+                name: 'Cursor',
+                ext: '.cursorrules',
+                icon: 'cursor',
+                hint: 'agentic IDE, refactors and dev workflows tuned to the task',
+              },
+              {
+                name: 'Claude (Anthropic)',
+                ext: '.md',
+                icon: 'claude',
+                hint: 'long context, reviews, docs/design drafts',
+              },
+              {
+                name: 'Postman / HTTP clients',
+                ext: '.http',
+                icon: 'postman',
+                hint: 'API debugging and integration work',
+              },
+              {
+                name: 'OpenAPI',
+                ext: '.yaml',
+                icon: 'swagger',
+                hint: 'contracts between services and teams',
+              },
+              {
+                name: 'Jira / trackers',
+                ext: '.issue',
+                icon: 'jira',
+                hint: 'work items, status, delivery transparency',
+              },
+            ],
           },
         ],
       },
       experience: {
         title: 'Experience & projects',
         partnerNote:
-          'Some public sites and case pages live on my partner’s portfolio (webstartechnology.ru), with industry context and client goals. Below is my contribution; internal systems and NDA work are described at a high level only.',
+          'Some public sites and case pages appear on my partner’s portfolio—along with industry context and client goals. Below is my contribution; internal systems and NDA work are described at a high level only. Year ranges mark the main engagement window—not necessarily the last shipped release.',
+        partnerShowcase: {
+          href: 'https://webstartechnology.ru/',
+          label: 'webstartechnology.ru',
+        },
         highlights: [
           '1000+ projects and tasks across a wide complexity range',
           'Conversion and performance improvements driven by architecture and product changes',
           'Successful Magento migrations and long-term support for large stores',
         ],
         selectedTitle: 'Selected projects',
-        projects: [
+        timelineLead:
+          'The rail on the left: present at the top, deeper past below. As you scroll, the era nearest the focus brightens—layers of experience stacking backward in time.',
+        projectGroups: [
           {
-            name: 'windowcleaner.com (USA)',
-            detail: '5+ years of development and support; Magento 1 → 2 migration.',
-            log: {
-              status: 'PROD',
-              action: 'Magento 1 → 2, releases, payments and operational flows',
-              result: 'Long-running stable storefront and business operations',
-            },
+            period: '2022—present',
+            context: 'Current workstreams: product builds, integrations, experiments—including long-running systems I still develop.',
+            projects: [
+              {
+                name: 'Dostavka-ZPR (dostavka-zpr.ru)',
+                detail:
+                  'Greenfield Laravel build for a CDEK-aligned delivery workflow: pricing logic, API usage, and operational flows. Earlier domain cdek-zpr.ru; production site moved to dostavka-zpr.ru.',
+                href: 'https://dostavka-zpr.ru/',
+              },
+              {
+                name: 'Krymresurs training center',
+                detail:
+                  'Internal corporate stack: training workflows, technicians, responsible officers, managers, document lifecycle, generation, and merging data from many apps into one model. Still in active development and maintenance on my side; krymresurs.ru is the public brochure, not the full system story.',
+                href: 'https://krymresurs.ru/',
+              },
+              {
+                name: 'sechat.ru',
+                detail: 'Product engineering work for a communications platform (scoped by the client).',
+                href: 'https://sechat.ru',
+              },
+              {
+                name: 'mozgovnet.com',
+                detail: 'Payment integrations and legacy recovery work.',
+                href: 'https://mozgovnet.com/',
+              },
+              {
+                name: 'biznesmashin.ru',
+                detail: 'Heavy machinery store on 1C-Bitrix.',
+                href: 'https://biznesmashin.ru/',
+              },
+              {
+                name: 'AI Telegram bot: reminders & micro-coaching (Python)',
+                detail:
+                  'Personal build: reminders for tasks and “thoughts” the user marks as important, follow-up questions driven by configurable flows. Stack: Python, aiogram, FSM. Significant time spent on dialog UX and durable conversation state.',
+              },
+              {
+                name: 'layer.cafe',
+                detail: 'Design work for early-stage marketing site of the product.',
+                href: 'https://layer.cafe/',
+              },
+            ],
           },
           {
-            name: 'gratisiskolan.se (Sweden)',
-            detail: 'Magento 2.4 migration, custom modules and integrations.',
-            log: {
-              status: 'OK',
-              action: 'Magento 2.4, custom modules, external integrations',
-              result: 'Shipped migration and ongoing production evolution',
-            },
+            period: '2019–2024',
+            context: 'Corporate programs and partner-led cases; larger Magento 2.x migrations.',
+            projects: [
+              {
+                name: 'gratisiskolan.se (Sweden)',
+                detail: 'Magento 2.4 migration; adapting custom modules to 2.4.',
+                href: 'https://gratisiskolan.se/',
+              },
+              {
+                name: '102 PES (Ministry of Defense electrical networks)',
+                detail:
+                  'Corporate layer for technicians, customers, managers, and admins; public marketing shell.',
+                links: [
+                  { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
+                  { kind: 'customer', href: 'https://102pes.ru/' },
+                ],
+              },
+              {
+                name: 'KPSK (insurance) — partner case page',
+                detail:
+                  'Work on a bank-related system: extending and hardening an existing project for the insurance front office and integrations.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
+              },
+              {
+                name: 'Gagarin fitness club',
+                detail: 'Corporate site: structure, implementation, integrations, and ongoing work within the partner delivery process.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
+              },
+              {
+                name: 'Crimean Musical Theatre, Pneumo plant, KKO concert hall',
+                detail:
+                  'Contributions to specific functional areas and iterations inside partner-led projects (scope varied by phase).',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+              },
+              {
+                name: 'Medical call center (archived)',
+                detail:
+                  'A bespoke system for the client’s operations, tied to the KPSK insurance/hospital workflow. Technically demanding; no longer active for external client reasons.',
+              },
+              {
+                name: 'Corporate solutions (NDA)',
+                detail: 'Monitoring, management, and integrations for energy, fitness, and education without public access.',
+              },
+            ],
           },
           {
-            name: 'AI Telegram bot: reminders & micro-coaching (Python)',
-            detail:
-              'Personal build: reminders for tasks and “thoughts” the user marks as important, follow-up questions driven by configurable flows. Significant time spent on dialog UX and durable conversation state.',
-            log: {
-              status: 'OK',
-              action: 'Python · aiogram · FSM · async prompting flows',
-              result: 'Working personal prototype; strong dialog design and state-handling experience',
-            },
+            period: '≈2012–2021',
+            context: 'Long-running international storefronts, load-bearing maintenance, platform evolution.',
+            projects: [
+              {
+                name: 'windowcleaner.com (USA)',
+                detail:
+                  'Roughly five years of sustained engineering and growth—a core client and project. Path: Magento 1.4 → 1.9 support → Magento 2 migration. Same business umbrella included additional storefronts and properties (including SWCR-related work).',
+                href: 'https://windowcleaner.com/',
+              },
+              {
+                name: 'store.finaldraft.com',
+                detail: 'Maintenance and evolution (Magento).',
+                href: 'https://store.finaldraft.com/',
+              },
+              {
+                name: 'microline.ua',
+                detail: 'Maintenance and evolution (Magento).',
+                href: 'https://microline.ua/',
+              },
+              {
+                name: 'nancysbeauty.com (USA)',
+                detail: 'Ongoing maintenance and improvements.',
+                href: 'https://nancysbeauty.com/',
+              },
+              {
+                name: 'epik.com',
+                detail: 'Maintenance and evolution.',
+                href: 'https://www.epik.com/',
+              },
+              {
+                name: 'cargo.flowers',
+                detail: 'Maintenance and evolution.',
+                href: 'https://cargo.flowers/',
+              },
+              {
+                name: 'kolyom.co.il',
+                detail: 'Maintenance and evolution (Vue.js on the frontend).',
+                href: 'https://www.kolyom.co.il/',
+              },
+              {
+                name: 'kurortexpert.com',
+                detail: 'Custom system for distributed “star rating” calculations.',
+                href: 'https://www.kurortexpert.com/',
+              },
+            ],
           },
           {
-            name: 'KPSK (insurance) — partner case page',
-            detail:
-              'Work on a bank-related system: extending and hardening an existing project for the insurance front office and integrations.',
-            href: 'https://webstartechnology.ru/kpsk',
-          },
-          {
-            name: 'Gagarin fitness club',
-            detail: 'Corporate site: structure, implementation, integrations, and ongoing work within the partner delivery process.',
-            href: 'https://webstartechnology.ru/gagarin',
-          },
-          {
-            name: 'Crimean Musical Theatre, Pneumo plant, KKO concert hall',
-            detail:
-              'Contributions to specific functional areas and iterations inside partner-led projects (scope varied by phase).',
-            href: 'https://webstartechnology.ru/muzteatr',
-          },
-          {
-            name: '102 PES',
-            detail:
-              'Dedicated corporate layer for technicians, clients, managers, and admins tailored to the client’s operations; the public site is the marketing shell around that solution.',
-            href: 'https://webstartechnology.ru/102pes',
-          },
-          {
-            name: 'Krymresurs training center',
-            detail:
-              'Internal corporate stack: training workflows, technicians, responsible officers, managers, full document lifecycle, generation, and merging data from many apps into one model; krymresurs.ru is the public wrapper, not the full system story.',
-            href: 'https://krymresurs.ru/',
-          },
-          {
-            name: 'Medical call center (archived)',
-            detail:
-              'A bespoke system for the client’s operations, tied to the KPSK insurance/hospital workflow. Technically demanding; no longer active for external client reasons.',
-          },
-          {
-            name: 'Corporate solutions (NDA)',
-            detail: 'Monitoring, management, and integrations for energy, fitness, and education without public access.',
+            period: '≈2009–2018',
+            context:
+              'Early large engagements—the work patterns and platforms still anchor how I approach e-commerce today.',
+            projects: [
+              {
+                name: 'dnforum.com',
+                detail: 'Extension and addon development.',
+                href: 'https://www.dnforum.com/',
+              },
+              {
+                name: 'terradelyssa.com',
+                detail: 'Extension and addon development.',
+                href: 'https://terradelyssa.com/',
+              },
+              {
+                name: 'Grungy Gentleman',
+                detail:
+                  'Within Gluzdov-led work: jewelry Retail and franchise store builds. The public site changed substantially over time; current brand presence is on the live domain.',
+                href: 'https://www.grungygentleman.com/',
+              },
+              {
+                name: 'Accuscore (accuscore.com)',
+                detail:
+                  'Short-term engagement: implemented specific logic pieces as needed—no long-running ownership.',
+                href: 'https://www.accuscore.com',
+              },
+              {
+                name: 'shkafkrovat.com.ua',
+                detail: 'Furniture site for a family friend’s father.',
+                href: 'https://shkafkrovat.com.ua/',
+              },
+              {
+                name: 'Dikoros-Taiga',
+                detail: 'Specialty apparel store; included an OpenCart-based stack.',
+              },
+              {
+                name: 'rkb-bank',
+                detail: 'Magento engineering for a bank-related storefront integration layer.',
+              },
+            ],
           },
         ],
       },
@@ -724,8 +1548,8 @@ export const cv: Record<Lang, CVContent> = {
             body: 'I connect business goals, architecture, code, and operations into one coherent picture.',
           },
           {
-            title: 'Ownership',
-            body: 'I don’t “hand off a ticket”—I own the problem, find root causes, propose options, implement.',
+            title: 'Problem ownership',
+            body: 'I don’t “check the box on a ticket”—I own the problem: find root causes, propose options, implement.',
           },
           {
             title: 'Continuous learning',
@@ -770,10 +1594,33 @@ export const cv: Record<Lang, CVContent> = {
   },
 };
 
+function withTechStackDocs(content: CVContent): CVContent {
+  const map = TECH_STACK_DOC_HREFS;
+  return {
+    ...content,
+    sections: {
+      ...content.sections,
+      tech: {
+        ...content.sections.tech,
+        lanes: content.sections.tech.lanes.map((lane) => ({
+          ...lane,
+          files: lane.files.map((f) => {
+            const fromMap = map[f.name];
+            const docHref =
+              f.docHref ?? (typeof fromMap === 'string' && fromMap.length > 0 ? fromMap : undefined);
+            if (docHref) return { ...f, docHref };
+            return { ...f };
+          }),
+        })),
+      },
+    },
+  };
+}
+
 export function isLang(value: string | undefined): value is Lang {
   return value === 'ru' || value === 'en';
 }
 
 export function getCv(lang: Lang): CVContent {
-  return cv[lang];
+  return withTechStackDocs(cv[lang]);
 }

@@ -1,0 +1,122 @@
+---
+/**
+ * Фиксированная кнопка «наверх»: пиксельная стрелка в духе HUD-сайта.
+ * Звук «level up» — синтез через Web Audio (квадратная волна), без отдельного файла.
+ */
+interface Props {
+  label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<button
+  type="button"
+  class="scroll-top-pixel"
+  data-scroll-top
+  aria-label={label}
+  hidden
+>
+  <span class="scroll-top-pixel__chrome" aria-hidden="true">
+    <svg
+      class="scroll-top-pixel__arrow"
+      viewBox="0 0 5 4"
+      width="20"
+      height="16"
+      aria-hidden="true"
+      shape-rendering="crispEdges"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="2" y="0" width="1" height="1" fill="currentColor" />
+      <rect x="1" y="1" width="1" height="1" fill="currentColor" />
+      <rect x="2" y="1" width="1" height="1" fill="currentColor" />
+      <rect x="3" y="1" width="1" height="1" fill="currentColor" />
+      <rect x="0" y="2" width="1" height="1" fill="currentColor" />
+      <rect x="1" y="2" width="1" height="1" fill="currentColor" />
+      <rect x="2" y="2" width="1" height="1" fill="currentColor" />
+      <rect x="3" y="2" width="1" height="1" fill="currentColor" />
+      <rect x="4" y="2" width="1" height="1" fill="currentColor" />
+      <rect x="0" y="3" width="1" height="1" fill="currentColor" />
+      <rect x="1" y="3" width="1" height="1" fill="currentColor" />
+      <rect x="2" y="3" width="1" height="1" fill="currentColor" />
+      <rect x="3" y="3" width="1" height="1" fill="currentColor" />
+      <rect x="4" y="3" width="1" height="1" fill="currentColor" />
+    </svg>
+  </span>
+</button>
+
+<script is:inline>
+  (function () {
+    var btn = document.querySelector('[data-scroll-top]');
+    if (!btn) return;
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var threshold = 380;
+    var sharedAudioCtx = null;
+
+    function playLevelUpChime() {
+      if (reduce) return;
+      try {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!sharedAudioCtx) sharedAudioCtx = new AC();
+        var ctx = sharedAudioCtx;
+        var start = function () {
+          var now = ctx.currentTime;
+          var master = ctx.createGain();
+          master.gain.value = 0.085;
+          master.connect(ctx.destination);
+          var notes = [
+            { f: 523.25, t: 0 },
+            { f: 659.25, t: 0.068 },
+            { f: 783.99, t: 0.136 },
+            { f: 1046.5, t: 0.204 },
+          ];
+          for (var i = 0; i < notes.length; i++) {
+            var step = notes[i];
+            var osc = ctx.createOscillator();
+            var g = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(step.f, now + step.t);
+            var st = now + step.t;
+            g.gain.setValueAtTime(0.0001, st);
+            g.gain.exponentialRampToValueAtTime(0.18, st + 0.012);
+            g.gain.exponentialRampToValueAtTime(0.0001, st + 0.085);
+            osc.connect(g);
+            g.connect(master);
+            osc.start(st);
+            osc.stop(st + 0.095);
+          }
+        };
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(start);
+        } else {
+          start();
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    function sync() {
+      var y = window.scrollY || document.documentElement.scrollTop || 0;
+      if (y > threshold) {
+        btn.removeAttribute('hidden');
+      } else {
+        btn.setAttribute('hidden', '');
+      }
+    }
+
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+
+    btn.addEventListener('click', function () {
+      playLevelUpChime();
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      try {
+        if (btn.focus) btn.focus({ preventScroll: true });
+      } catch (e) {
+        if (btn.focus) btn.focus();
+      }
+    });
+  })();
+</script>

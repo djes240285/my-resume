@@ -25,9 +25,67 @@ export const prerender = true;
           var n = (navigator.language || 'en').slice(0, 2).toLowerCase();
           return n === 'ru' ? 'ru' : 'en';
         }
+        /** Язык по сайту, с которого пришли (referrer), без блокировки нейтральных источников */
+        function fromReferrer() {
+          var ref = document.referrer;
+          if (!ref) return null;
+          var host;
+          try {
+            host = new URL(ref).hostname.toLowerCase();
+          } catch (e) {
+            return null;
+          }
+          if (!host || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local')) {
+            return null;
+          }
+          var parts = host.split('.');
+          var tld = parts[parts.length - 1];
+          var cisTld = {
+            ru: 1,
+            by: 1,
+            kz: 1,
+            ua: 1,
+            am: 1,
+            az: 1,
+            ge: 1,
+            md: 1,
+            tj: 1,
+            tm: 1,
+            uz: 1,
+            kg: 1,
+            рф: 1,
+            su: 1,
+          };
+          if (cisTld[tld]) return 'ru';
+          var ruHosts = [
+            'habr.com',
+            'vk.com',
+            'ok.ru',
+            'mail.ru',
+            'ya.ru',
+            'yandex.ru',
+            'yandex.by',
+            'yandex.kz',
+            'dzen.ru',
+            'vc.ru',
+            'pikabu.ru',
+            't.me',
+            'e.mail.ru',
+          ];
+          for (var i = 0; i < ruHosts.length; i++) {
+            var h = ruHosts[i];
+            if (host === h || host.endsWith('.' + h)) return 'ru';
+          }
+          return null;
+        }
         var c = fromCookie();
         if (c === 'ru' || c === 'en') {
           go('/' + c + '/');
+          return;
+        }
+        var refLang = fromReferrer();
+        if (refLang === 'ru') {
+          go('/ru/');
           return;
         }
         fetch('https://ipapi.co/country_code/', { cache: 'no-store' })

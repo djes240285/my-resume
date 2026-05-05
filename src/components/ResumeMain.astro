@@ -1,6 +1,7 @@
 ---
-import type { Lang } from '../i18n/cv-data';
+import type { Lang, ProjectOutboundKind } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
+import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import {
   AVATAR_SHUTTER_MP3,
   AVATAR_SHUTTER_PLAY_MS,
@@ -9,6 +10,7 @@ import {
 } from '../config/avatar-experience';
 import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
 import ContactCopyIcon from './ContactCopyIcon.astro';
+import TechRoadmap from './TechRoadmap.astro';
 
 interface Props {
   lang: Lang;
@@ -17,7 +19,53 @@ interface Props {
 const { lang } = Astro.props;
 const t = getCv(lang);
 const s = t.sections;
+const projectGroupsWithCaseLink = await resolveProjectCaseLinks(s.experience.projectGroups);
 const L = t.terminalLabels;
+/** Точки polyline в viewBox 0 0 64 22 — разный рисунок для каждого блока */
+const SUCCESS_PATH_SPARKS: readonly string[] = [
+  '2,18 8,6 14,15 21,5 28,14 36,4 44,12 52,7 60,3',
+  '2,5 10,16 20,19 30,8 40,13 50,5 58,3 62,2',
+  '2,19 12,16 24,8 34,12 45,3 55,9 62,2',
+  '2,12 11,3 20,17 30,6 40,14 50,5 58,11 62,2',
+  '2,20 16,16 30,10 42,6 52,4 58,2 62,1',
+];
+const SUCCESS_PATH_SPARK_STROKES: readonly string[] = [
+  '#38bdf8',
+  '#2dd4bf',
+  '#4ade80',
+  '#a78bfa',
+  '#fbbf24',
+];
+function successPathSparkPoints(i: number): string {
+  return SUCCESS_PATH_SPARKS[i % SUCCESS_PATH_SPARKS.length] ?? SUCCESS_PATH_SPARKS[0];
+}
+function successPathSparkStroke(i: number): string {
+  return SUCCESS_PATH_SPARK_STROKES[i % SUCCESS_PATH_SPARK_STROKES.length] ?? SUCCESS_PATH_SPARK_STROKES[0];
+}
+
+function projectLinkLabel(kind: ProjectOutboundKind, L: typeof t.terminalLabels): string {
+  switch (kind) {
+    case 'partner':
+      return L.projectLinkPartner;
+    case 'customer':
+      return L.projectLinkCustomer;
+    default:
+      return L.projectLinkWebsite;
+  }
+}
+
+function projectLinkClass(kind: ProjectOutboundKind): string {
+  const base =
+    'project-outbound-link inline-flex items-center gap-1.5 rounded border px-2.5 py-1 font-mono text-xs leading-snug underline-offset-4 transition-colors hover:underline';
+  switch (kind) {
+    case 'partner':
+      return `${base} border-amber-500/40 text-amber-300/95 hover:border-amber-400/55 hover:bg-amber-500/10 hover:text-amber-200`;
+    case 'customer':
+      return `${base} border-cyan-500/40 text-cyan-300/95 hover:border-cyan-400/55 hover:bg-cyan-500/10 hover:text-cyan-200`;
+    default:
+      return `${base} border-slate-600/55 text-slate-300 hover:border-slate-500/70 hover:bg-slate-800/40 hover:text-slate-100`;
+  }
+}
 const boot = t.bootLines;
 const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   id: slide.id,
@@ -36,12 +84,20 @@ const idxLinkedin = emailRowCount + 3;
 
 <main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
   <section class="terminal-module terminal-module--window reveal-2026" style="--reveal-delay: 80ms">
-    <header class="terminal-module-windowbar" aria-hidden="true">
-      <p class="terminal-module-windowbar__title">{L.heroWindowTitle}</p>
-      <div class="terminal-window-controls">
-        <span class="terminal-window-btn terminal-window-btn--min"></span>
-        <span class="terminal-window-btn terminal-window-btn--max"></span>
-        <span class="terminal-window-btn terminal-window-btn--close"></span>
+    <header class="terminal-module-windowbar">
+      <p class="terminal-module-windowbar__title" aria-hidden="true">{L.heroWindowTitle}</p>
+      <div class="terminal-window-controls" role="group" aria-label={lang === 'ru' ? 'Декор окна' : 'Window decoration'}>
+        <span class="terminal-window-btn terminal-window-btn--min" aria-hidden="true"></span>
+        <span class="terminal-window-btn terminal-window-btn--max" aria-hidden="true"></span>
+        <button
+          type="button"
+          class="terminal-window-btn terminal-window-btn--close"
+          data-hero-terminal-close
+          aria-label={
+            lang === 'ru'
+              ? 'Закрыть вкладку или вернуться назад'
+              : 'Close tab or go back to the previous page'
+          }></button>
       </div>
     </header>
     <div class="terminal-module__shell p-5 sm:p-7">
@@ -62,8 +118,8 @@ const idxLinkedin = emailRowCount + 3;
           data-avatar-stack
           aria-label={
             lang === 'ru'
-              ? 'Фото профиля: кадр стека. Наведите — видоискатель. Клик или Enter — следующий кадр.'
-              : 'Profile stack photo: hover for viewfinder overlay. Click or Enter for next frame.'
+              ? 'Фото профиля: кадр стека. Наведите — видоискатель. Клик или Enter — следующий кадр; после клика прицел скрывается, пока курсор над блоком, чтобы был виден кадр.'
+              : 'Profile stack: hover for viewfinder. Click or Enter for next frame; after click the overlay hides while the pointer stays so the new frame is visible.'
           }
         >
           <div class="avatar-terminal-frame">
@@ -88,8 +144,8 @@ const idxLinkedin = emailRowCount + 3;
           <p class="avatar-stack-hint mt-2 font-mono text-[0.7rem] leading-snug text-slate-500">
             {
               lang === 'ru'
-                ? 'Наведите — видоискатель · клик — следующий кадр'
-                : 'Hover — viewfinder · click — next frame'
+                ? 'Наведите — видоискатель · клик — кадр; прицел после клика скрывается над картинкой'
+                : 'Hover — viewfinder · click — frame; overlay clears after click so you see the shot'
             }
           </p>
           <p class="avatar-stack-chip" data-avatar-chip aria-live="polite">
@@ -428,17 +484,52 @@ const idxLinkedin = emailRowCount + 3;
         </ul>
       </article>
 
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 130ms">
-        <h2 class="terminal-label">{L.successPath}</h2>
+      <article
+        class="terminal-module terminal-module--success-path reveal-2026 p-5 sm:p-6"
+        style="--reveal-delay: 130ms"
+      >
+        <header class="success-path-module__head">
+          <span class="success-path-module__folder" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill="rgba(34, 211, 238, 0.95)"
+                d="M10 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2h-8l-2-2z"
+              />
+              <path fill="rgba(6, 182, 212, 0.75)" d="M10 4h10v4H8l2-4z" />
+            </svg>
+          </span>
+          <h2 class="terminal-label success-path-module__title">{L.successPath}</h2>
+        </header>
         <ol class="success-path mt-4">
           {
-            t.careerPath.map((m) => (
-              <li class="success-path__item">
+            t.careerPath.map((m, idx, arr) => (
+              <li class:list={['success-path__item', { 'success-path__item--last': idx === arr.length - 1 }]}>
                 <div class="success-path__marker" aria-hidden="true" />
-                <div class="success-path__body">
-                  <p class="success-path__phase font-mono text-xs text-emerald-400">{m.phase}</p>
-                  <p class="success-path__title mt-0.5 text-sm font-semibold text-cyan-200">{m.title}</p>
-                  <p class="success-path__detail mt-1 text-sm text-pretty text-slate-400">{m.detail}</p>
+                <div class="success-path__row">
+                  <div class="success-path__body">
+                    <p class="success-path__phase">{m.phase}</p>
+                    <p class="success-path__title">{m.title}</p>
+                    <p class="success-path__detail">{m.detail}</p>
+                  </div>
+                  <div class="success-path__aside" aria-hidden="true">
+                    <span class="success-path__status-chip">{L.successPathBadge}</span>
+                    <svg
+                      class:list={['success-path__spark', `success-path__spark--glow-${idx % 5}`]}
+                      viewBox="0 0 64 22"
+                      xmlns="http://www.w3.org/2000/svg"
+                      overflow="visible"
+                      aria-hidden="true"
+                    >
+                      <polyline
+                        fill="none"
+                        stroke={successPathSparkStroke(idx)}
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        points={successPathSparkPoints(idx)}
+                      />
+                    </svg>
+                  </div>
                 </div>
               </li>
             ))
@@ -458,44 +549,102 @@ const idxLinkedin = emailRowCount + 3;
       <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 145ms">
         <h2 class="terminal-label">{L.partnerNote}</h2>
         <p class="mt-3 text-pretty text-sm text-slate-400">{s.experience.partnerNote}</p>
+        {
+          s.experience.partnerShowcase ? (
+            <p class="mt-4">
+              <a
+                href={s.experience.partnerShowcase.href}
+                class="partner-showcase-link inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 wrap-break-word rounded-lg border border-emerald-500/35 bg-emerald-500/[0.07] px-3 py-2 font-mono text-sm font-semibold text-emerald-200/95 underline-offset-2 ring-1 ring-emerald-400/10 transition-colors hover:border-emerald-400/55 hover:bg-emerald-500/15 hover:text-emerald-100 hover:underline hover:ring-emerald-300/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400/70"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={`${L.partnerShowcaseLinkAria}: ${s.experience.partnerShowcase.label}`}
+              >
+                <span class="text-emerald-400/90" aria-hidden="true">
+                  →
+                </span>
+                <span class="font-sans text-xs font-semibold uppercase tracking-[0.12em] text-emerald-100/90 sm:text-[13px]">
+                  {L.partnerShowcaseCta}
+                </span>
+                <span class="break-all text-[13px] text-emerald-50 sm:text-sm">{s.experience.partnerShowcase.label}</span>
+              </a>
+            </p>
+          ) : null
+        }
       </article>
 
       <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 150ms">
         <h2 class="terminal-label">{L.projects}</h2>
         <p class="mt-1 text-xs font-mono uppercase tracking-wider text-slate-500">{s.experience.selectedTitle}</p>
-        <div class="mt-4 space-y-3">
+        {s.experience.timelineLead ? (
+          <p class="mt-2 max-w-prose text-pretty text-xs leading-relaxed text-slate-500">{s.experience.timelineLead}</p>
+        ) : null}
+        <div class="project-timeline">
           {
-            s.experience.projects.map((p) => (
-              <div class="terminal-log terminal-log--project">
-                <p class="font-semibold text-cyan-300">{p.name}</p>
-                {p.log ? (
-                  <dl class="project-log-dl mt-2 space-y-1.5 text-sm">
-                    <div class="project-log-row">
-                      <dt class="project-log-dt">{L.logStatus}</dt>
-                      <dd class="project-log-dd font-mono text-emerald-300/95">{p.log.status}</dd>
-                    </div>
-                    <div class="project-log-row">
-                      <dt class="project-log-dt">{L.logAction}</dt>
-                      <dd class="project-log-dd text-slate-300">{p.log.action}</dd>
-                    </div>
-                    <div class="project-log-row">
-                      <dt class="project-log-dt">{L.logResult}</dt>
-                      <dd class="project-log-dd text-slate-400">{p.log.result}</dd>
-                    </div>
-                  </dl>
-                ) : null}
-                <p class:list={['text-pretty text-slate-300', p.log ? 'mt-2 text-sm' : 'mt-1']}>{p.detail}</p>
-                {p.href ? (
-                  <a
-                    href={p.href}
-                    class="project-log-link mt-2 inline-flex font-mono text-xs text-cyan-400 underline-offset-2 hover:text-cyan-300 hover:underline"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {lang === 'ru' ? '→ страница кейса' : '→ case page'}
-                  </a>
-                ) : null}
-              </div>
+            projectGroupsWithCaseLink.map((group, eraIdx) => (
+              <section
+                class:list={['project-era', { 'project-era--active': eraIdx === 0 }]}
+                data-project-era
+                style={{ '--era-index': String(eraIdx) }}
+                aria-labelledby={`project-era-${eraIdx}`}
+              >
+                <span class="project-era__node" aria-hidden="true" />
+                <div class="project-era__body">
+                  <header class="border-l-2 border-cyan-500/35 pl-3">
+                    <p class="text-[10px] font-medium uppercase tracking-[0.22em] text-slate-600">{L.projectEraBadge}</p>
+                    <p id={`project-era-${eraIdx}`} class="mt-1 font-mono text-sm font-semibold tracking-wide text-cyan-200/95">
+                      {group.period}
+                    </p>
+                    {group.context ? (
+                      <p class="mt-1.5 text-pretty text-xs leading-relaxed text-slate-500">{group.context}</p>
+                    ) : null}
+                  </header>
+                  <div class="mt-3 space-y-3">
+                    {group.projects.map((p) => (
+                      <div class="terminal-log terminal-log--project">
+                        <p class="font-semibold text-cyan-300">{p.name}</p>
+                        {p.log ? (
+                          <dl class="project-log-dl mt-2 space-y-1.5 text-sm">
+                            <div class="project-log-row">
+                              <dt class="project-log-dt">{L.logStatus}</dt>
+                              <dd class="project-log-dd font-mono text-emerald-300/95">{p.log.status}</dd>
+                            </div>
+                            <div class="project-log-row">
+                              <dt class="project-log-dt">{L.logAction}</dt>
+                              <dd class="project-log-dd text-slate-300">{p.log.action}</dd>
+                            </div>
+                            <div class="project-log-row">
+                              <dt class="project-log-dt">{L.logResult}</dt>
+                              <dd class="project-log-dd text-slate-400">{p.log.result}</dd>
+                            </div>
+                          </dl>
+                        ) : null}
+                        <p class:list={['text-pretty text-slate-300', p.log ? 'mt-2 text-sm' : 'mt-1']}>{p.detail}</p>
+                        {
+                          p.resolvedLinks.filter((l) => l.show).length ? (
+                            <div class="project-outbound-row mt-2.5 flex flex-wrap gap-2">
+                              {p.resolvedLinks
+                                .filter((l) => l.show)
+                                .map((l) => (
+                                  <a
+                                    href={l.href}
+                                    class={projectLinkClass(l.kind)}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                  >
+                                    <span class="opacity-75" aria-hidden="true">
+                                      →
+                                    </span>
+                                    <span>{projectLinkLabel(l.kind, L)}</span>
+                                  </a>
+                                ))}
+                            </div>
+                          ) : null
+                        }
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
             ))
           }
         </div>
@@ -503,18 +652,11 @@ const idxLinkedin = emailRowCount + 3;
     </div>
 
     <aside class="space-y-[22px]">
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 125ms">
+      <article class="terminal-module reveal-2026 p-5 sm:p-6 tech-focus-zone" data-tech-focus-zone style="--reveal-delay: 125ms">
         <h2 class="terminal-label">{L.tech}</h2>
         <p class="mt-1 text-xs text-slate-500">{s.tech.title}</p>
-        <div class="mt-4 space-y-3">
-          {
-            s.tech.groups.map((g) => (
-              <div class="tech-stack-card">
-                <p class="tech-stack-card__label">{g.label}</p>
-                <p class="tech-stack-card__value">{g.value}</p>
-              </div>
-            ))
-          }
+        <div class="tech-roadmap-wrap mt-4">
+          <TechRoadmap lanes={s.tech.lanes} lang={lang} />
         </div>
       </article>
 
@@ -560,6 +702,28 @@ const idxLinkedin = emailRowCount + 3;
   contactCopyToast: L.contactCopyToast,
 }}>
   document.addEventListener('DOMContentLoaded', function () {
+    var heroTerminalClose = document.querySelector('[data-hero-terminal-close]');
+    if (heroTerminalClose) {
+      heroTerminalClose.addEventListener('click', function () {
+        window.close();
+        /* Обычная вкладка: close() почти всегда игнорируется — даём рабочий запасной ход */
+        window.setTimeout(function () {
+          try {
+            if (window.history.length > 1) {
+              window.history.back();
+              return;
+            }
+            var ref = document.referrer;
+            if (ref) {
+              window.location.assign(ref);
+            }
+          } catch (e) {
+            /* ignore */
+          }
+        }, 150);
+      });
+    }
+
     (function initHeroLiveAndTypewriter() {
       var msgs = heroLiveStatus;
       function mskTotalMinutes() {
@@ -683,7 +847,31 @@ const idxLinkedin = emailRowCount + 3;
     var chip = document.querySelector('[data-avatar-chip]');
     if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
 
+    var vfSuppressTimer = null;
     var idx = 0;
+
+    function clearVfSuppressTimer() {
+      if (vfSuppressTimer) {
+        clearTimeout(vfSuppressTimer);
+        vfSuppressTimer = null;
+      }
+    }
+
+    function scheduleViewfinderSuppress() {
+      clearVfSuppressTimer();
+      vfSuppressTimer = window.setTimeout(function () {
+        vfSuppressTimer = null;
+        if (group.matches(':hover')) {
+          group.classList.add('avatar-terminal-group--vf-suppressed');
+        }
+      }, 1000);
+    }
+
+    group.addEventListener('mouseleave', function () {
+      clearVfSuppressTimer();
+      group.classList.remove('avatar-terminal-group--vf-suppressed');
+    });
+
     /** Один плеер + таймер обрезки: длинный MP3 не играет до конца после одного клика */
     var shutterAudio = null;
     var shutterCutTimer = null;
@@ -770,10 +958,12 @@ const idxLinkedin = emailRowCount + 3;
     }
 
     function nextSlide() {
+      group.classList.remove('avatar-terminal-group--vf-suppressed');
       idx = (idx + 1) % stackSlides.length;
       bump();
       render();
       playShutterSound();
+      scheduleViewfinderSuppress();
     }
 
     group.addEventListener('click', function (ev) {
@@ -1024,5 +1214,257 @@ const idxLinkedin = emailRowCount + 3;
         clearLayoutModes();
       });
     })();
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var eras = document.querySelectorAll('[data-project-era]');
+    if (!eras.length || !('IntersectionObserver' in window)) return;
+    var AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    var audioCtx = AudioCtx ? new AudioCtx() : null;
+    var audioUnlocked = false;
+    var activeEra = null as Element | null;
+    var hadFirstActivation = false;
+    var eraNoiseBuffer: AudioBuffer | null = null;
+
+    function unlockTimelineAudio() {
+      if (!audioCtx || audioUnlocked) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(function () {
+          /* ignore */
+        });
+      }
+      audioUnlocked = true;
+    }
+
+    function eraIndex(el: Element | null): number {
+      if (!el) return -1;
+      for (var i = 0; i < eras.length; i++) {
+        if (eras[i] === el) return i;
+      }
+      return -1;
+    }
+
+    function ensureEraNoiseBuffer() {
+      if (!audioCtx || eraNoiseBuffer) return;
+      var samples = Math.floor(audioCtx.sampleRate * 0.09);
+      var buf = audioCtx.createBuffer(1, samples, audioCtx.sampleRate);
+      var ch = buf.getChannelData(0);
+      for (var i = 0; i < samples; i++) {
+        ch[i] = Math.random() * 2 - 1;
+      }
+      eraNoiseBuffer = buf;
+    }
+
+    /** Механика ленты: короткий щелчок + приглушённая прокрутка; ниже — уход в прошлое (индекс ↑), выше — к «настоящему». */
+    function playMechanicalEraTransition(fromIdx: number, toIdx: number) {
+      if (!audioCtx || !audioUnlocked) return;
+      if (audioCtx.state === 'suspended') return;
+      ensureEraNoiseBuffer();
+      if (!eraNoiseBuffer) return;
+
+      var dir = 0;
+      if (fromIdx >= 0 && toIdx >= 0) {
+        if (toIdx > fromIdx) dir = 1;
+        else if (toIdx < fromIdx) dir = -1;
+      }
+
+      var toneMul = dir === 1 ? 0.88 : dir === -1 ? 1.12 : 1;
+      var tapeGainMul = dir === 1 ? 1 : dir === -1 ? 0.92 : 0.85;
+
+      var t0 = audioCtx.currentTime;
+
+      var clickOsc = audioCtx.createOscillator();
+      clickOsc.type = 'square';
+      var clickGain = audioCtx.createGain();
+      var clickHp = audioCtx.createBiquadFilter();
+      clickHp.type = 'highpass';
+      clickHp.frequency.value = 380;
+      clickOsc.frequency.setValueAtTime(145 * toneMul, t0);
+      clickOsc.frequency.exponentialRampToValueAtTime(62 * toneMul, t0 + 0.022);
+      clickGain.gain.setValueAtTime(0.0001, t0);
+      clickGain.gain.linearRampToValueAtTime(0.038 * toneMul, t0 + 0.003);
+      clickGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.028);
+      clickOsc.connect(clickHp);
+      clickHp.connect(clickGain);
+      clickGain.connect(audioCtx.destination);
+      clickOsc.start(t0);
+      clickOsc.stop(t0 + 0.032);
+
+      var tapeT = t0 + 0.006;
+      var tapeSrc = audioCtx.createBufferSource();
+      tapeSrc.buffer = eraNoiseBuffer;
+      var tapeBp = audioCtx.createBiquadFilter();
+      tapeBp.type = 'bandpass';
+      tapeBp.frequency.setValueAtTime(1650 * toneMul, tapeT);
+      tapeBp.frequency.linearRampToValueAtTime(1180 * toneMul, tapeT + 0.078);
+      tapeBp.Q.value = 2.1;
+      var tapeGain = audioCtx.createGain();
+      tapeGain.gain.setValueAtTime(0.0001, tapeT);
+      tapeGain.gain.linearRampToValueAtTime(0.015 * tapeGainMul, tapeT + 0.018);
+      tapeGain.gain.exponentialRampToValueAtTime(0.0001, tapeT + 0.088);
+      tapeSrc.connect(tapeBp);
+      tapeBp.connect(tapeGain);
+      tapeGain.connect(audioCtx.destination);
+      tapeSrc.start(tapeT);
+      tapeSrc.stop(tapeT + 0.092);
+    }
+
+    document.addEventListener('pointerdown', unlockTimelineAudio, { once: true, passive: true });
+    document.addEventListener('keydown', unlockTimelineAudio, { once: true });
+
+    var ratios = new Map();
+    for (var i = 0; i < eras.length; i++) {
+      ratios.set(eras[i], 0);
+    }
+    var thresholds = [0, 0.08, 0.16, 0.28, 0.42, 0.58, 0.75, 0.92, 1];
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var j = 0; j < entries.length; j++) {
+          ratios.set(entries[j].target, entries[j].intersectionRatio);
+        }
+        var best = null;
+        var max = -1;
+        for (var k = 0; k < eras.length; k++) {
+          var el = eras[k];
+          var r = ratios.get(el) || 0;
+          if (r > max) {
+            max = r;
+            best = el;
+          }
+        }
+        for (var m = 0; m < eras.length; m++) {
+          eras[m].classList.toggle('project-era--active', eras[m] === best && max > 0.05);
+        }
+        var nextActive = max > 0.05 ? best : null;
+        if (nextActive !== activeEra) {
+          var prevIdx = eraIndex(activeEra);
+          var nextIdx = eraIndex(nextActive);
+          if (hadFirstActivation && nextIdx >= 0 && prevIdx >= 0) {
+            playMechanicalEraTransition(prevIdx, nextIdx);
+          } else if (hadFirstActivation && nextIdx >= 0 && prevIdx < 0) {
+            playMechanicalEraTransition(-1, nextIdx);
+          }
+          activeEra = nextActive;
+          hadFirstActivation = true;
+        }
+      },
+      { threshold: thresholds, rootMargin: '-12% 0px -24% 0px' }
+    );
+    for (var n = 0; n < eras.length; n++) {
+      io.observe(eras[n]);
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var selectors = [
+      '.terminal-log--project',
+      '.project-outbound-link',
+      '.partner-showcase-link',
+      '.tech-road__lane',
+      '.tech-file-row',
+    ];
+    var targets = document.querySelectorAll(selectors.join(','));
+    if (!targets.length) return;
+
+    var AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+
+    var ctx = new AudioCtx();
+    var unlocked = false;
+    var lastPlayedAt = 0;
+
+    function unlockAudioOnce() {
+      if (unlocked) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(function () {
+          /* ignore */
+        });
+      }
+      unlocked = true;
+    }
+
+    document.addEventListener('pointerdown', unlockAudioOnce, { once: true, passive: true });
+    document.addEventListener('keydown', unlockAudioOnce, { once: true });
+
+    function playHoverTone() {
+      if (!unlocked) return;
+      if (ctx.state === 'suspended') return;
+
+      var nowMs = performance.now();
+      if (nowMs - lastPlayedAt < 90) return;
+      lastPlayedAt = nowMs;
+
+      var now = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(980, now);
+      osc.frequency.exponentialRampToValueAtTime(740, now + 0.06);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.028, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.075);
+    }
+
+    targets.forEach(function (el) {
+      el.addEventListener('pointerenter', playHoverTone, { passive: true });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var zone = document.querySelector('[data-tech-focus-zone]');
+    if (!zone) return;
+    var techZone = zone as HTMLElement;
+
+    function setActive(value: boolean) {
+      techZone.classList.toggle('is-active', value);
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setActive(true);
+      return;
+    }
+
+    techZone.addEventListener('mouseenter', function () {
+      setActive(true);
+    });
+    techZone.addEventListener('mouseleave', function () {
+      setActive(false);
+    });
+    techZone.addEventListener('focusin', function () {
+      setActive(true);
+    });
+    techZone.addEventListener('focusout', function () {
+      setActive(false);
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      setActive(true);
+      return;
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.target === techZone) {
+            setActive(entry.intersectionRatio > 0.32);
+          }
+        });
+      },
+      { threshold: [0, 0.16, 0.32, 0.55, 0.8], rootMargin: '-12% 0px -12% 0px' }
+    );
+    io.observe(techZone);
   });
 </script>

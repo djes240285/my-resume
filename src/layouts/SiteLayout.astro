@@ -3,6 +3,7 @@ import '../styles/global.css';
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import SiteHeader from '../components/SiteHeader.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
 import { UI_FLAGS } from '../config/ui';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 const { lang, title, description } = Astro.props;
 const t = getCv(lang);
+const scrollTopLabel = lang === 'ru' ? 'Наверх страницы' : 'Back to top';
 const canonical = Astro.url.href;
 const ogLocale = lang === 'ru' ? 'ru_RU' : 'en_US';
 const personJsonLd = {
@@ -68,6 +70,7 @@ const personJsonLd = {
         <p class="-mt-2">{t.footerQuote}</p>
       </div>
     </footer>
+    <ScrollToTop label={scrollTopLabel} />
     <script is:inline>
       (function () {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
