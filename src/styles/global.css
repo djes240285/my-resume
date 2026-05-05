@@ -319,7 +319,7 @@
   }
 
   body[data-theme="retro-soft"] {
-    font-family: "IBM Plex Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   }
 
   body[data-theme="retro-soft"] p,
@@ -805,22 +805,48 @@
     height: 100%;
     min-height: 0;
     overflow: hidden;
+    background-color: #070b12;
+  }
+
+  .avatar-terminal-slot-window picture[data-avatar-picture] {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+  }
+
+  /* Под слоем кадра: лого EZ вместо «просвечивающих» градиентов при fade-out */
+  .avatar-terminal-slot-window::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-color: #070b12;
+    background-image: url("/avatar-ez-transition.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: min(46%, 7.5rem);
+    image-rendering: pixelated;
   }
 
   .avatar-terminal-slot-img {
     position: absolute;
     inset: 0;
+    z-index: 1;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
     transition:
-      opacity 0.18s ease,
-      filter 0.2s ease;
+      opacity 0.34s ease,
+      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.28s ease;
   }
 
-  .avatar-terminal-group.avatar-terminal-group--switching .avatar-terminal-slot-img {
-    opacity: 0.55;
+  .avatar-terminal-slot-img.avatar-terminal-slot-img--swap-out {
+    opacity: 0;
+    transform: scale(1.045);
   }
 
   .avatar-terminal-film-img--retro {
@@ -2345,6 +2371,14 @@
   .project-era:not(.project-era--active) .project-era__body {
     opacity: 0.76;
     filter: saturate(0.88);
+  }
+
+  /* Узкий экран: весь журнал читаемый; подсветка «эпохи» остаётся по узлу */
+  @media (max-width: 1023px) {
+    .project-era:not(.project-era--active) .project-era__body {
+      opacity: 1;
+      filter: none;
+    }
   }
 
   .project-era__body header {

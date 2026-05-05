@@ -21,80 +21,32 @@ export const prerender = true;
           var m = document.cookie.match(/(?:^|; )site_lang=(ru|en)(?:;|$)/);
           return m ? m[1] : null;
         }
+        /** Fallback, если гео-IP недоступен: смотрим языки браузера (en-AU → en, ru-RU → ru). */
         function fromNavigator() {
-          var n = (navigator.language || 'en').slice(0, 2).toLowerCase();
-          return n === 'ru' ? 'ru' : 'en';
-        }
-        /** Язык по сайту, с которого пришли (referrer), без блокировки нейтральных источников */
-        function fromReferrer() {
-          var ref = document.referrer;
-          if (!ref) return null;
-          var host;
-          try {
-            host = new URL(ref).hostname.toLowerCase();
-          } catch (e) {
-            return null;
+          var list = navigator.languages;
+          if (list && list.length) {
+            for (var i = 0; i < list.length; i++) {
+              var tag = (list[i] || '').toLowerCase().replace('_', '-');
+              if (tag === 'ru' || tag.indexOf('ru-') === 0) return 'ru';
+            }
           }
-          if (!host || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local')) {
-            return null;
-          }
-          var parts = host.split('.');
-          var tld = parts[parts.length - 1];
-          var cisTld = {
-            ru: 1,
-            by: 1,
-            kz: 1,
-            ua: 1,
-            am: 1,
-            az: 1,
-            ge: 1,
-            md: 1,
-            tj: 1,
-            tm: 1,
-            uz: 1,
-            kg: 1,
-            рф: 1,
-            su: 1,
-          };
-          if (cisTld[tld]) return 'ru';
-          var ruHosts = [
-            'habr.com',
-            'vk.com',
-            'ok.ru',
-            'mail.ru',
-            'ya.ru',
-            'yandex.ru',
-            'yandex.by',
-            'yandex.kz',
-            'dzen.ru',
-            'vc.ru',
-            'pikabu.ru',
-            't.me',
-            'e.mail.ru',
-          ];
-          for (var i = 0; i < ruHosts.length; i++) {
-            var h = ruHosts[i];
-            if (host === h || host.endsWith('.' + h)) return 'ru';
-          }
-          return null;
+          var primary = (navigator.language || 'en').toLowerCase().replace('_', '-');
+          if (primary === 'ru' || primary.indexOf('ru-') === 0) return 'ru';
+          return 'en';
         }
         var c = fromCookie();
         if (c === 'ru' || c === 'en') {
           go('/' + c + '/');
           return;
         }
-        var refLang = fromReferrer();
-        if (refLang === 'ru') {
-          go('/ru/');
-          return;
-        }
+        /* Страна по IP: RU и СНГ → /ru/, остальное (в т.ч. AU, US, EU) → /en/ */
         fetch('https://ipapi.co/country_code/', { cache: 'no-store' })
           .then(function (r) {
             return r.text();
           })
           .then(function (text) {
             var cc = (text || '').trim().toUpperCase();
-            var cis = {
+            var ruRegion = {
               RU: 1,
               BY: 1,
               KZ: 1,
@@ -108,7 +60,7 @@ export const prerender = true;
               UZ: 1,
               KG: 1,
             };
-            go(cis[cc] ? '/ru/' : '/en/');
+            go(ruRegion[cc] ? '/ru/' : '/en/');
           })
           .catch(function () {
             go(fromNavigator() === 'ru' ? '/ru/' : '/en/');

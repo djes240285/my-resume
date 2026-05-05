@@ -18,12 +18,20 @@ export const AVATAR_SHUTTER_PLAY_MS = 900;
 
 export const AVATAR_RETRO_CONCEPT = '/avatar-retro-concept.png';
 
+/** WebP первого кадра (LCP): меньше веса при том же визуале */
+export const AVATAR_RETRO_CONCEPT_WEBP = '/avatar-retro-concept.webp';
+
 /** «Чистое» фото 1:1 — второй кадр после HUD (файл из Im-clean.png) */
 export const AVATAR_CLEAN_PHOTO = '/avatar-clean.png';
+
+/** WebP того же кадра: уменьшено до max 768px — достаточно для слота ~320 CSS px при retina */
+export const AVATAR_CLEAN_PHOTO_WEBP = '/avatar-clean.webp';
 
 export type AvatarStackSlide = {
   id: string;
   src: string;
+  /** Если задано — `<picture>` отдаёт WebP для этого кадра */
+  webpSrc?: string;
   labelRu: string;
   labelEn: string;
 };
@@ -33,7 +41,7 @@ export type AvatarStackSlide = {
  *
  * Согласованный порядок (PNG в /public):
  *   — retro (HUD)     → avatar-retro-concept.png
- *   — чистое фото     → avatar-clean.png (исходник Im-clean.png, 1254×1254)
+ *   — чистое фото     → avatar-clean.png (+ avatar-clean.webp для `<picture>`)
  *   — стек            → avatar-stack-{laravel,magento,wordpress,react}.png
  *   — Vue, Docker     → по желанию
  *
@@ -44,36 +52,42 @@ export const AVATAR_STACK_SLIDES: AvatarStackSlide[] = [
   {
     id: 'retro',
     src: AVATAR_RETRO_CONCEPT,
+    webpSrc: AVATAR_RETRO_CONCEPT_WEBP,
     labelRu: 'HUD / пиксель',
     labelEn: 'HUD / pixel',
   },
   {
     id: 'clean',
     src: AVATAR_CLEAN_PHOTO,
+    webpSrc: AVATAR_CLEAN_PHOTO_WEBP,
     labelRu: 'Фото',
     labelEn: 'Photo',
   },
   {
     id: 'laravel',
     src: '/avatar-stack-laravel.png',
+    webpSrc: '/avatar-stack-laravel.webp',
     labelRu: 'Laravel',
     labelEn: 'Laravel',
   },
   {
     id: 'magento',
     src: '/avatar-stack-magento.png',
+    webpSrc: '/avatar-stack-magento.webp',
     labelRu: 'Magento',
     labelEn: 'Magento',
   },
   {
     id: 'wordpress',
     src: '/avatar-stack-wordpress.png',
+    webpSrc: '/avatar-stack-wordpress.webp',
     labelRu: 'WordPress',
     labelEn: 'WordPress',
   },
   {
     id: 'react',
     src: '/avatar-stack-react.png',
+    webpSrc: '/avatar-stack-react.webp',
     labelRu: 'React',
     labelEn: 'React',
   },

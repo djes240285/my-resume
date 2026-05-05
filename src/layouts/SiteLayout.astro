@@ -17,6 +17,9 @@ const t = getCv(lang);
 const scrollTopLabel = lang === 'ru' ? 'Наверх страницы' : 'Back to top';
 const canonical = Astro.url.href;
 const ogLocale = lang === 'ru' ? 'ru_RU' : 'en_US';
+/** Только нужные начертания; без IBM Plex — body в теме retro-soft на Inter */
+const googleFontsHref =
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap';
 const personJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -50,10 +53,11 @@ const personJsonLd = {
     <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" href={googleFontsHref} as="style" />
+    <link href={googleFontsHref} rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href={googleFontsHref} />
+    </noscript>
   </head>
   <body
     class="min-h-screen bg-slate-950 font-sans text-slate-200"

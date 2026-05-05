@@ -3,6 +3,7 @@ import type { Lang, ProjectOutboundKind } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import {
+  AVATAR_RETRO_CONCEPT_WEBP,
   AVATAR_SHUTTER_MP3,
   AVATAR_SHUTTER_PLAY_MS,
   AVATAR_STACK_SLIDES,
@@ -70,6 +71,7 @@ const boot = t.bootLines;
 const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   id: slide.id,
   src: slide.src,
+  webpSrc: slide.webpSrc,
   label: avatarSlideLabel(slide, lang),
 }));
 const TELEGRAM_HANDLE = '@DJES240285';
@@ -126,16 +128,20 @@ const idxLinkedin = emailRowCount + 3;
             <div class="avatar-terminal-inner hud-frame">
               <div class="avatar-terminal-deco" aria-hidden="true" />
               <div class="avatar-terminal-slot-window">
-                <img
-                  class="avatar-terminal-slot-img avatar-terminal-film-img--retro"
-                  data-avatar-slot
-                  src={AVATAR_STACK_SLIDES[0].src}
-                  alt=""
-                  width="256"
-                  height="256"
-                  loading="eager"
-                  decoding="async"
-                />
+                <picture data-avatar-picture>
+                  <source type="image/webp" srcset={AVATAR_RETRO_CONCEPT_WEBP} data-avatar-webp-source />
+                  <img
+                    class="avatar-terminal-slot-img avatar-terminal-film-img--retro"
+                    data-avatar-slot
+                    src={AVATAR_STACK_SLIDES[0].src}
+                    alt=""
+                    width="256"
+                    height="256"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                  />
+                </picture>
                 <AvatarViewfinderOverlay />
                 <div class="avatar-terminal-crt" aria-hidden="true" />
               </div>
@@ -554,7 +560,7 @@ const idxLinkedin = emailRowCount + 3;
             <p class="mt-4">
               <a
                 href={s.experience.partnerShowcase.href}
-                class="partner-showcase-link inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 wrap-break-word rounded-lg border border-emerald-500/35 bg-emerald-500/[0.07] px-3 py-2 font-mono text-sm font-semibold text-emerald-200/95 underline-offset-2 ring-1 ring-emerald-400/10 transition-colors hover:border-emerald-400/55 hover:bg-emerald-500/15 hover:text-emerald-100 hover:underline hover:ring-emerald-300/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400/70"
+                class="partner-showcase-link inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 wrap-break-word rounded-lg border border-emerald-500/35 bg-emerald-500/[0.07] px-3 py-2 font-mono text-sm font-semibold text-emerald-200/95 no-underline ring-1 ring-emerald-400/10 transition-colors hover:border-emerald-400/55 hover:bg-emerald-500/15 hover:text-emerald-100 hover:no-underline hover:ring-emerald-300/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400/70"
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label={`${L.partnerShowcaseLinkAria}: ${s.experience.partnerShowcase.label}`}
@@ -849,6 +855,8 @@ const idxLinkedin = emailRowCount + 3;
 
     var vfSuppressTimer = null;
     var idx = 0;
+    var avatarSwapBusy = false;
+    var motionOkAvatar = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
     function clearVfSuppressTimer() {
       if (vfSuppressTimer) {
@@ -885,6 +893,13 @@ const idxLinkedin = emailRowCount + 3;
     function render() {
       var s = stackSlides[idx];
       if (!s) return;
+      var pic = slot.closest('picture');
+      var webpEl = pic && pic.querySelector('[data-avatar-webp-source]');
+      if (webpEl instanceof HTMLSourceElement) {
+        var w = s.webpSrc;
+        if (w) webpEl.setAttribute('srcset', w);
+        else webpEl.removeAttribute('srcset');
+      }
       slot.src = s.src;
       slot.dataset.stackId = s.id;
       if (chip) chip.textContent = s.label;
@@ -950,20 +965,72 @@ const idxLinkedin = emailRowCount + 3;
       }
     }
 
-    function bump() {
-      group.classList.add('avatar-terminal-group--switching');
-      window.setTimeout(function () {
-        group.classList.remove('avatar-terminal-group--switching');
-      }, 140);
-    }
-
     function nextSlide() {
       group.classList.remove('avatar-terminal-group--vf-suppressed');
-      idx = (idx + 1) % stackSlides.length;
-      bump();
-      render();
       playShutterSound();
       scheduleViewfinderSuppress();
+
+      if (!motionOkAvatar) {
+        idx = (idx + 1) % stackSlides.length;
+        render();
+        return;
+      }
+
+      if (avatarSwapBusy) return;
+      avatarSwapBusy = true;
+
+      var fadeCommitted = false;
+      var fadeOutFallbackId = 0;
+      var imgWaitId = 0;
+
+      function releaseBusy() {
+        avatarSwapBusy = false;
+      }
+
+      function commitFadeOut() {
+        if (fadeCommitted) return;
+        fadeCommitted = true;
+        if (fadeOutFallbackId) window.clearTimeout(fadeOutFallbackId);
+        if (imgWaitId) window.clearTimeout(imgWaitId);
+        slot.removeEventListener('transitionend', onFadeOut);
+        idx = (idx + 1) % stackSlides.length;
+        render();
+
+        function reveal() {
+          if (imgWaitId) window.clearTimeout(imgWaitId);
+          slot.classList.remove('avatar-terminal-slot-img--swap-out');
+          window.setTimeout(releaseBusy, 440);
+        }
+
+        if (slot.decode && typeof slot.decode === 'function') {
+          slot
+            .decode()
+            .then(reveal)
+            .catch(reveal);
+        } else if (slot.complete && slot.naturalWidth > 0) {
+          window.requestAnimationFrame(reveal);
+        } else {
+          var onImg = function () {
+            slot.removeEventListener('load', onImg);
+            slot.removeEventListener('error', onImg);
+            window.requestAnimationFrame(reveal);
+          };
+          slot.addEventListener('load', onImg, { once: true });
+          slot.addEventListener('error', onImg, { once: true });
+          imgWaitId = window.setTimeout(function () {
+            window.requestAnimationFrame(reveal);
+          }, 900);
+        }
+      }
+
+      function onFadeOut(ev) {
+        if (ev.target !== slot || ev.propertyName !== 'opacity') return;
+        commitFadeOut();
+      }
+
+      slot.addEventListener('transitionend', onFadeOut);
+      slot.classList.add('avatar-terminal-slot-img--swap-out');
+      fadeOutFallbackId = window.setTimeout(commitFadeOut, 400);
     }
 
     group.addEventListener('click', function (ev) {
@@ -1320,6 +1387,9 @@ const idxLinkedin = emailRowCount + 3;
       ratios.set(eras[i], 0);
     }
     var thresholds = [0, 0.08, 0.16, 0.28, 0.42, 0.58, 0.75, 0.92, 1];
+    var narrow =
+      typeof window.matchMedia !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches;
+    var rootMargin = narrow ? '-2% 0px -6% 0px' : '-12% 0px -24% 0px';
     var io = new IntersectionObserver(
       function (entries) {
         for (var j = 0; j < entries.length; j++) {
@@ -1334,6 +1404,10 @@ const idxLinkedin = emailRowCount + 3;
             max = r;
             best = el;
           }
+        }
+        if (narrow && max <= 0.05 && eras.length) {
+          best = eras[0];
+          max = 0.06;
         }
         for (var m = 0; m < eras.length; m++) {
           eras[m].classList.toggle('project-era--active', eras[m] === best && max > 0.05);
@@ -1351,7 +1425,7 @@ const idxLinkedin = emailRowCount + 3;
           hadFirstActivation = true;
         }
       },
-      { threshold: thresholds, rootMargin: '-12% 0px -24% 0px' }
+      { threshold: thresholds, rootMargin: rootMargin }
     );
     for (var n = 0; n < eras.length; n++) {
       io.observe(eras[n]);
