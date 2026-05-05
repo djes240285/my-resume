@@ -85,6 +85,8 @@ export type TerminalLabels = {
   contactCopied: string;
   /** Видимое уведомление после копирования (toast) */
   contactCopyToast: string;
+  /** Копировать URL (Telegram, MAX, LinkedIn) */
+  contactCopyLinkAria: string;
 };
 
 /** Тексты статуса по времени Europe/Moscow (скрипт на клиенте) */
@@ -244,6 +246,7 @@ export const cv: Record<Lang, CVContent> = {
       contactCopyPhoneAria: 'Копировать номер в буфер',
       contactCopied: 'Скопировано',
       contactCopyToast: 'Скопировано в буфер обмена',
+      contactCopyLinkAria: 'Копировать ссылку',
     },
     coreStats: [
       { label: 'Лет в продакшене', value: '15+' },
@@ -543,6 +546,7 @@ export const cv: Record<Lang, CVContent> = {
       contactCopyPhoneAria: 'Copy phone number to clipboard',
       contactCopied: 'Copied',
       contactCopyToast: 'Copied to clipboard',
+      contactCopyLinkAria: 'Copy link',
     },
     coreStats: [
       { label: 'Years in production', value: '15+' },

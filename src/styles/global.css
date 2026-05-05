@@ -1281,10 +1281,6 @@
     background: linear-gradient(165deg, rgba(17, 24, 39, 0.98), rgba(15, 23, 42, 0.92));
   }
 
-  .contact-terminal-card--email {
-    min-width: 0;
-  }
-
   /* Контакты в духе концепта: акцент #3BAFFD, плоские иконки, без «второго» слоя вокруг лого */
   .contact-terminal-card--concept {
     border-color: rgba(59, 175, 253, 0.22);
@@ -1339,14 +1335,118 @@
     text-shadow: 0 0 14px rgba(59, 175, 253, 0.18);
   }
 
+  /* Файловое дерево контактов (колонка hero): секции и строки */
+  .contact-file-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+    min-width: 0;
+    outline: none;
+  }
+
+  .contact-file-tree:focus-visible {
+    box-shadow: 0 0 0 2px rgba(59, 175, 253, 0.35);
+    border-radius: 12px;
+  }
+
+  .contact-file-tree__section {
+    min-width: 0;
+  }
+
+  .contact-file-tree__section .contact-concept-head {
+    margin-bottom: 0.25rem;
+  }
+
+  .contact-file-tree__panel.contact-terminal-email-body {
+    margin-top: 0;
+  }
+
+  .contact-file-tree__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+  }
+
+  .contact-file-tree__row {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    border-radius: 7px;
+    isolation: isolate;
+    list-style: none;
+  }
+
+  .contact-file-tree__row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(59, 175, 253, 0.12);
+    box-shadow: inset 3px 0 0 rgba(59, 175, 253, 0.9);
+    opacity: 0;
+    transition: opacity 0.16s ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .contact-file-tree__row:hover::after,
+  .contact-file-tree__row.contact-file-tree__row--active::after {
+    opacity: 1;
+  }
+
+  .contact-file-tree__row > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-file-tree__prompt {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #3baffd;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+
+  .contact-file-tree__primary {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    text-decoration: none;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    transition: color 0.16s ease;
+  }
+
+  .contact-file-tree__primary--link {
+    color: #7dd3fc;
+  }
+
+  .contact-file-tree__primary:hover,
+  .contact-file-tree__primary:focus-visible {
+    color: #fff;
+  }
+
+  @media (min-width: 640px) {
+    .contact-file-tree__primary {
+      font-size: 0.8rem;
+    }
+  }
+
   .contact-terminal-card--concept .contact-terminal-email-body {
     border-left-color: rgba(59, 175, 253, 0.55);
     background: rgba(2, 6, 23, 0.38);
     box-shadow: inset 0 0 0 1px rgba(59, 175, 253, 0.05);
-  }
-
-  .contact-terminal-card--concept .contact-terminal-email-row::before {
-    color: #3baffd;
   }
 
   .contact-terminal-card--concept .contact-terminal-linkedin-meter {
@@ -1399,66 +1499,6 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
-  }
-
-  .contact-terminal-email-rows {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
-  .contact-terminal-email-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem;
-    min-width: 0;
-  }
-
-  /* Email-строки: «выделение файла» при hover/focus ссылки (не подчёркивание) */
-  .contact-terminal-card--email .contact-terminal-email-row {
-    position: relative;
-    border-radius: 7px;
-    isolation: isolate;
-  }
-
-  .contact-terminal-card--email .contact-terminal-email-row::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: rgba(59, 175, 253, 0.12);
-    box-shadow: inset 3px 0 0 rgba(59, 175, 253, 0.9);
-    opacity: 0;
-    transition: opacity 0.16s ease;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .contact-terminal-card--email .contact-terminal-email-row:has(.contact-terminal-email-link:hover)::after,
-  .contact-terminal-card--email .contact-terminal-email-row:has(.contact-terminal-email-link:focus-visible)::after {
-    opacity: 1;
-  }
-
-  .contact-terminal-card--email .contact-terminal-email-row > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  .contact-terminal-phone-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem;
-    min-width: 0;
-    justify-content: center;
-  }
-
-  .contact-messenger-col--max .contact-terminal-phone-row {
-    width: 100%;
   }
 
   .contact-copy-btn {
@@ -1534,73 +1574,6 @@
   .contact-copy-bubble.contact-copy-bubble--visible {
     opacity: 1;
     transform: translateY(0);
-  }
-
-  .contact-terminal-email-row::before {
-    content: ">";
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #4ade80;
-    flex-shrink: 0;
-    line-height: 1.2;
-  }
-
-  .contact-terminal-email-link,
-  .contact-terminal-log-value {
-    flex: 1 1 auto;
-    min-width: 0;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #e5e7eb;
-    text-decoration: none;
-    word-break: normal;
-    overflow-wrap: normal;
-    transition: color 0.16s ease;
-  }
-
-  /* Подчёркивание только у LinkedIn (и прочих не-email полей), не у email */
-  .contact-terminal-log-value {
-    padding-bottom: 1px;
-    background: linear-gradient(90deg, rgba(56, 189, 248, 0.55), rgba(74, 222, 128, 0.55)) 0 100% / 0 1px
-      no-repeat;
-    transition:
-      color 0.18s ease,
-      background-size 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .contact-terminal-card--email .contact-terminal-email-link:hover,
-  .contact-terminal-card--email .contact-terminal-email-link:focus-visible {
-    color: #fff;
-  }
-
-  .contact-terminal-log-value:hover,
-  .contact-terminal-log-value:focus-visible {
-    color: #fff;
-    background-size: 100% 1px;
-  }
-
-  .contact-terminal-card--linkedin:hover .contact-terminal-log-value,
-  .contact-terminal-card--linkedin:focus-visible .contact-terminal-log-value {
-    color: #fff;
-    background-size: 100% 1px;
-  }
-
-  @media (min-width: 640px) {
-    .contact-terminal-email-link,
-    .contact-terminal-log-value {
-      font-size: 0.8rem;
-      white-space: nowrap;
-    }
-  }
-
-  .contact-terminal-card--linkedin {
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    min-width: 0;
   }
 
   .contact-terminal-linkedin-meter {

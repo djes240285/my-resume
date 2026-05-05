@@ -24,6 +24,14 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   src: slide.src,
   label: avatarSlideLabel(slide, lang),
 }));
+const TELEGRAM_HANDLE = '@DJES240285';
+const TELEGRAM_URL = 'https://t.me/DJES240285';
+const treeRowId = (i: number) => `contact-tree-row-${i}`;
+const emailRowCount = t.contact.emails.length;
+const idxTelegram = emailRowCount;
+const idxMaxPhone = emailRowCount + 1;
+const idxMaxProfile = emailRowCount + 2;
+const idxLinkedin = emailRowCount + 3;
 ---
 
 <main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
@@ -168,137 +176,225 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
           </div>
           <div class="contact-window-body" data-contact-window-body>
         <div class="contact-terminal-stack">
-          <div class="contact-terminal-card contact-terminal-card--email contact-terminal-card--concept hud-mini">
-            <div class="contact-concept-head">
-              <img
-                class="contact-concept-icon"
-                src="/logo-mail.svg"
-                alt=""
-                width="20"
-                height="20"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-              <p class="contact-concept-tag">{L.email}</p>
-            </div>
-            <div class="contact-terminal-email-body">
-              <ul class="contact-terminal-email-rows">
-                {
-                  t.contact.emails.map((email) => (
-                    <li class="contact-terminal-email-row">
-                      <a href={`mailto:${email}`} class="contact-terminal-email-link">
-                        {email}
-                      </a>
-                      <button
-                        type="button"
-                        class="contact-copy-btn"
-                        data-copy-value={email}
-                        aria-label={L.contactCopyEmailAria}
-                        title={email}
-                      >
-                        <ContactCopyIcon class="contact-copy-btn__glyph" />
-                      </button>
-                    </li>
-                  ))
-                }
-              </ul>
-            </div>
-          </div>
-          <div class="contact-terminal-card contact-terminal-card--messengers contact-terminal-card--concept hud-mini">
-            <div class="contact-messengers-cols">
-              <a
-                class="contact-messenger-col"
-                href="https://t.me/DJES240285"
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={lang === 'ru' ? 'Открыть Telegram, @DJES240285' : 'Open Telegram, @DJES240285'}
-              >
-                <div class="contact-concept-head">
-                  <img
-                    class="contact-concept-icon"
-                    src="/logo-telegram.svg"
-                    alt=""
-                    width="20"
-                    height="20"
-                    loading="lazy"
-                    decoding="async"
-                    aria-hidden="true"
-                  />
-                  <p class="contact-concept-tag">{L.telegram}</p>
-                </div>
-                <p class="contact-terminal-handle mt-2 font-mono text-sm font-semibold text-slate-200">
-                  @DJES240285
-                </p>
-              </a>
-              <div class="contact-messenger-col contact-messenger-col--max">
-                <div class="contact-concept-head">
-                  <img
-                    class="contact-concept-icon contact-concept-icon--max"
-                    src="/logo-max.svg"
-                    alt=""
-                    width="20"
-                    height="20"
-                    loading="lazy"
-                    decoding="async"
-                    aria-hidden="true"
-                  />
-                  <p class="contact-concept-tag">{L.max}</p>
-                </div>
-                <div class="contact-terminal-phone-row mt-2">
-                  <a
-                    href={`tel:${t.contact.maxTel}`}
-                    class="contact-terminal-phone-link font-mono text-sm font-semibold text-slate-200"
-                  >
-                    {t.contact.maxInvite}
-                  </a>
-                  <button
-                    type="button"
-                    class="contact-copy-btn"
-                    data-copy-value={t.contact.maxTel}
-                    aria-label={L.contactCopyPhoneAria}
-                    title={t.contact.maxTel}
-                  >
-                    <ContactCopyIcon class="contact-copy-btn__glyph" />
-                  </button>
-                </div>
-                <a
-                  class="contact-messenger-profile-link"
-                  href={t.contact.maxHref}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  {L.maxProfileLink}
-                </a>
-              </div>
-            </div>
-          </div>
-          <a
-            class="contact-terminal-card contact-terminal-card--linkedin contact-terminal-card--concept hud-mini"
-            href={t.contact.linkedinHref}
-            target="_blank"
-            rel="noreferrer noopener"
+          <div
+            class="contact-file-tree contact-terminal-card contact-terminal-card--concept hud-mini"
+            data-contact-file-tree
+            role="region"
+            tabindex="0"
+            aria-label={
+              lang === 'ru'
+                ? 'Контакты: стрелки вверх и вниз для перехода по строкам'
+                : 'Contacts: Up and Down arrows move between rows'
+            }
           >
-            <div class="contact-concept-head">
-              <img
-                class="contact-concept-icon"
-                src="/logo-linkedin.svg"
-                alt=""
-                width="20"
-                height="20"
-                loading="lazy"
-                decoding="async"
-                aria-hidden="true"
-              />
-              <p class="contact-concept-tag">{L.linkedin}</p>
-            </div>
-            <div class="contact-terminal-email-body">
-              <div class="contact-terminal-email-row">
-                <span class="contact-terminal-log-value">{t.contact.linkedinLabel}</span>
+            <div class="contact-file-tree__section">
+              <div class="contact-concept-head">
+                <img
+                  class="contact-concept-icon"
+                  src="/logo-mail.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <p class="contact-concept-tag">{L.email}</p>
+              </div>
+              <div class="contact-file-tree__panel contact-terminal-email-body">
+                <ul class="contact-file-tree__list" role="list">
+                  {
+                    t.contact.emails.map((email, i) => (
+                      <li
+                        class:list={['contact-file-tree__row', { 'contact-file-tree__row--active': i === 0 }]}
+                        data-tree-row
+                        id={treeRowId(i)}
+                        aria-current={i === 0 ? 'true' : 'false'}
+                      >
+                        <span class="contact-file-tree__prompt">&gt;</span>
+                        <a href={`mailto:${email}`} class="contact-file-tree__primary contact-terminal-email-link">
+                          {email}
+                        </a>
+                        <button
+                          type="button"
+                          class="contact-copy-btn"
+                          data-copy-value={email}
+                          aria-label={L.contactCopyEmailAria}
+                          title={email}
+                          tabindex="0"
+                        >
+                          <ContactCopyIcon class="contact-copy-btn__glyph" />
+                        </button>
+                      </li>
+                    ))
+                  }
+                </ul>
               </div>
             </div>
-            <div class="contact-terminal-linkedin-meter" aria-hidden="true" />
-          </a>
+
+            <div class="contact-file-tree__section">
+              <div class="contact-concept-head contact-file-tree__section-head">
+                <img
+                  class="contact-concept-icon"
+                  src="/logo-telegram.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <p class="contact-concept-tag">{L.telegram}</p>
+              </div>
+              <div class="contact-file-tree__panel contact-terminal-email-body">
+                <ul class="contact-file-tree__list" role="list">
+                  <li
+                    class="contact-file-tree__row"
+                    data-tree-row
+                    id={treeRowId(idxTelegram)}
+                    aria-current="false"
+                  >
+                    <span class="contact-file-tree__prompt">&gt;</span>
+                    <a
+                      class="contact-file-tree__primary"
+                      href={TELEGRAM_URL}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {TELEGRAM_HANDLE}
+                    </a>
+                    <button
+                      type="button"
+                      class="contact-copy-btn"
+                      data-copy-value={TELEGRAM_URL}
+                      aria-label={L.contactCopyLinkAria}
+                      title={TELEGRAM_URL}
+                      tabindex="0"
+                    >
+                      <ContactCopyIcon class="contact-copy-btn__glyph" />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="contact-file-tree__section">
+              <div class="contact-concept-head contact-file-tree__section-head">
+                <img
+                  class="contact-concept-icon contact-concept-icon--max"
+                  src="/logo-max.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <p class="contact-concept-tag">{L.max}</p>
+              </div>
+              <div class="contact-file-tree__panel contact-terminal-email-body">
+                <ul class="contact-file-tree__list" role="list">
+                  <li
+                    class="contact-file-tree__row"
+                    data-tree-row
+                    id={treeRowId(idxMaxPhone)}
+                    aria-current="false"
+                  >
+                    <span class="contact-file-tree__prompt">&gt;</span>
+                    <a
+                      class="contact-file-tree__primary"
+                      href={`tel:${t.contact.maxTel}`}
+                    >
+                      {t.contact.maxInvite}
+                    </a>
+                    <button
+                      type="button"
+                      class="contact-copy-btn"
+                      data-copy-value={t.contact.maxTel}
+                      aria-label={L.contactCopyPhoneAria}
+                      title={t.contact.maxTel}
+                      tabindex="0"
+                    >
+                      <ContactCopyIcon class="contact-copy-btn__glyph" />
+                    </button>
+                  </li>
+                  <li
+                    class="contact-file-tree__row"
+                    data-tree-row
+                    id={treeRowId(idxMaxProfile)}
+                    aria-current="false"
+                  >
+                    <span class="contact-file-tree__prompt">&gt;</span>
+                    <a
+                      class="contact-file-tree__primary contact-file-tree__primary--link"
+                      href={t.contact.maxHref}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {L.maxProfileLink}
+                    </a>
+                    <button
+                      type="button"
+                      class="contact-copy-btn"
+                      data-copy-value={t.contact.maxHref}
+                      aria-label={L.contactCopyLinkAria}
+                      title={t.contact.maxHref}
+                      tabindex="0"
+                    >
+                      <ContactCopyIcon class="contact-copy-btn__glyph" />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="contact-file-tree__section">
+              <div class="contact-concept-head contact-file-tree__section-head">
+                <img
+                  class="contact-concept-icon"
+                  src="/logo-linkedin.svg"
+                  alt=""
+                  width="20"
+                  height="20"
+                  loading="lazy"
+                  decoding="async"
+                  aria-hidden="true"
+                />
+                <p class="contact-concept-tag">{L.linkedin}</p>
+              </div>
+              <div class="contact-file-tree__panel contact-terminal-email-body">
+                <ul class="contact-file-tree__list" role="list">
+                  <li
+                    class="contact-file-tree__row"
+                    data-tree-row
+                    id={treeRowId(idxLinkedin)}
+                    aria-current="false"
+                  >
+                    <span class="contact-file-tree__prompt">&gt;</span>
+                    <a
+                      class="contact-file-tree__primary contact-file-tree__primary--link"
+                      href={t.contact.linkedinHref}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {t.contact.linkedinLabel}
+                    </a>
+                    <button
+                      type="button"
+                      class="contact-copy-btn"
+                      data-copy-value={t.contact.linkedinHref}
+                      aria-label={L.contactCopyLinkAria}
+                      title={t.contact.linkedinHref}
+                      tabindex="0"
+                    >
+                      <ContactCopyIcon class="contact-copy-btn__glyph" />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div class="contact-terminal-linkedin-meter mt-2" aria-hidden="true" />
+            </div>
+          </div>
         </div>
           </div>
         </div>
@@ -698,6 +794,65 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
     });
 
     render();
+
+    (function initContactFileTree() {
+      var tree = document.querySelector('[data-contact-file-tree]');
+      if (!tree) return;
+      var rows = Array.from(tree.querySelectorAll('[data-tree-row]'));
+      if (!rows.length) return;
+      var active = 0;
+
+      function applyActive(i) {
+        if (i < 0 || i >= rows.length) return;
+        active = i;
+        rows.forEach(function (r, j) {
+          var on = j === i;
+          r.classList.toggle('contact-file-tree__row--active', on);
+          r.setAttribute('aria-current', on ? 'true' : 'false');
+        });
+      }
+
+      function focusPrimary(idx) {
+        var link = rows[idx].querySelector('.contact-file-tree__primary');
+        if (link && link.focus) link.focus();
+      }
+
+      tree.addEventListener('keydown', function (ev) {
+        var key = ev.key;
+        if (key !== 'ArrowUp' && key !== 'ArrowDown' && key !== 'Home' && key !== 'End') return;
+        var el = document.activeElement;
+        if (!tree.contains(el)) return;
+        var insideRow = el.closest('[data-tree-row]');
+        if (!insideRow && el !== tree) return;
+        ev.preventDefault();
+        var idx = insideRow ? rows.indexOf(insideRow) : active;
+        if (key === 'ArrowDown') idx = Math.min(rows.length - 1, idx + 1);
+        else if (key === 'ArrowUp') idx = Math.max(0, idx - 1);
+        else if (key === 'Home') idx = 0;
+        else if (key === 'End') idx = rows.length - 1;
+        applyActive(idx);
+        focusPrimary(idx);
+      });
+
+      tree.addEventListener('focus', function (ev) {
+        if (ev.target !== tree) return;
+        window.requestAnimationFrame(function () {
+          applyActive(active);
+          focusPrimary(active);
+        });
+      });
+
+      rows.forEach(function (row, j) {
+        row.addEventListener('click', function (ev) {
+          if (ev.target.closest('.contact-copy-btn')) return;
+          applyActive(j);
+        });
+        row.addEventListener('focusin', function (ev) {
+          if (ev.target.closest('.contact-copy-btn')) return;
+          applyActive(j);
+        });
+      });
+    })();
 
     (function initContactCopyButtons() {
       var bubbleEl = null;
