@@ -1381,6 +1381,7 @@
     border-radius: 7px;
     isolation: isolate;
     list-style: none;
+    padding: 0.12rem 0.35rem 0.12rem 0.55rem;
   }
 
   .contact-file-tree__row::after {
@@ -1404,15 +1405,6 @@
   .contact-file-tree__row > * {
     position: relative;
     z-index: 1;
-  }
-
-  .contact-file-tree__prompt {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #3baffd;
-    flex-shrink: 0;
-    line-height: 1.2;
   }
 
   .contact-file-tree__primary {

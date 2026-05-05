@@ -211,7 +211,6 @@ const idxLinkedin = emailRowCount + 3;
                         id={treeRowId(i)}
                         aria-current={i === 0 ? 'true' : 'false'}
                       >
-                        <span class="contact-file-tree__prompt">&gt;</span>
                         <a href={`mailto:${email}`} class="contact-file-tree__primary contact-terminal-email-link">
                           {email}
                         </a>
@@ -254,7 +253,6 @@ const idxLinkedin = emailRowCount + 3;
                     id={treeRowId(idxTelegram)}
                     aria-current="false"
                   >
-                    <span class="contact-file-tree__prompt">&gt;</span>
                     <a
                       class="contact-file-tree__primary"
                       href={TELEGRAM_URL}
@@ -300,7 +298,6 @@ const idxLinkedin = emailRowCount + 3;
                     id={treeRowId(idxMaxPhone)}
                     aria-current="false"
                   >
-                    <span class="contact-file-tree__prompt">&gt;</span>
                     <a
                       class="contact-file-tree__primary"
                       href={`tel:${t.contact.maxTel}`}
@@ -370,7 +367,6 @@ const idxLinkedin = emailRowCount + 3;
                     id={treeRowId(idxLinkedin)}
                     aria-current="false"
                   >
-                    <span class="contact-file-tree__prompt">&gt;</span>
                     <a
                       class="contact-file-tree__primary contact-file-tree__primary--link"
                       href={t.contact.linkedinHref}
