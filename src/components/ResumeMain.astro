@@ -3,7 +3,6 @@ import type { Lang, ProjectOutboundKind } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import {
-  AVATAR_RETRO_CONCEPT_WEBP,
   AVATAR_SHUTTER_MP3,
   AVATAR_SHUTTER_PLAY_MS,
   AVATAR_STACK_SLIDES,
@@ -82,6 +81,79 @@ const idxTelegram = emailRowCount;
 const idxMaxPhone = emailRowCount + 1;
 const idxMaxProfile = emailRowCount + 2;
 const idxLinkedin = emailRowCount + 3;
+const audienceConsoleTitle = lang === 'ru' ? 'ПРОФИЛЬНЫЙ КОНТЕКСТ' : 'PROFILE CONTEXT';
+const techLegend =
+  lang === 'ru'
+    ? 'Роадмап моей практики: стек, с которым работаю в реальных проектах — от платформ и backend до данных, инфраструктуры и delivery.'
+    : 'A roadmap of my practical stack: tools I use in real projects, from platforms and backend to data, infrastructure, and delivery.';
+const audienceMode = {
+  storageKey: 'audience-mode-v1',
+  defaultMode: 'default',
+  modes:
+    lang === 'ru'
+      ? {
+          default: { label: 'По умолчанию' },
+          client: {
+            label: 'Я клиент',
+            role: 'Fullstack разработчик / архитектор решений для бизнес-результата',
+            about:
+              'Если вам нужен не набор “фич”, а устойчивый результат: беру систему под ответственность, снижаю технический риск и довожу до состояния, где релизы и рост не ломают бизнес-процессы.',
+            collaboration:
+              'Работаем прозрачно: фиксируем цель, ограничения, план и критерии результата. Регулярные короткие статусы без лишней бюрократии, с фокусом на риски, сроки и эффект для бизнеса.',
+            help: [
+              'Стабилизация легаси: вместо пожаров — предсказуемый релизный ритм',
+              'Миграции и изменения платформы без остановки критичных процессов',
+              'Ускорение ключевых сценариев: БД, кеш, очереди, поиск, фронтенд',
+              'Единая инженерная ответственность: backend, frontend, инфраструктура, CI/CD, мониторинг',
+            ],
+            highlights: [
+              'Опыт с контурами, где цена простоя и ошибки ощутима для бизнеса',
+              'Системный взгляд: архитектура, интеграции и эксплуатация как единая цепочка',
+              'Фокус на эффекте: быстрее, стабильнее, прозрачнее для команды и владельца',
+            ],
+            approachTitle:
+              'Подход для клиента: минимизируем риск, ускоряем результат и сохраняем управляемость системы.',
+            approachBodies: [
+              'Беру задачу под ownership и веду до результата, а не до “формального закрытия”.',
+              'Сначала диагностирую контекст и ограничения, затем предлагаю рабочий путь внедрения.',
+              'Показываю альтернативы и их стоимость, чтобы решения были осознанными.',
+              'Строю изменения так, чтобы после релиза система оставалась стабильной и понятной команде.',
+            ],
+            avatarId: 'clean',
+          },
+        }
+      : {
+          default: { label: 'Default' },
+          client: {
+            label: 'I am a client',
+            role: 'Fullstack developer / solution architect focused on business outcomes',
+            about:
+              'If you need outcomes rather than feature noise, I take ownership of the system, reduce technical risk, and deliver a setup where releases and growth stop breaking business-critical flows.',
+            collaboration:
+              'Engagement stays transparent: goals, constraints, plan, and success criteria are aligned upfront. Short regular updates focus on risk, timing, and measurable impact.',
+            help: [
+              'Legacy stabilization: replace firefighting with predictable release flow',
+              'Platform changes and migrations without disrupting critical operations',
+              'Performance work where it matters: DB, cache, queues, search, frontend',
+              'Single ownership line across backend, frontend, infra, CI/CD, and monitoring',
+            ],
+            highlights: [
+              'Experience in systems where downtime and errors have direct business cost',
+              'System-level thinking across architecture, integrations, and operations',
+              'Outcome-oriented execution: faster, safer, clearer for owners and teams',
+            ],
+            approachTitle:
+              'Client-focused delivery: lower risk, faster outcomes, and long-term system control.',
+            approachBodies: [
+              'I take full ownership and drive work to outcomes, not checklist completion.',
+              'I diagnose context and constraints first, then execute a pragmatic delivery path.',
+              'I explain options with cost/risk trade-offs so decisions stay explicit.',
+              'I deliver changes in a way that remains stable and understandable after release.',
+            ],
+            avatarId: 'clean',
+          },
+        },
+} as const;
 ---
 
 <main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
@@ -103,14 +175,30 @@ const idxLinkedin = emailRowCount + 3;
       </div>
     </header>
     <div class="terminal-module__shell p-5 sm:p-7">
-    {
-      boot.map((line, i) => (
-        <p class="boot-line">
-          {line}
-          {i === boot.length - 1 ? <span class="terminal-caret" aria-hidden="true" /> : null}
+    <section class="audience-console w-full" data-audience-switch data-audience-onboarding>
+      <div class="audience-console__title-line">{audienceConsoleTitle}</div>
+      <div class="audience-console__viewport" aria-live="polite">
+        {
+          boot.map((line, i) => (
+            <p class="boot-line audience-console__line">
+              {line}
+              {i === boot.length - 1 ? <span class="terminal-caret" aria-hidden="true" /> : null}
+            </p>
+          ))
+        }
+        <p class="audience-console__line audience-console__line--question audience-onboarding__prompt">
+          {lang === 'ru' ? '> кто вы?' : '> who are you?'}
         </p>
-      ))
-    }
+        <div class="audience-mode-switch" role="group" aria-label={lang === 'ru' ? 'Выбор сценария просмотра' : 'Select viewing scenario'}>
+          <button type="button" class="audience-mode-btn" data-audience-mode-btn="default">
+            {audienceMode.modes.default.label}
+          </button>
+          <button type="button" class="audience-mode-btn" data-audience-mode-btn="client">
+            {audienceMode.modes.client.label}
+          </button>
+        </div>
+      </div>
+    </section>
     <div class="hero-terminal-grid mt-6">
       <div class="hero-terminal-avatar flex flex-col items-center lg:items-start">
         <div
@@ -129,9 +217,9 @@ const idxLinkedin = emailRowCount + 3;
               <div class="avatar-terminal-deco" aria-hidden="true" />
               <div class="avatar-terminal-slot-window">
                 <picture data-avatar-picture>
-                  <source type="image/webp" srcset={AVATAR_RETRO_CONCEPT_WEBP} data-avatar-webp-source />
+                  <source type="image/webp" srcset={AVATAR_STACK_SLIDES[0].webpSrc} data-avatar-webp-source />
                   <img
-                    class="avatar-terminal-slot-img avatar-terminal-film-img--retro"
+                    class="avatar-terminal-slot-img"
                     data-avatar-slot
                     src={AVATAR_STACK_SLIDES[0].src}
                     alt=""
@@ -147,13 +235,6 @@ const idxLinkedin = emailRowCount + 3;
               </div>
             </div>
           </div>
-          <p class="avatar-stack-hint mt-2 font-mono text-[0.7rem] leading-snug text-slate-500">
-            {
-              lang === 'ru'
-                ? 'Наведите — видоискатель · клик — кадр; прицел после клика скрывается над картинкой'
-                : 'Hover — viewfinder · click — frame; overlay clears after click so you see the shot'
-            }
-          </p>
           <p class="avatar-stack-chip" data-avatar-chip aria-live="polite">
             {avatarSlideLabel(AVATAR_STACK_SLIDES[0], lang)}
           </p>
@@ -189,7 +270,7 @@ const idxLinkedin = emailRowCount + 3;
         <h1 class="retro-heading-soft text-2xl font-bold uppercase leading-snug text-slate-100 sm:text-3xl">
           {t.name}
         </h1>
-        <p class="mt-2 font-mono text-base uppercase tracking-wide text-cyan-300 sm:text-lg">{t.role}</p>
+        <p class="mt-2 font-mono text-base uppercase tracking-wide text-cyan-300 sm:text-lg" data-audience-role>{t.role}</p>
         <div
           class="hero-console mt-4"
           data-hero-console
@@ -471,19 +552,19 @@ const idxLinkedin = emailRowCount + 3;
 
   <div class="terminal-stack mt-[22px] grid gap-[22px] lg:grid-cols-3">
     <div class="space-y-[22px] lg:col-span-2">
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 100ms">
+      <article class="terminal-module reveal-2026 p-5 sm:p-6" data-audience-card style="--reveal-delay: 100ms">
         <h2 class="terminal-label">{L.about}</h2>
-        <p class="mt-3 text-pretty text-slate-300">{s.about.body}</p>
+        <p class="mt-3 text-pretty text-slate-300" data-audience-about>{s.about.body}</p>
       </article>
 
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 110ms">
+      <article class="terminal-module reveal-2026 p-5 sm:p-6" data-audience-card style="--reveal-delay: 110ms">
         <h2 class="terminal-label">{L.collaboration}</h2>
-        <p class="mt-3 text-pretty text-slate-300">{s.collaboration.body}</p>
+        <p class="mt-3 text-pretty text-slate-300" data-audience-collaboration>{s.collaboration.body}</p>
       </article>
 
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 120ms">
+      <article class="terminal-module reveal-2026 p-5 sm:p-6" data-audience-card style="--reveal-delay: 120ms">
         <h2 class="terminal-label">{L.help}</h2>
-        <ul class="mt-3 space-y-2 text-slate-300">
+        <ul class="mt-3 space-y-2 text-slate-300" data-audience-help>
           {s.help.items.map((item) => (
             <li class="terminal-list-item text-pretty">{item}</li>
           ))}
@@ -543,9 +624,9 @@ const idxLinkedin = emailRowCount + 3;
         </ol>
       </article>
 
-      <article class="terminal-module reveal-2026 p-5 sm:p-6" style="--reveal-delay: 140ms">
+      <article class="terminal-module reveal-2026 p-5 sm:p-6" data-audience-card style="--reveal-delay: 140ms">
         <h2 class="terminal-label">{L.highlights}</h2>
-        <ul class="mt-3 space-y-2 text-slate-300">
+        <ul class="mt-3 space-y-2 text-slate-300" data-audience-highlights>
           {s.experience.highlights.map((h) => (
             <li class="terminal-list-item text-pretty">{h}</li>
           ))}
@@ -660,7 +741,7 @@ const idxLinkedin = emailRowCount + 3;
     <aside class="space-y-[22px]">
       <article class="terminal-module reveal-2026 p-5 sm:p-6 tech-focus-zone" data-tech-focus-zone style="--reveal-delay: 125ms">
         <h2 class="terminal-label">{L.tech}</h2>
-        <p class="mt-1 text-xs text-slate-500">{s.tech.title}</p>
+        <p class="mt-1 text-xs text-slate-500">{techLegend}</p>
         <div class="tech-roadmap-wrap mt-4">
           <TechRoadmap lanes={s.tech.lanes} lang={lang} />
         </div>
@@ -682,21 +763,162 @@ const idxLinkedin = emailRowCount + 3;
     </aside>
   </div>
 
-  <section class="terminal-module reveal-2026 mt-[22px] p-5 sm:p-6" style="--reveal-delay: 170ms">
+  <section class="terminal-module reveal-2026 mt-[22px] p-5 sm:p-6" data-audience-card style="--reveal-delay: 170ms">
     <h2 class="terminal-label">{L.approach}</h2>
-    <p class="mt-1 text-xs text-slate-500">{s.approach.title}</p>
+    <p class="mt-1 text-xs text-slate-500" data-audience-approach-title>{s.approach.title}</p>
     <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {
-        s.approach.pillars.map((p) => (
+        s.approach.pillars.map((p, i) => (
           <div class="terminal-log">
             <p class="text-emerald-300">{p.title}</p>
-            <p class="mt-2 text-sm text-pretty text-slate-300">{p.body}</p>
+            <p class="mt-2 text-sm text-pretty text-slate-300" data-audience-approach-body={String(i)}>{p.body}</p>
           </div>
         ))
       }
     </div>
   </section>
 </main>
+
+<script define:vars={{ audienceMode }}>
+  (function initAudienceModeEarly() {
+    if (!audienceMode || !audienceMode.modes) return;
+    var roleEl = document.querySelector('[data-audience-role]');
+    var aboutEl = document.querySelector('[data-audience-about]');
+    var collaborationEl = document.querySelector('[data-audience-collaboration]');
+    var helpEl = document.querySelector('[data-audience-help]');
+    var highlightsEl = document.querySelector('[data-audience-highlights]');
+    var approachTitleEl = document.querySelector('[data-audience-approach-title]');
+    var approachBodies = Array.from(document.querySelectorAll('[data-audience-approach-body]'));
+    var modeBtns = Array.from(document.querySelectorAll('[data-audience-mode-btn]'));
+    if (
+      !roleEl ||
+      !aboutEl ||
+      !collaborationEl ||
+      !helpEl ||
+      !highlightsEl ||
+      !approachTitleEl ||
+      !modeBtns.length
+    )
+      return;
+
+    var onboarding = document.querySelector('[data-audience-onboarding]');
+    var key = audienceMode.storageKey || 'audience-mode-v1';
+    var modes = audienceMode.modes;
+    var rootEl = document.documentElement;
+
+    var cards = Array.from(document.querySelectorAll('[data-audience-card]'));
+    var base = {
+      role: roleEl.textContent || '',
+      about: aboutEl.textContent || '',
+      collaboration: collaborationEl.textContent || '',
+      help: Array.from(helpEl.querySelectorAll('li')).map(function (li) {
+        return li.textContent || '';
+      }),
+      highlights: Array.from(highlightsEl.querySelectorAll('li')).map(function (li) {
+        return li.textContent || '';
+      }),
+      approachTitle: approachTitleEl.textContent || '',
+      approachBodies: approachBodies.map(function (el) {
+        return el.textContent || '';
+      }),
+    };
+    var activeMode = audienceMode.defaultMode || 'default';
+
+    function isKnownMode(m) {
+      return m === 'default' || m === 'client';
+    }
+
+    function paintList(ul, items) {
+      if (!ul || !Array.isArray(items)) return;
+      ul.innerHTML = '';
+      items.forEach(function (item) {
+        var li = document.createElement('li');
+        li.className = 'terminal-list-item text-pretty';
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+    }
+
+    function animateCards() {
+      cards.forEach(function (card) {
+        card.classList.remove('audience-card--flip');
+        window.requestAnimationFrame(function () {
+          card.classList.add('audience-card--flip');
+          window.setTimeout(function () {
+            card.classList.remove('audience-card--flip');
+          }, 520);
+        });
+      });
+    }
+
+    function applyMode(mode, persist) {
+      if (!isKnownMode(mode)) return;
+      var payload = mode === 'client' ? modes.client : base;
+      roleEl.textContent = payload.role;
+      aboutEl.textContent = payload.about;
+      collaborationEl.textContent = payload.collaboration;
+      paintList(helpEl, payload.help);
+      paintList(highlightsEl, payload.highlights);
+      approachTitleEl.textContent = payload.approachTitle;
+      if (Array.isArray(payload.approachBodies)) {
+        approachBodies.forEach(function (el) {
+          var idx = Number(el.getAttribute('data-audience-approach-body'));
+          if (!(idx >= 0)) return;
+          var text = payload.approachBodies[idx];
+          if (typeof text === 'string' && text.length) el.textContent = text;
+        });
+      }
+      modeBtns.forEach(function (btn) {
+        var on = btn.getAttribute('data-audience-mode-btn') === mode;
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      rootEl.setAttribute('data-audience-mode', mode);
+      activeMode = mode;
+      if (mode === 'client') animateCards();
+      document.dispatchEvent(
+        new CustomEvent('audience-mode-change', {
+          detail: {
+            mode: mode,
+            avatarId: mode === 'client' ? modes.client.avatarId : 'retro',
+            animateAvatar: !!persist,
+          },
+        })
+      );
+      if (persist) {
+        try {
+          localStorage.setItem(key, mode);
+        } catch (e) {
+          /* ignore */
+        }
+        document.cookie = key + '=' + encodeURIComponent(mode) + '; path=/; max-age=31536000; samesite=lax';
+      }
+    }
+
+    var saved = rootEl.getAttribute('data-audience-mode');
+    try {
+      if (saved !== 'default' && saved !== 'client') saved = localStorage.getItem(key);
+    } catch (e) {
+      /* ignore */
+    }
+    applyMode(isKnownMode(saved) ? saved : activeMode, false);
+
+    modeBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var mode = btn.getAttribute('data-audience-mode-btn');
+        if (mode === activeMode) return;
+        applyMode(mode, true);
+      });
+    });
+
+    if (onboarding) {
+      window.requestAnimationFrame(function () {
+        onboarding.classList.add('is-ready');
+      });
+    }
+    rootEl.classList.remove('audience-mode-pending');
+  })();
+</script>
 
 <script define:vars={{
   stackSlides,
@@ -706,6 +928,7 @@ const idxLinkedin = emailRowCount + 3;
   heroConsole: t.heroConsole,
   contactCopied: L.contactCopied,
   contactCopyToast: L.contactCopyToast,
+  audienceMode,
 }}>
   document.addEventListener('DOMContentLoaded', function () {
     var heroTerminalClose = document.querySelector('[data-hero-terminal-close]');
@@ -850,6 +1073,7 @@ const idxLinkedin = emailRowCount + 3;
 
     var group = document.querySelector('[data-avatar-stack]');
     var slot = document.querySelector('[data-avatar-slot]');
+    var slotWindow = document.querySelector('.avatar-terminal-slot-window');
     var chip = document.querySelector('[data-avatar-chip]');
     if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
 
@@ -904,6 +1128,38 @@ const idxLinkedin = emailRowCount + 3;
       slot.dataset.stackId = s.id;
       if (chip) chip.textContent = s.label;
       applyRetroClass();
+    }
+
+    function setAvatarById(id, instant, withFlip) {
+      if (!id) return;
+      var next = -1;
+      for (var i = 0; i < stackSlides.length; i++) {
+        if (stackSlides[i] && stackSlides[i].id === id) {
+          next = i;
+          break;
+        }
+      }
+      if (next < 0 || next === idx) return;
+      if (withFlip) {
+        slot.classList.remove('avatar-terminal-slot-img--mode-flip');
+        window.requestAnimationFrame(function () {
+          slot.classList.add('avatar-terminal-slot-img--mode-flip');
+        });
+        window.setTimeout(function () {
+          idx = next;
+          if (instant) slot.classList.remove('avatar-terminal-slot-img--swap-out');
+          render();
+        }, 170);
+        window.setTimeout(function () {
+          slot.classList.remove('avatar-terminal-slot-img--mode-flip');
+        }, 380);
+        return;
+      }
+      idx = next;
+      if (instant) {
+        slot.classList.remove('avatar-terminal-slot-img--swap-out');
+      }
+      render();
     }
 
     function clearShutterCutTimer() {
@@ -999,6 +1255,7 @@ const idxLinkedin = emailRowCount + 3;
         function reveal() {
           if (imgWaitId) window.clearTimeout(imgWaitId);
           slot.classList.remove('avatar-terminal-slot-img--swap-out');
+          if (slotWindow) slotWindow.classList.remove('avatar-terminal-slot-window--show-ez');
           window.setTimeout(releaseBusy, 440);
         }
 
@@ -1029,6 +1286,7 @@ const idxLinkedin = emailRowCount + 3;
       }
 
       slot.addEventListener('transitionend', onFadeOut);
+      if (slotWindow) slotWindow.classList.add('avatar-terminal-slot-window--show-ez');
       slot.classList.add('avatar-terminal-slot-img--swap-out');
       fadeOutFallbackId = window.setTimeout(commitFadeOut, 400);
     }
@@ -1046,6 +1304,14 @@ const idxLinkedin = emailRowCount + 3;
     });
 
     render();
+    document.addEventListener('audience-mode-change', function (ev) {
+      var detail = ev && ev.detail ? ev.detail : null;
+      if (!detail) return;
+      var avatarId = detail.avatarId;
+      if (typeof avatarId === 'string' && avatarId.length) {
+        setAvatarById(avatarId, true, !!detail.animateAvatar);
+      }
+    });
 
     (function initContactFileTree() {
       var tree = document.querySelector('[data-contact-file-tree]');

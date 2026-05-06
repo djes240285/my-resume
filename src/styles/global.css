@@ -1,12 +1,17 @@
 @import "tailwindcss";
 
+/* Локальные WOFF2 — без Google Fonts (меньше DNS/TLS и блокировок при LH) */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource/press-start-2p/index.css";
+
 @theme {
   --color-navy-950: #001a36;
   --color-navy-900: #002b5b;
   --color-navy-800: #003d7a;
   --color-navy-700: #0d4f8c;
   --color-surface-muted: #f3f5f7;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -16,6 +21,17 @@
   body {
     @apply bg-white text-slate-800 antialiased;
   }
+}
+
+/* До ранней инициализации режима скрываем только адаптивные тексты — без "дёргания" контента */
+html.audience-mode-pending [data-audience-role],
+html.audience-mode-pending [data-audience-about],
+html.audience-mode-pending [data-audience-collaboration],
+html.audience-mode-pending [data-audience-help],
+html.audience-mode-pending [data-audience-highlights],
+html.audience-mode-pending [data-audience-approach-title],
+html.audience-mode-pending [data-audience-approach-body] {
+  visibility: hidden;
 }
 
 @keyframes fade-up-2026 {
@@ -204,7 +220,7 @@
   }
 
   body[data-theme="retro-soft"] .retro-heading-soft {
-    font-family: "Press Start 2P", "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Press Start 2P", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
     letter-spacing: 0.06em;
     text-shadow: 0 0 0 rgba(56, 189, 248, 0.2), 1px 1px 0 rgba(34, 197, 94, 0.18);
   }
@@ -218,7 +234,7 @@
     box-shadow:
       inset 0 0 0 1px rgba(56, 189, 248, 0.06),
       inset 0 -10px 22px -18px rgba(0, 0, 0, 0.45);
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     transition: opacity 0.2s ease;
   }
 
@@ -319,7 +335,7 @@
   }
 
   body[data-theme="retro-soft"] {
-    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   }
 
   body[data-theme="retro-soft"] p,
@@ -552,7 +568,7 @@
   .terminal-module-windowbar__title {
     margin: 0;
     min-width: 0;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.42rem;
     line-height: 1.5;
     letter-spacing: 0.04em;
@@ -629,7 +645,7 @@
   }
 
   .terminal-nav-link__bracket {
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.7rem;
     color: rgba(74, 222, 128, 0.45);
     transition: color 0.2s ease;
@@ -806,6 +822,27 @@
     min-height: 0;
     overflow: hidden;
     background-color: #070b12;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  @keyframes avatar-mode-card-flip {
+    0% {
+      transform: perspective(900px) rotateY(0deg);
+    }
+    49% {
+      transform: perspective(900px) rotateY(89deg);
+    }
+    51% {
+      transform: perspective(900px) rotateY(-89deg);
+    }
+    100% {
+      transform: perspective(900px) rotateY(0deg);
+    }
+  }
+
+  .avatar-terminal-slot-window.avatar-terminal-slot-window--mode-flip {
+    animation: avatar-mode-card-flip 380ms cubic-bezier(0.22, 0.74, 0.11, 1);
   }
 
   .avatar-terminal-slot-window picture[data-avatar-picture] {
@@ -823,11 +860,17 @@
     z-index: 0;
     pointer-events: none;
     background-color: #070b12;
-    background-image: url("/avatar-ez-transition.png");
+    background-image: var(--avatar-underlay-image, url("/avatar-ez-transition.png"));
     background-repeat: no-repeat;
     background-position: center;
     background-size: min(46%, 7.5rem);
     image-rendering: pixelated;
+    opacity: 0;
+    transition: opacity 0.16s ease;
+  }
+
+  .avatar-terminal-slot-window.avatar-terminal-slot-window--show-ez::before {
+    opacity: 1;
   }
 
   .avatar-terminal-slot-img {
@@ -849,13 +892,33 @@
     transform: scale(1.045);
   }
 
+  @keyframes avatar-mode-image-flip {
+    0% {
+      transform: perspective(900px) rotateY(0deg);
+    }
+    49% {
+      transform: perspective(900px) rotateY(89deg);
+    }
+    51% {
+      transform: perspective(900px) rotateY(-89deg);
+    }
+    100% {
+      transform: perspective(900px) rotateY(0deg);
+    }
+  }
+
+  .avatar-terminal-slot-img.avatar-terminal-slot-img--mode-flip {
+    animation: avatar-mode-image-flip 380ms cubic-bezier(0.22, 0.74, 0.11, 1);
+    backface-visibility: hidden;
+  }
+
   .avatar-terminal-film-img--retro {
     image-rendering: crisp-edges;
     filter: contrast(1.08) saturate(1.04);
   }
 
   .avatar-terminal-slot-img:not(.avatar-terminal-film-img--retro) {
-    filter: saturate(1.05) contrast(1.03);
+    filter: none;
   }
 
   .avatar-terminal-crt {
@@ -908,7 +971,7 @@
     padding: 0.2rem 0.45rem;
     border-radius: 6px;
     border: 1px dashed rgba(74, 222, 128, 0.35);
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.65rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -972,7 +1035,7 @@
   .contact-window-title {
     margin: 0;
     min-width: 0;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.38rem;
     line-height: 1.45;
     letter-spacing: 0.04em;
@@ -983,8 +1046,176 @@
     white-space: nowrap;
   }
 
+  .audience-console {
+    width: 100%;
+    border: 1px solid rgba(34, 211, 238, 0.35);
+    border-radius: 10px;
+    background:
+      linear-gradient(180deg, rgba(6, 78, 59, 0.08) 0%, rgba(2, 6, 23, 0.72) 38%),
+      rgba(2, 6, 23, 0.92);
+    box-shadow:
+      inset 0 0 0 1px rgba(45, 212, 191, 0.08),
+      0 12px 28px -18px rgba(0, 0, 0, 0.65);
+    overflow: hidden;
+  }
+
+  .audience-console__title-line {
+    padding: 0.46rem 0.64rem;
+    border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    color: rgba(45, 212, 191, 0.96);
+    text-transform: uppercase;
+  }
+
+  .audience-console__viewport {
+    padding: 0.62rem 0.68rem 0.74rem;
+  }
+
+  .audience-console__line {
+    margin: 0 0 0.2rem;
+  }
+
+  [data-audience-onboarding] {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 220ms ease, transform 240ms ease;
+  }
+
+  [data-audience-onboarding].is-ready {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  [data-audience-onboarding].is-needs-choice .audience-onboarding__prompt {
+    color: #22d3ee;
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.22);
+  }
+
+  @keyframes audience-card-flip {
+    0% {
+      transform: perspective(1000px) rotateY(0deg) scale(1);
+    }
+    45% {
+      transform: perspective(1000px) rotateY(-6deg) scale(0.992);
+    }
+    100% {
+      transform: perspective(1000px) rotateY(0deg) scale(1);
+    }
+  }
+
+  [data-audience-card] {
+    transform-origin: center;
+    backface-visibility: hidden;
+  }
+
+  [data-audience-card].audience-card--flip {
+    animation: audience-card-flip 460ms cubic-bezier(0.2, 0.7, 0, 1);
+  }
+
+  .audience-onboarding__prompt {
+    margin: 0 0 0.52rem;
+  }
+
+  .audience-console__line--question {
+    margin-bottom: 0.48rem;
+  }
+
+  .audience-mode-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.24rem;
+    padding: 0.14rem;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.58);
+  }
+
+  .audience-mode-btn {
+    border: 1px solid rgba(148, 163, 184, 0.36);
+    background: rgba(15, 23, 42, 0.78);
+    color: rgba(186, 230, 253, 0.88);
+    border-radius: 5px;
+    padding: 0.18rem 0.35rem;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 0.56rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  }
+
+  .audience-mode-btn:hover,
+  .audience-mode-btn:focus-visible {
+    border-color: rgba(56, 189, 248, 0.66);
+    color: #e0f2fe;
+    outline: none;
+  }
+
+  .audience-mode-btn.is-active {
+    background: rgba(34, 211, 238, 0.2);
+    border-color: rgba(45, 212, 191, 0.75);
+    color: #99f6e4;
+  }
+
+  @media (max-width: 520px) {
+    .audience-console__viewport {
+      padding-inline: 0.58rem;
+    }
+  }
+
   .contact-window-body {
     padding: 0.55rem 0.5rem 0.65rem;
+  }
+
+  .portfolio-page {
+    position: relative;
+    z-index: 0;
+  }
+
+  .case-media {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 8px;
+    background: rgba(2, 6, 23, 0.68);
+  }
+
+  .case-media__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #020617;
+  }
+
+  .case-media__controls {
+    position: absolute;
+    right: 0.4rem;
+    bottom: 0.4rem;
+    display: inline-flex;
+    gap: 0.3rem;
+  }
+
+  .case-media__btn {
+    border: 1px solid rgba(125, 211, 252, 0.45);
+    background: rgba(2, 6, 23, 0.75);
+    color: #bae6fd;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 0.65rem;
+    cursor: pointer;
+  }
+
+  .case-media__btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .case-card--hidden {
+    display: none !important;
   }
 
   @media (min-width: 640px) {
@@ -1031,7 +1262,7 @@
     border-radius: 8px;
     border: 1px dashed rgba(59, 175, 253, 0.35);
     background: rgba(2, 6, 23, 0.55);
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.68rem;
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -1204,7 +1435,7 @@
 
   .hero-hud-fact__label {
     margin: 0 0 0.12rem;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.48rem;
     line-height: 1.45;
     letter-spacing: 0.06em;
@@ -1218,7 +1449,7 @@
     flex-wrap: wrap;
     align-items: baseline;
     gap: 0.28rem;
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.72rem;
     font-weight: 600;
     line-height: 1.35;
@@ -1364,7 +1595,7 @@
 
   .contact-concept-tag {
     margin: 0;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.52rem;
     line-height: 1.4;
     color: #3baffd;
@@ -1447,7 +1678,7 @@
   .contact-file-tree__primary {
     flex: 1 1 auto;
     min-width: 0;
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.72rem;
     font-weight: 600;
     color: #e5e7eb;
@@ -1493,7 +1724,7 @@
     display: inline-block;
     margin-top: 0.45rem;
     align-self: center;
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.68rem;
     font-weight: 600;
     color: #7dd3fc;
@@ -1586,7 +1817,7 @@
     box-shadow:
       inset 0 0 0 1px rgba(56, 189, 248, 0.08),
       0 8px 28px -6px rgba(0, 0, 0, 0.5);
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.68rem;
     font-weight: 600;
     line-height: 1.35;
@@ -1689,7 +1920,7 @@
   }
 
   .contact-terminal-tag {
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.52rem;
     line-height: 1.4;
     color: #22c55e;
@@ -1844,7 +2075,7 @@
 
   .success-path__phase {
     margin: 0;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -1854,7 +2085,7 @@
 
   .success-path__title {
     margin: 0.28rem 0 0;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     font-size: 0.82rem;
     font-weight: 700;
     line-height: 1.35;
@@ -1864,7 +2095,7 @@
 
   .success-path__detail {
     margin: 0.45rem 0 0;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     font-size: 0.72rem;
     line-height: 1.55;
     color: rgba(148, 163, 184, 0.96);
@@ -1881,7 +2112,7 @@
   }
 
   .success-path__status-chip {
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.45rem;
     font-weight: 400;
     line-height: 1.6;
@@ -1954,7 +2185,7 @@
 
   .project-log-dt {
     margin: 0;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.5rem;
     color: rgba(148, 163, 184, 0.95);
     letter-spacing: 0.06em;
@@ -2058,7 +2289,7 @@
 
   .tech-road__title {
     margin: 0;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -2203,14 +2434,14 @@
 
   .core-stats-cell__value {
     margin-top: 0.2rem;
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     font-size: 0.85rem;
     font-weight: 700;
     color: #38bdf8;
   }
 
   .terminal-label {
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     color: #38bdf8;
     font-size: 0.72rem;
     text-transform: uppercase;
@@ -2233,7 +2464,7 @@
   }
 
   .chip-label {
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.58rem;
     color: #22c55e;
     text-transform: uppercase;
@@ -2258,7 +2489,7 @@
     position: absolute;
     left: 0;
     color: #22c55e;
-    font-family: "Press Start 2P", "JetBrains Mono", monospace;
+    font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
     font-size: 0.7rem;
   }
 
@@ -2392,7 +2623,7 @@
   }
 
   .boot-line {
-    font-family: "JetBrains Mono", monospace;
+    font-family: "JetBrains Mono Variable", monospace;
     color: #9ca3af;
     font-size: 0.88rem;
     line-height: 1.5;

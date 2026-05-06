@@ -797,9 +797,9 @@ export const cv: Record<Lang, CVContent> = {
                 href: 'https://www.kolyom.co.il/',
               },
               {
-                name: 'kurortexpert.com',
+                name: 'turexpertiza.ru',
                 detail: 'Разработка уникальной системы подсчёта распределённой звёздности.',
-                href: 'https://www.kurortexpert.com/',
+                href: 'https://www.turexpertiza.ru/',
               },
             ],
           },
@@ -1486,9 +1486,9 @@ export const cv: Record<Lang, CVContent> = {
                 href: 'https://www.kolyom.co.il/',
               },
               {
-                name: 'kurortexpert.com',
+                name: 'turexpertiza.ru',
                 detail: 'Custom system for distributed “star rating” calculations.',
-                href: 'https://www.kurortexpert.com/',
+                href: 'https://www.turexpertiza.ru/',
               },
             ],
           },

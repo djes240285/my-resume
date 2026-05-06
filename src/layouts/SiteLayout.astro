@@ -17,9 +17,7 @@ const t = getCv(lang);
 const scrollTopLabel = lang === 'ru' ? 'Наверх страницы' : 'Back to top';
 const canonical = Astro.url.href;
 const ogLocale = lang === 'ru' ? 'ru_RU' : 'en_US';
-/** Только нужные начертания; без IBM Plex — body в теме retro-soft на Inter */
-const googleFontsHref =
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Press+Start+2P&display=swap';
+/** Шрифты самохостятся через global.css (@fontsource-variable / press-start-2p) */
 const personJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
@@ -35,6 +33,28 @@ const personJsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('audience-mode-pending');
+        function readCookie(name) {
+          var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+          return m ? decodeURIComponent(m[1]) : null;
+        }
+        var saved = null;
+        try {
+          saved = localStorage.getItem('audience-mode-v1');
+        } catch (e) {
+          /* ignore */
+        }
+        if (saved !== 'hire' && saved !== 'explore') {
+          saved = readCookie('audience-mode-v1');
+        }
+        if (saved === 'default' || saved === 'client') {
+          root.setAttribute('data-audience-mode', saved);
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -51,13 +71,7 @@ const personJsonLd = {
     {description && <meta name="twitter:description" content={description} />}
     <meta name="twitter:image" content={`${Astro.url.origin}/profile.png`} />
     <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href={googleFontsHref} as="style" />
-    <link href={googleFontsHref} rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript>
-      <link rel="stylesheet" href={googleFontsHref} />
-    </noscript>
+    <link rel="preload" href="/avatar-retro-concept.webp" as="image" type="image/webp" />
   </head>
   <body
     class="min-h-screen bg-slate-950 font-sans text-slate-200"
