@@ -120,6 +120,7 @@ type ShowcaseCard = {
   result: string;
   tags: string[];
   score: number;
+  priority: number;
   hasMedia: boolean;
   mediaSlides: string[];
 };
@@ -141,19 +142,146 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       project.resolvedLinks?.find((l) => l.show && l.kind !== 'partner')?.href ??
       project.resolvedLinks?.find((l) => l.show)?.href;
     const text = `${project.name} ${group.context ?? ''} ${project.detail}`.toLowerCase();
-    const problem =
+    let problem =
       project.log?.status ??
       (group.context
         ? group.context
         : lang === 'ru'
           ? 'Нужен стабильный рабочий контур без потери темпа разработки.'
           : 'Need a stable production contour without losing delivery speed.');
-    const action = project.log?.action ?? project.detail;
-    const result =
+    let action = project.log?.action ?? project.detail;
+    let result =
       project.log?.result ??
       (lang === 'ru'
         ? 'Результат: проект доведён до рабочего состояния и интегрирован в текущий контур.'
         : 'Outcome: delivered into a working state and integrated into the current delivery contour.');
+
+    const nameLc = project.name.toLowerCase();
+    if (nameLc.includes('доставка-зпр') || nameLc.includes('dostavka-zpr')) {
+      if (lang === 'ru') {
+        problem =
+          'Клиенту нужен был не лендинг, а прикладной one-page сервис оформления доставки между территориями через CDEK. Стандартный расчёт «из коробки» не подходил под двустороннюю логику маршрутов.';
+        action =
+          'Реализовал собственный калькулятор направлений «город -> материк» и «материк -> конкретный город», интегрировал API-поток оформления заказов и добавил сохранение инвойсов для отслеживания.';
+        result =
+          'Оформление и расчёт стали выполняться в одном контуре: корректная стоимость, формирование заказов по API и документированный трекинг отправлений.';
+      } else {
+        problem =
+          'The client needed more than a landing page: a practical one-page CDEK shipping flow between territories. Out-of-the-box calculation logic did not match two-way route requirements.';
+        action =
+          'Built a custom calculator for “city -> mainland” and “mainland -> target city”, integrated API-based order creation, and added invoice persistence for tracking.';
+        result =
+          'Shipping flow moved into one operational contour: accurate pricing, API order generation, and traceable shipment documents.';
+      }
+    }
+
+    if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
+      if (lang === 'ru') {
+        problem =
+          'У клиента было три приложения для разных организаций с дублями данных, рассинхроном процессов и большим объёмом ручного труда. Легаси-контур мешал согласованию и развитию функционала.';
+        action =
+          'Собрал интеграционную прослойку и объединил три приложения в единый рабочий контур, настроил синхронизацию данных и наполнения, параллельно развивая новую платформу техсопровождения и документооборота.';
+        result =
+          'Сократили ручной труд и ускорили согласования, новый функционал внедряется быстрее. Проект находится на финальном этапе миграции в единый защищённый контур без дублей данных.';
+      } else {
+        problem =
+          'The client had three organization-specific apps with duplicated data, process drift, and heavy manual work. Legacy architecture was slowing down coordination and feature growth.';
+        action =
+          'Built an integration layer to unify the three apps into one operational contour, synchronized data/content flows, and advanced a new platform for technical operations and document workflows.';
+        result =
+          'Manual workload and coordination delays were reduced, while feature delivery became faster. The migration is now near completion into a single secure contour without data duplication.';
+      }
+    }
+
+    if (nameLc.includes('windowcleaner')) {
+      if (lang === 'ru') {
+        problem =
+          'Проект стабильно развивался, но ключевая задача была в другом: системно усилить продажи и рыночную долю без потери качества операционного контура.';
+        action =
+          'В связке с владельцем (Крис) прошли методичный путь развития: сопровождение Magento 1.x, подготовка и миграция на 2.x, запуск 5 нишевых площадок, а также плотная работа с тепловыми картами и UX-деталями checkout/каталога для упрощения пользовательского пути.';
+        result =
+          'По совокупности релизов получили прирост продаж примерно на 40% относительно прошлых периодов. Контур остался устойчивым даже в сложные периоды безопасности и высокой нагрузки.';
+      } else {
+        problem =
+          'The store was already operating steadily, but the real goal was to increase sales and market share in a systematic way without losing operational stability.';
+        action =
+          'Working closely with the owner (Chris), we evolved Magento 1.x, migrated to 2.x, launched 5 niche storefronts, and used heatmap-driven UX improvements to simplify customer flow across catalog and checkout.';
+        result =
+          'Across release cycles, sales grew by roughly 40% versus previous periods, while the platform remained stable through high-load and security-sensitive phases.';
+      }
+    }
+
+    if (nameLc.includes('gratisiskolan')) {
+      if (lang === 'ru') {
+        problem =
+          'Проекту требовалось одновременно развивать функциональность и интерфейс под новые задачи, не останавливая рабочий контур.';
+        action =
+          'Параллельно с доработками и изменениями UI выполнил обновление до актуального контура Magento 2.4, включая адаптацию расширений и кастомных модулей к рабочему коду.';
+        result =
+          'Система сохранила стабильность в процессе обновления, получила новый функционал и обновлённый интерфейс, а кодовая база стала более актуальной и поддерживаемой.';
+      } else {
+        problem =
+          'The project needed ongoing feature/UI evolution while keeping the production contour stable during platform updates.';
+        action =
+          'Delivered feature and UI improvements in parallel with Magento 2.4 modernization, including extension and custom module adaptation to production code.';
+        result =
+          'The system stayed stable through the upgrade, gained new functionality and UI updates, and moved to a more maintainable and up-to-date codebase.';
+      }
+    }
+
+    if (nameLc.includes('sechat')) {
+      if (lang === 'ru') {
+        problem =
+          'Клиент взял за основу существующий social-подход, но требовалось полностью переосмыслить продукт под своё видение: аудитории, UX-сценарии и коммерческую модель.';
+        action =
+          'Переработал платформу на Laravel, внедрил WebSockets и очередь сообщений для realtime-контуров, настроил DevOps-мониторинг, усилил anti-spam защиту, добавил AI-сегменты общения (в т.ч. для вовлечения, когда пользователю скучно), а также сценарии работы без регистрации и под разные типы пользователей.';
+        result =
+          'Проект стабильно работал под нагрузкой, был доведён до продающего состояния с поступательной монетизацией и успешно продан как готовый продукт.';
+      } else {
+        problem =
+          'The client started from a social-network baseline, but the product required a full redesign around their own audience model, UX flows, and commercial direction.';
+        action =
+          'Reworked the platform on Laravel, introduced WebSockets and queue-based realtime messaging, set up DevOps monitoring, strengthened anti-spam controls, added AI-assisted conversation segments for engagement, and delivered both no-registration and multi-user-type flows.';
+        result =
+          'The product stayed stable under load, reached commercial readiness with staged monetization, and was successfully sold as a finished solution.';
+      }
+    }
+
+    if (nameLc.includes('mozgovnet')) {
+      if (lang === 'ru') {
+        problem =
+          'Клиент приобрёл проект в нерабочем состоянии: легаси-код, сломанные сценарии и расхождение с ожидаемым ТЗ.';
+        action =
+          'Быстро провёл разбор легаси, восстановил критичные потоки, внедрил платёжную интеграцию и донастроил бизнес-логику под реальный сценарий клиента.';
+        result =
+          'Проект переведён в рабочий контур в сжатые сроки: ключевые функции и платежи заработали стабильно, качество изменений сохранили на уровне, пригодном для дальнейшего развития.';
+      } else {
+        problem =
+          'The client acquired the project in a non-working state: legacy-heavy code, broken core flows, and a gap between actual behavior and expected scope.';
+        action =
+          'Performed a fast legacy audit, restored critical flows, integrated payments, and aligned business logic with the client’s actual operating model.';
+        result =
+          'The project was moved into a stable working contour under tight timelines, with core functions and payment flow restored and code quality kept suitable for further evolution.';
+      }
+    }
+
+    if (nameLc.includes('biznesmashin')) {
+      if (lang === 'ru') {
+        problem =
+          'Проекту требовалась не разовая переделка, а регулярная коммерческая поддержка: обновление ассортимента, рекламных блоков и витрины под текущие задачи бизнеса.';
+        action =
+          'Выполнял периодические ТЗ-доработки: обновлял карточки и категории под изменения линейки грузовой техники, перерабатывал лендинг-блоки под маркетинговые кампании и вносил элементы ребрендинга.';
+        result =
+          'Магазин оставался актуальным для продаж и рекламы, а контур поддержки работал стабильно без накопления критичных изменений в бэклоге.';
+      } else {
+        problem =
+          'The project needed continuous commercial support rather than a one-off redesign: product line updates, promo block changes, and storefront adjustments aligned with business cycles.';
+        action =
+          'Handled recurring scope updates: refreshed product cards/categories for changing truck inventory, adjusted landing promo blocks for campaigns, and delivered partial rebranding updates.';
+        result =
+          'The storefront stayed commercially relevant for both sales and marketing, with stable support flow and no critical change debt accumulation.';
+      }
+    }
 
     const tags = ['all'];
     if (/(shop|store|e-com|commerce|витрин|магаз|retail|woo|magento|bitrix)/.test(text)) tags.push('ecom');
@@ -170,6 +298,17 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
     const hasMedia = previewSlides.length > 0 && score >= 4;
     const mediaSlides = hasMedia ? previewSlides : [];
 
+    const priority = (() => {
+      if (nameLc.includes('windowcleaner')) return 100;
+      if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) return 95;
+      if (nameLc.includes('доставка-зпр') || nameLc.includes('dostavka-zpr')) return 92;
+      if (nameLc.includes('sechat')) return 90;
+      if (nameLc.includes('mozgovnet')) return 86;
+      if (nameLc.includes('gratisiskolan')) return 83;
+      if (nameLc.includes('biznesmashin')) return 80;
+      return 50;
+    })();
+
     return {
       title: project.name,
       tag: group.period,
@@ -179,6 +318,7 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       result,
       tags,
       score,
+      priority,
       hasMedia,
       mediaSlides,
     };
@@ -207,13 +347,14 @@ const fallbackCases = p.cards.map((card) => {
     result,
     title: card.title,
     score: 0,
+    priority: 10,
     hasMedia: false,
     mediaSlides: [] as string[],
   };
 });
 
 const showcase: ShowcaseCard[] = cases.length ? cases : fallbackCases;
-showcase.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) - (a.score ?? 0));
 ---
 
 <main class="portfolio-page mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
