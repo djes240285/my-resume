@@ -123,6 +123,7 @@ type ShowcaseCard = {
   priority: number;
   hasMedia: boolean;
   mediaSlides: string[];
+  ndaSafe?: boolean;
 };
 
 function normalizeUrl(input: string): string {
@@ -283,11 +284,39 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       }
     }
 
-    const tags = ['all'];
-    if (/(shop|store|e-com|commerce|витрин|магаз|retail|woo|magento|bitrix)/.test(text)) tags.push('ecom');
-    if (/(корп|enterprise|portal|докумен|nda|страх|bank|energy|ministry)/.test(text)) tags.push('enterprise');
-    if (/(мигра|migration|legacy|upgrade|m1|m2|переход)/.test(text)) tags.push('migrations');
-    if (/(seo|структур|архит|процесс|контур|integration|flow|queue|cache)/.test(text)) tags.push('process');
+    const tags = (() => {
+      const manual = new Set<string>(['all']);
+      if (nameLc.includes('доставка-зпр') || nameLc.includes('dostavka-zpr')) {
+        manual.add('ecom');
+        manual.add('process');
+      } else if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
+        manual.add('enterprise');
+        manual.add('migrations');
+        manual.add('process');
+      } else if (nameLc.includes('windowcleaner')) {
+        manual.add('ecom');
+        manual.add('migrations');
+        manual.add('process');
+      } else if (nameLc.includes('gratisiskolan')) {
+        manual.add('ecom');
+        manual.add('migrations');
+        manual.add('process');
+      } else if (nameLc.includes('sechat')) {
+        manual.add('enterprise');
+        manual.add('process');
+      } else if (nameLc.includes('mozgovnet')) {
+        manual.add('enterprise');
+        manual.add('process');
+      } else if (nameLc.includes('biznesmashin')) {
+        manual.add('ecom');
+        manual.add('process');
+      } else {
+        // Conservative fallback: do not over-classify unknown projects
+        if (/(мигра|migration|legacy|upgrade|m1|m2|переход)/.test(text)) manual.add('migrations');
+        if (/(процесс|контур|integration|flow|queue|cache|архит)/.test(text)) manual.add('process');
+      }
+      return Array.from(manual);
+    })();
 
     const score =
       (project.log ? 3 : 0) +
@@ -326,12 +355,7 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
 );
 
 const fallbackCases = p.cards.map((card) => {
-  const text = `${card.title} ${card.tag} ${card.body}`.toLowerCase();
-  const tags = ['all'];
-  if (/(shop|store|e-com|commerce|витрин|магаз|retail|woo|magento)/.test(text)) tags.push('ecom');
-  if (/(корп|enterprise|portal|докумен|nda|страх|bank|energy)/.test(text)) tags.push('enterprise');
-  if (/(мигра|migration|legacy|upgrade|m1|m2|переход)/.test(text)) tags.push('migrations');
-  if (/(seo|структур|архит|процесс|контур|integration|flow)/.test(text)) tags.push('process');
+  const tags = ['all', 'process'];
 
   const problem = lang === 'ru' ? `Нужно: ${card.tag}` : `Need: ${card.tag}`;
   const action = card.body;
@@ -355,6 +379,173 @@ const fallbackCases = p.cards.map((card) => {
 
 const showcase: ShowcaseCard[] = cases.length ? cases : fallbackCases;
 showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) - (a.score ?? 0));
+
+const featuredLayer: ShowcaseCard[] =
+  lang === 'ru'
+    ? [
+        {
+          title: 'Verkter.dk: Magento 2.4.x + PWA (React/GraphQL)',
+          tag: 'Freelancer 2023',
+          href: 'https://www.verkter.dk/',
+          problem:
+            'Проекту требовался современный e-com контур с высокой скоростью интерфейса и стабильным API-слоем для масштабирования.',
+          action:
+            'Работал в контуре Magento 2.4.x с PWA-стеком на React/GraphQL: дорабатывал UI-сценарии, интеграционные узлы и поддерживал производственный ритм релизов.',
+          result:
+            'Интерфейс и бизнес-потоки оставались устойчивыми при развитии функционала: платформа готова к дальнейшему росту без деградации UX.',
+          tags: ['all', 'ecom', 'process', 'enterprise'],
+          score: 1000,
+          priority: 122,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'RattanFurnitureFairy: модульные UI-доработки по ТЗ',
+          tag: 'Mobecls, разработчик Magento, 2021–2022',
+          href: 'https://rattanfurniturefairy.co.uk',
+          problem:
+            'Нужно было безопасно развивать витрину магазина через регулярные ТЗ-доработки, не ломая рабочий коммерческий контур.',
+          action:
+            'Выполнял доработку Magento-модулей, UI-правки и поддержку сайта по согласованным спринтам: от точечных изменений до стабилизации поведения блоков.',
+          result:
+            'Проект сохранял рабочую коммерческую динамику, а изменения выкатывались предсказуемо и без критичных инцидентов в продакшене.',
+          tags: ['all', 'ecom', 'process'],
+          score: 996,
+          priority: 114,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Magento-реанимация: эволюция без остановки продаж',
+          tag: 'Legacy & Stability',
+          problem:
+            'Система с 5-летним слоем кастомного кода на Magento 1.4, высокий риск падения базы и простой продаж при обновлении.',
+          action:
+            'Провёл аудит критичных узлов, изолировал рисковые зоны и выстроил поэтапную миграцию на Magento 2.4 с контролем совместимости модулей.',
+          result:
+            'Платформа переведена в современный контур без остановки коммерческого цикла: бизнес продолжил продажи, а команда получила поддерживаемую архитектуру.',
+          tags: ['all', 'migrations', 'enterprise', 'process'],
+          score: 999,
+          priority: 120,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Техдолг в профит: windowcleaner.com',
+          tag: 'Profit Architect',
+          href: 'https://windowcleaner.com/',
+          problem:
+            'Хаотичные правки в продакшене снижали производительность и делали развитие непредсказуемым.',
+          action:
+            'Внедрил управляемый delivery-контур: Docker-окружение, CI/CD, дисциплину релизов и улучшения UX на основе поведенческой аналитики.',
+          result:
+            'Платформа масштабируется и стабильно живёт более 5 лет; суммарный эффект релизов дал измеримый рост коммерческой эффективности.',
+          tags: ['all', 'ecom', 'process', 'enterprise'],
+          score: 998,
+          priority: 118,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Интерфейсная точность: Pixel Perfect + high-load',
+          tag: 'AI & Automation',
+          problem:
+            'Высокая сложность интерфейсов (PWA/XenForo/ScandiPWA): нужно 100% соответствие макету без просадки скорости.',
+          action:
+            'Реализовал Pixel Perfect слой и кастомные аддоны, используя модульную архитектуру и автоматизацию рутинных этапов проверки.',
+          result:
+            'UI точно соответствует Figma, система остаётся быстрой и пригодной к развитию. Детали проекта показаны в NDA-safe формате.',
+          tags: ['all', 'process', 'enterprise'],
+          score: 997,
+          priority: 116,
+          hasMedia: false,
+          mediaSlides: [],
+          ndaSafe: true,
+        },
+      ]
+    : [
+        {
+          title: 'Verkter.dk: Magento 2.4.x + PWA (React/GraphQL)',
+          tag: 'Freelancer 2023',
+          href: 'https://www.verkter.dk/',
+          problem:
+            'The project required a modern e-commerce contour with fast UI and a stable API layer ready for scaling.',
+          action:
+            'Worked inside a Magento 2.4.x PWA stack (React/GraphQL): delivered UI flow improvements, integration updates, and steady production release support.',
+          result:
+            'Interface and business flows stayed stable while functionality evolved, keeping the platform growth-ready without UX regression.',
+          tags: ['all', 'ecom', 'process', 'enterprise'],
+          score: 1000,
+          priority: 122,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'RattanFurnitureFairy: Magento UI module delivery',
+          tag: 'Mobecls, Magento Developer, 2021–2022',
+          href: 'https://rattanfurniturefairy.co.uk',
+          problem:
+            'The storefront needed safe, continuous evolution through specification-driven updates without breaking commercial operations.',
+          action:
+            'Delivered Magento module enhancements, UI updates, and ongoing support in agreed sprint cycles, from targeted fixes to behavior stabilization.',
+          result:
+            'Commercial flow stayed stable, and updates were released predictably without critical production incidents.',
+          tags: ['all', 'ecom', 'process'],
+          score: 996,
+          priority: 114,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Magento Resuscitation: evolve without sales freeze',
+          tag: 'Legacy & Stability',
+          problem:
+            'A 5-year custom-heavy Magento 1.4 system with high DB risk and a realistic threat of revenue loss during upgrade.',
+          action:
+            'Audited critical nodes, isolated risky zones, and executed phased migration to Magento 2.4 with compatibility controls.',
+          result:
+            'The platform moved to a modern contour without interrupting commercial operations, while the team gained a maintainable architecture.',
+          tags: ['all', 'migrations', 'enterprise', 'process'],
+          score: 999,
+          priority: 120,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Tech debt to profit: windowcleaner.com',
+          tag: 'Profit Architect',
+          href: 'https://windowcleaner.com/',
+          problem:
+            'Chaotic production edits were degrading performance and making delivery unpredictable.',
+          action:
+            'Built a controlled delivery contour: Docker environment, CI/CD, release discipline, and behavior-driven UX optimization.',
+          result:
+            'The platform has scaled and remained stable for 5+ years, with release cycles producing measurable commercial impact.',
+          tags: ['all', 'ecom', 'process', 'enterprise'],
+          score: 998,
+          priority: 118,
+          hasMedia: false,
+          mediaSlides: [],
+        },
+        {
+          title: 'Interface precision: Pixel Perfect + high-load',
+          tag: 'AI & Automation',
+          problem:
+            'High complexity UI (PWA/XenForo/ScandiPWA): 100% fidelity to design while keeping performance under load.',
+          action:
+            'Implemented a Pixel Perfect layer and custom addons with modular architecture and automated validation routines.',
+          result:
+            'UI matches Figma exactly, delivery remains fast, and architecture stays growth-ready. Details are presented NDA-safe.',
+          tags: ['all', 'process', 'enterprise'],
+          score: 997,
+          priority: 116,
+          hasMedia: false,
+          mediaSlides: [],
+          ndaSafe: true,
+        },
+      ];
+
+const curatedShowcase = [...featuredLayer, ...showcase];
 ---
 
 <main class="portfolio-page mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
@@ -372,6 +563,54 @@ showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) 
     <p class="mt-3 max-w-prose leading-relaxed text-slate-300">{p.introBody}</p>
   </section>
 
+  <section class="mt-8 rounded-lg border border-cyan-500/25 bg-slate-900/95 p-4 sm:p-5" data-layer-switch>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider text-cyan-300">
+        {lang === 'ru' ? 'Режим экспертизы' : 'Expertise mode'}
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" class="rounded border border-cyan-500/45 bg-cyan-500/10 px-2.5 py-1 text-xs font-mono text-cyan-200" data-layer-mode-btn="legacy">
+          {lang === 'ru' ? 'Legacy & Stability' : 'Legacy & Stability'}
+        </button>
+        <button type="button" class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-layer-mode-btn="profit">
+          {lang === 'ru' ? 'Profit Architect' : 'Profit Architect'}
+        </button>
+        <button type="button" class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-layer-mode-btn="ai">
+          {lang === 'ru' ? 'AI & Automation' : 'AI & Automation'}
+        </button>
+      </div>
+    </div>
+    <p class="mt-3 text-sm text-slate-300" data-layer-mode-panel="legacy">
+      {lang === 'ru'
+        ? 'Фокус: эволюция легаси без ломания продакшена. Сначала защищаю бизнес-контур, затем провожу системную модернизацию.'
+        : 'Focus: legacy evolution without breaking production. First protect the business contour, then modernize in controlled phases.'}
+    </p>
+    <p class="mt-3 hidden text-sm text-slate-300" data-layer-mode-panel="profit">
+      {lang === 'ru'
+        ? 'Фокус: экономика результата. Приоритет — измеримый эффект для бизнеса, а не количество часов в отчёте.'
+        : 'Focus: result economics. Priority is measurable business impact, not billable-hour volume.'}
+    </p>
+    <p class="mt-3 hidden text-sm text-slate-300" data-layer-mode-panel="ai">
+      {lang === 'ru'
+        ? 'Фокус: Laravel + AI-контуры (агенты, автоматизация) для ускорения delivery при соблюдении инженерных стандартов PSR/SOLID.'
+        : 'Focus: Laravel + AI workflows (agents, automation) to accelerate delivery while preserving PSR/SOLID engineering quality.'}
+    </p>
+    <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
+        <p class="font-mono uppercase tracking-wide text-cyan-300">Legacy Package</p>
+        <p class="mt-1">{lang === 'ru' ? 'Аудит рисков -> план миграции -> безопасный релиз.' : 'Risk audit -> migration plan -> safe release.'}</p>
+      </div>
+      <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
+        <p class="font-mono uppercase tracking-wide text-cyan-300">Profit Package</p>
+        <p class="mt-1">{lang === 'ru' ? 'Стабилизация -> CI/CD -> рост конверсии через UX и процесс.' : 'Stabilization -> CI/CD -> conversion growth via UX and process.'}</p>
+      </div>
+      <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
+        <p class="font-mono uppercase tracking-wide text-cyan-300">Interface Package</p>
+        <p class="mt-1">{lang === 'ru' ? 'Pixel Perfect Implementation для Blade/Vue/React без потери производительности.' : 'Pixel Perfect Implementation for Blade/Vue/React without performance loss.'}</p>
+      </div>
+    </div>
+  </section>
+
   <section class="mt-10">
     <div class="flex flex-wrap items-center gap-2">
       <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">{labels.filtersTitle}:</span>
@@ -385,8 +624,8 @@ showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) 
 
   <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[3fr_1.2fr]">
     <div class="space-y-4">
-      {showcase.map((card) => (
-        <article class="retro-panel-soft lift-2026 rounded-lg border border-slate-800 bg-slate-900/95 p-5 shadow-sm" data-case-card data-case-tags={card.tags.join(',')}>
+      {curatedShowcase.map((card) => (
+        <article class="retro-panel-soft lift-2026 rounded-lg border border-slate-800 bg-slate-900/95 p-5 shadow-sm" data-case-card data-case-tags={card.tags.join(',')} style="order:0">
           {card.hasMedia ? (
             <div class="case-media mb-4" data-case-media>
               <img src={card.mediaSlides[0]} alt={card.title} loading="lazy" decoding="async" class="case-media__img" data-case-media-img data-case-media-index="0" />
@@ -399,9 +638,16 @@ showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) 
           ) : null}
           <div class="flex flex-wrap items-center justify-between gap-2">
             <h3 class="text-lg font-bold text-slate-100">{card.title}</h3>
-            <span class="rounded border border-emerald-500/35 bg-emerald-500/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
-              {labels.periodLabel}: {card.tag}
-            </span>
+            <div class="flex flex-wrap items-center gap-2">
+              {card.ndaSafe ? (
+                <span class="rounded border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-300">
+                  NDA-safe
+                </span>
+              ) : null}
+              <span class="rounded border border-emerald-500/35 bg-emerald-500/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+                {labels.periodLabel}: {card.tag}
+              </span>
+            </div>
           </div>
           <dl class="mt-3 space-y-2 text-sm">
             <div>
@@ -433,6 +679,16 @@ showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) 
         <span class="font-mono text-[11px] text-emerald-300">{labels.runbookTitle}</span>
       </div>
       <div class="p-4">
+        <div class="mb-3 rounded border border-emerald-500/30 bg-emerald-500/8 px-2.5 py-2">
+          <p class="font-mono text-[11px] uppercase tracking-wide text-emerald-300">
+            {lang === 'ru' ? 'METRICS & TRUST' : 'METRICS & TRUST'}
+          </p>
+          <ul class="mt-1 space-y-1 text-[12px] leading-relaxed text-slate-300">
+            <li>{lang === 'ru' ? '• 5+ лет поддержки сложных контуров без аварийных остановок.' : '• 5+ years supporting complex contours without emergency downtime.'}</li>
+            <li>{lang === 'ru' ? '• Миграции и рефакторинг через поэтапные релизы вместо «большого взрыва».' : '• Migration and refactoring through phased releases, not big-bang cutovers.'}</li>
+            <li>{lang === 'ru' ? '• Инженерный фокус: PSR/SOLID, CI/CD, предсказуемый delivery.' : '• Engineering focus: PSR/SOLID, CI/CD, predictable delivery.'}</li>
+          </ul>
+        </div>
         <p class="text-sm leading-relaxed text-slate-300">{labels.workStyleLead}</p>
         <ol class="mt-3 space-y-2">
           {labels.steps.map((s) => (
@@ -500,6 +756,64 @@ showcase.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) 
       card.classList.remove('case-card--hidden');
     });
     applyFilter('all');
+
+    var modeBtns = Array.from(document.querySelectorAll('[data-layer-mode-btn]'));
+    var panels = Array.from(document.querySelectorAll('[data-layer-mode-panel]'));
+    function applyMode(mode: 'legacy' | 'profit' | 'ai') {
+      modeBtns.forEach(function (btn) {
+        var on = btn.getAttribute('data-layer-mode-btn') === mode;
+        btn.classList.toggle('border-cyan-500/45', on);
+        btn.classList.toggle('bg-cyan-500/10', on);
+        btn.classList.toggle('text-cyan-200', on);
+        if (!on) {
+          btn.classList.remove('border-cyan-500/45', 'bg-cyan-500/10', 'text-cyan-200');
+          btn.classList.add('border-slate-700', 'text-slate-300');
+        } else {
+          btn.classList.remove('border-slate-700', 'text-slate-300');
+        }
+      });
+      panels.forEach(function (panel) {
+        var show = panel.getAttribute('data-layer-mode-panel') === mode;
+        panel.classList.toggle('hidden', !show);
+      });
+
+      function getOrder(tags: string[]) {
+        if (mode === 'legacy') {
+          if (tags.indexOf('migrations') >= 0) return 0;
+          if (tags.indexOf('enterprise') >= 0) return 1;
+          if (tags.indexOf('process') >= 0) return 2;
+          return 3;
+        }
+        if (mode === 'profit') {
+          if (tags.indexOf('ecom') >= 0) return 0;
+          if (tags.indexOf('process') >= 0) return 1;
+          if (tags.indexOf('enterprise') >= 0) return 2;
+          return 3;
+        }
+        if (tags.indexOf('process') >= 0) return 0;
+        if (tags.indexOf('enterprise') >= 0) return 1;
+        if (tags.indexOf('migrations') >= 0) return 2;
+        return 3;
+      }
+
+      cards.forEach(function (card) {
+        var tags = (card.getAttribute('data-case-tags') || '').split(',');
+        var order = getOrder(tags);
+        (card as HTMLElement).style.order = String(order);
+      });
+
+      var preferredFilter: 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process' = 'all';
+      if (mode === 'legacy') preferredFilter = 'migrations';
+      if (mode === 'profit') preferredFilter = 'ecom';
+      if (mode === 'ai') preferredFilter = 'process';
+      applyFilter(preferredFilter);
+    }
+    modeBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        applyMode((btn.getAttribute('data-layer-mode-btn') || 'legacy') as 'legacy' | 'profit' | 'ai');
+      });
+    });
+    applyMode('legacy');
 
     var mediaBlocks = Array.from(document.querySelectorAll('[data-case-media]'));
     mediaBlocks.forEach(function (block) {
