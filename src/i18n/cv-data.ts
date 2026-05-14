@@ -153,6 +153,12 @@ export type CVContent = {
   metaDescription: string;
   navResume: string;
   navPortfolio: string;
+  /** Альтернативная страница резюме (Mission Control / «пульт») */
+  navMission: string;
+  mission: {
+    metaTitle: string;
+    metaDescription: string;
+  };
   name: string;
   role: string;
   summary: string;
@@ -224,6 +230,12 @@ export const cv: Record<Lang, CVContent> = {
       'Резюме: 15+ лет веб-разработки, e-commerce, корпоративные и высоконагруженные системы, интеграции, архитектура и DevOps.',
     navResume: 'Резюме',
     navPortfolio: 'Портфолио',
+    navMission: 'Пульт',
+    mission: {
+      metaTitle: 'Евгений Жуков — System Rescue / инженерный пульт',
+      metaDescription:
+        'Резюме в формате центра управления: стабилизация легаси, миграции, архитектура, e-commerce и AI-augmented delivery. 15+ лет в продакшене.',
+    },
     name: 'Евгений Жуков',
     role: 'Fullstack разработчик / архитектор решений',
     summary:
@@ -909,6 +921,12 @@ export const cv: Record<Lang, CVContent> = {
       'Resume: 15+ years in web development, e-commerce, enterprise and high-load systems, integrations, architecture and DevOps.',
     navResume: 'Resume',
     navPortfolio: 'Portfolio',
+    navMission: 'Mission',
+    mission: {
+      metaTitle: 'Eugene Zhukov — System Rescue / mission control',
+      metaDescription:
+        'Resume as a mission-control deck: legacy stabilization, migrations, architecture, e-commerce, and AI-augmented delivery. 15+ years in production.',
+    },
     name: 'Eugene Zhukov',
     role: 'Fullstack developer / solution architect',
     summary:

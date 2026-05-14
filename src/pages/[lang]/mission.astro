@@ -1,0 +1,21 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import MissionResume from '../../components/MissionResume.astro';
+import { SUPPORTED_LANGS, getCv, isLang } from '../../i18n/cv-data';
+
+export function getStaticPaths() {
+  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const { lang: raw } = Astro.params;
+if (!isLang(raw)) {
+  return Astro.redirect('/en/mission', 302);
+}
+
+const lang = raw;
+const m = getCv(lang).mission;
+---
+
+<SiteLayout lang={lang} title={m.metaTitle} description={m.metaDescription}>
+  <MissionResume lang={lang} />
+</SiteLayout>

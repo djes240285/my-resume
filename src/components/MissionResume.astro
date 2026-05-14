@@ -1,0 +1,476 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
+import type { ProjectEntryWithCaseLink } from '../lib/resolve-project-case-links';
+import { PORTFOLIO_PREVIEWS } from '../config/portfolio-previews';
+import { AVATAR_RETRO_CONCEPT_WEBP, AVATAR_RETRO_CONCEPT } from '../config/avatar-experience';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = getCv(lang);
+const projectGroups = await resolveProjectCaseLinks(t.sections.experience.projectGroups);
+
+function normalizeUrl(input: string): string {
+  try {
+    const u = new URL(input);
+    u.hash = '';
+    if (u.pathname !== '/' && u.pathname.endsWith('/')) u.pathname = u.pathname.slice(0, -1);
+    return u.toString();
+  } catch {
+    return input;
+  }
+}
+
+function primaryHref(p: ProjectEntryWithCaseLink): string | undefined {
+  return (
+    p.resolvedLinks?.find((l) => l.show && l.kind !== 'partner')?.href ??
+    p.resolvedLinks?.find((l) => l.show)?.href
+  );
+}
+
+type CaseRow = {
+  name: string;
+  period: string;
+  href?: string;
+  preview?: string;
+  incident: string;
+  action: string;
+  result: string;
+  score: number;
+};
+
+const flat: CaseRow[] = projectGroups.flatMap((g) =>
+  g.projects.map((p) => {
+    const href = primaryHref(p);
+    const preview = href ? PORTFOLIO_PREVIEWS[normalizeUrl(href)]?.[0] : undefined;
+    const nameLc = p.name.toLowerCase();
+    let score = (p.log ? 4 : 0) + (href ? 2 : 0);
+    if (nameLc.includes('windowcleaner')) score += 100;
+    if (nameLc.includes('krymresurs') || nameLc.includes('крымресурс')) score += 95;
+    if (nameLc.includes('dostavka') || nameLc.includes('зпр')) score += 90;
+    if (nameLc.includes('gratisiskolan')) score += 85;
+    if (nameLc.includes('sechat')) score += 80;
+    return {
+      name: p.name,
+      period: g.period,
+      href,
+      preview,
+      incident: p.log?.status ?? p.detail.slice(0, 160),
+      action: p.log?.action ?? p.detail,
+      result: p.log?.result ?? (lang === 'ru' ? 'Стабильный контур и предсказуемые релизы.' : 'Stable contour and predictable releases.'),
+      score,
+    };
+  })
+);
+
+flat.sort((a, b) => b.score - a.score);
+const caseFiles = flat.filter((c) => c.href).slice(0, 3);
+
+const copy =
+  lang === 'ru'
+    ? {
+        brand: 'EZ · SYSTEM RESCUE',
+        pageTitle: 'ИНЖЕНЕРНЫЙ ПУЛЬТ',
+        statusAvail: 'СТАТУС: НА СВЯЗИ',
+        statusHint: 'По графику МСК — см. классическое резюме для live-статуса',
+        heroTag: '> Стабилизирую системы, к которым другие не хотят прикасаться.',
+        viewPortfolio: 'Кейсы',
+        classicResume: 'Классическое резюме',
+        contact: 'Связаться',
+        linkedinCta: 'LinkedIn',
+        systemCard: 'Состояние системы',
+        opFocus: 'Операционный фокус',
+        currentMode: 'Режим',
+        modeActive: 'ACTIVE',
+        location: 'Локация',
+        timezone: 'Часовой пояс',
+        remote: 'Удалённо · глобально',
+        tz: 'UTC+3 (МСК)',
+        nextSlot: 'Следующий слот',
+        nextSlotVal: 'По запросу · после короткого созвона',
+        statsBar: 'Снимок практики',
+        failuresTitle: 'Сбои, которые чиню',
+        symptoms: 'Симптомы',
+        intervention: 'Вмешательство',
+        caseTitle: 'Кейсы (файлы)',
+        success: 'SUCCESS',
+        incident: 'Инцидент',
+        action: 'Действие',
+        result: 'Результат',
+        techTitle: 'Стек',
+        aiTitle: 'AI-augmented engineering',
+        aiBody:
+          'Cursor, GPT и вспомогательные агенты — для ускорения рутины: черновики кода, ревью диффов, документация и регрессионные сценарии. Архитектурные решения и ответственность за прод остаются за инженером; ИИ не заменяет контроль качества.',
+        approachTitle: 'Подход',
+        processTitle: 'Процесс rescue',
+        clientsTitle: 'Якорные проекты',
+        ctaTitle: 'Соберём устойчивую систему',
+        ctaBtn: 'Начать диалог',
+        footBuilt: 'Статический Astro · Tailwind',
+        footCopy: '©',
+        steps: [
+          { k: '01', title: 'Диагностика', sub: 'Аудит рисков и причина на уровне системы' },
+          { k: '02', title: 'Стабилизация', sub: 'Снять острые блокеры без остановки бизнеса' },
+          { k: '03', title: 'Редизайн', sub: 'Границы модулей, контракты, наблюдаемость' },
+          { k: '04', title: 'Автоматизация', sub: 'CI/CD, тесты, мониторинг, релизная дисциплина' },
+          { k: '05', title: 'Масштабирование', sub: 'Рост нагрузки и функционала без «лотереи»' },
+        ],
+        rows: [
+          {
+            s: 'Легаси-коллапс',
+            i: 'Страх релизов, «замороженные» обновления',
+          },
+          {
+            s: 'Просадка скорости',
+            i: 'Профилирование, кеш, очереди, БД, фронт',
+          },
+          {
+            s: 'Архитектурный хаос',
+            i: 'Модули, стандарты, поэтапный рефакторинг',
+          },
+          {
+            s: 'Интеграции ломаются',
+            i: 'Контракты API, идемпотентность, алерты',
+          },
+          {
+            s: 'Бизнес давит сроками',
+            i: 'Приоритеты, метрики, безопасные инкременты',
+          },
+        ],
+      }
+    : {
+        brand: 'EZ · SYSTEM RESCUE',
+        pageTitle: 'MISSION CONTROL',
+        statusAvail: 'STATUS: AVAILABLE',
+        statusHint: 'MSK schedule — classic resume page has live status',
+        heroTag: '> I stabilize systems others avoid touching.',
+        viewPortfolio: 'Case files',
+        classicResume: 'Classic resume',
+        contact: 'Contact',
+        linkedinCta: 'LinkedIn',
+        systemCard: 'System state',
+        opFocus: 'Operational focus',
+        currentMode: 'Current mode',
+        modeActive: 'ACTIVE',
+        location: 'Location',
+        timezone: 'Timezone',
+        remote: 'Remote · global',
+        tz: 'UTC+3 (MSK)',
+        nextSlot: 'Next slot',
+        nextSlotVal: 'On request · after a short intro call',
+        statsBar: 'Practice snapshot',
+        failuresTitle: 'Failures I fix',
+        symptoms: 'Symptoms',
+        intervention: 'Intervention',
+        caseTitle: 'Case files',
+        success: 'SUCCESS',
+        incident: 'Incident',
+        action: 'Action',
+        result: 'Result',
+        techTitle: 'Core stack',
+        aiTitle: 'AI-augmented engineering',
+        aiBody:
+          'Cursor, GPT, and supporting agents speed up routine: code drafts, diff review, docs, and regression scenarios. Architecture decisions and production accountability stay with the engineer; AI does not replace quality control.',
+        approachTitle: 'Work approach',
+        processTitle: 'Rescue process',
+        clientsTitle: 'Anchored projects',
+        ctaTitle: 'Let’s build something stable',
+        ctaBtn: 'Start a conversation',
+        footBuilt: 'Static Astro · Tailwind',
+        footCopy: '©',
+        steps: [
+          { k: '01', title: 'Diagnose', sub: 'Risk audit and real root-cause clarity' },
+          { k: '02', title: 'Stabilize', sub: 'Remove acute blockers without stopping the business' },
+          { k: '03', title: 'Redesign', sub: 'Module boundaries, contracts, observability' },
+          { k: '04', title: 'Automate', sub: 'CI/CD, tests, monitoring, release discipline' },
+          { k: '05', title: 'Scale', sub: 'Load + features without deploy roulette' },
+        ],
+        rows: [
+          { s: 'Legacy collapse', i: 'Release fear, frozen upgrades' },
+          { s: 'Slow performance', i: 'Profiling, cache, queues, DB, frontend' },
+          { s: 'Architecture chaos', i: 'Modules, standards, phased refactors' },
+          { s: 'Integration failures', i: 'API contracts, idempotency, alerts' },
+          { s: 'Business pressure', i: 'Priorities, metrics, safe increments' },
+        ],
+      };
+
+const opFocusLines = [
+  lang === 'ru' ? 'Легаси и миграции' : 'Legacy & migrations',
+  lang === 'ru' ? 'Стабилизация архитектуры' : 'Architecture stabilization',
+  lang === 'ru' ? 'E-commerce под нагрузкой' : 'E-commerce under load',
+  lang === 'ru' ? 'AI-augmented delivery' : 'AI-augmented delivery',
+];
+---
+
+<main class="mission-page">
+  <div class="mission-page__grid" aria-hidden="true"></div>
+
+  <header class="mission-topbar">
+    <div class="mission-topbar__brand">
+      <span class="mission-topbar__logo">EZ</span>
+      <div>
+        <p class="mission-topbar__title">{copy.brand}</p>
+        <p class="mission-topbar__subtitle">{copy.pageTitle}</p>
+      </div>
+    </div>
+    <div class="mission-topbar__status">
+      <span class="mission-topbar__dot" aria-hidden="true"></span>
+      <div>
+        <p class="mission-topbar__status-line">{copy.statusAvail}</p>
+        <p class="mission-topbar__status-hint">{copy.statusHint}</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="mission-hero mission-grid">
+    <div class="mission-panel mission-hero__left">
+      <div class="mission-hero__photo-wrap">
+        <span class="mission-hero__live" aria-hidden="true">LIVE</span>
+        <picture>
+          <source type="image/webp" srcset={AVATAR_RETRO_CONCEPT_WEBP} />
+          <img src={AVATAR_RETRO_CONCEPT} alt={t.name} class="mission-hero__photo" width={320} height={320} loading="eager" decoding="async" />
+        </picture>
+      </div>
+      <p class="mission-hero__name">{t.name.toUpperCase()}</p>
+      <p class="mission-hero__role">{t.role}</p>
+      <p class="mission-hero__tag">{copy.heroTag}</p>
+      <p class="mission-hero__summary">{t.sections.about.body}</p>
+      <div class="mission-hero__actions">
+        <a class="mission-btn mission-btn--primary" href={`/${lang}/portfolio`}>{copy.viewPortfolio}</a>
+        <a class="mission-btn mission-btn--ghost" href={`/${lang}/`}>{copy.classicResume}</a>
+      </div>
+      <div class="mission-hero__actions mission-hero__actions--row2">
+        <a class="mission-btn mission-btn--ghost" href={`mailto:${t.contact.emails[0]}`}>{copy.contact}</a>
+        <a class="mission-btn mission-btn--ghost" href={t.contact.linkedinHref} target="_blank" rel="noopener noreferrer">{copy.linkedinCta}</a>
+      </div>
+    </div>
+
+    <div class="mission-panel mission-hero__right">
+      <div class="mission-pulse" aria-hidden="true">
+        <svg class="mission-pulse__svg" viewBox="0 0 120 32" preserveAspectRatio="none">
+          <polyline
+            class="mission-pulse__line"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            points="0,20 10,22 18,10 28,24 40,8 52,26 64,12 76,22 88,14 100,20 112,16 120,18"></polyline>
+        </svg>
+      </div>
+      <p class="mission-card__label">{copy.systemCard}</p>
+      <ul class="mission-hud-list">
+        {
+          opFocusLines.map((line) => (
+            <li>
+              <span class="mission-hud-list__tick">✓</span> {line}
+            </li>
+          ))
+        }
+      </ul>
+      <dl class="mission-kv">
+        <div>
+          <dt>{copy.currentMode}</dt>
+          <dd>{copy.modeActive}</dd>
+        </div>
+        <div>
+          <dt>{copy.location}</dt>
+          <dd>{copy.remote}</dd>
+        </div>
+        <div>
+          <dt>{copy.timezone}</dt>
+          <dd>{copy.tz}</dd>
+        </div>
+        <div>
+          <dt>{copy.nextSlot}</dt>
+          <dd>{copy.nextSlotVal}</dd>
+        </div>
+      </dl>
+      <p class="mission-card__label mission-card__label--muted">{copy.opFocus}</p>
+      <ul class="mission-hud-list mission-hud-list--compact">
+        {t.heroHudFacts.map((f) => (
+          <li>
+            <span class="mission-hud-list__key">{f.label}</span>
+            <span class="mission-hud-list__val">{f.value}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="mission-stats mission-panel" aria-label={copy.statsBar}>
+    <div class="mission-stats__inner">
+      {
+        t.coreStats.map((s) => (
+          <div class="mission-stat">
+            <span class="mission-stat__dot" aria-hidden="true"></span>
+            <p class="mission-stat__val">{s.value}</p>
+            <p class="mission-stat__lbl">{s.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mission-split mission-grid">
+    <div class="mission-panel mission-failures">
+      <h2 class="mission-h2">{copy.failuresTitle}</h2>
+      <div class="mission-table" role="table">
+        <div class="mission-table__row mission-table__row--head" role="row">
+          <span role="columnheader">{copy.symptoms}</span>
+          <span role="columnheader">{copy.intervention}</span>
+        </div>
+        {
+          copy.rows.map((row) => (
+            <div class="mission-table__row mission-symptom-row" role="row">
+              <span class="mission-table__sym" role="cell">{row.s}</span>
+              <span class="mission-table__fix" role="cell">{row.i}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mission-panel mission-tech">
+      <h2 class="mission-h2">{copy.techTitle}</h2>
+      <div class="mission-tech__cols">
+        {
+          t.sections.tech.lanes.slice(0, 5).map((lane) => (
+            <div class="mission-tech__group">
+              <p class="mission-tech__lane">{lane.title}</p>
+              <ul class="mission-tech__list">
+                {lane.files.slice(0, 6).map((f) => (
+                  <li>{f.name}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="mission-cases mission-panel">
+    <h2 class="mission-h2">{copy.caseTitle}</h2>
+    <div class="mission-case-list">
+      {
+        caseFiles.map((c) => (
+          <article class="mission-case">
+            <div class="mission-case__thumb">
+              {c.preview ? (
+                <img src={c.preview} alt="" loading="lazy" decoding="async" width={320} height={180} />
+              ) : (
+                <div class="mission-case__thumb-fallback" aria-hidden="true" />
+              )}
+            </div>
+            <div class="mission-case__body">
+              <div class="mission-case__head">
+                <h3 class="mission-case__title">{c.name}</h3>
+                <span class="mission-badge mission-badge--ok">{copy.success}</span>
+              </div>
+              <p class="mission-case__period">{c.period}</p>
+              <dl class="mission-case__dl">
+                <div>
+                  <dt>{copy.incident}</dt>
+                  <dd>{c.incident}</dd>
+                </div>
+                <div>
+                  <dt>{copy.action}</dt>
+                  <dd>{c.action}</dd>
+                </div>
+                <div>
+                  <dt>{copy.result}</dt>
+                  <dd>{c.result}</dd>
+                </div>
+              </dl>
+              {c.href ? (
+                <a class="mission-link" href={c.href} target="_blank" rel="noreferrer noopener">
+                  → URL
+                </a>
+              ) : null}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mission-bottom mission-grid">
+    <div class="mission-panel mission-ai">
+      <h2 class="mission-h2">{copy.aiTitle}</h2>
+      <p class="mission-ai__body">{copy.aiBody}</p>
+    </div>
+    <div class="mission-panel mission-approach">
+      <h2 class="mission-h2">{copy.approachTitle}</h2>
+      <ul class="mission-approach-list">
+        {
+          t.sections.approach.pillars.map((p) => (
+            <li>
+              <span class="mission-approach__mark">::</span>
+              <div>
+                <p class="mission-approach__title">{p.title}</p>
+                <p class="mission-approach__body">{p.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="mission-process mission-panel">
+    <h2 class="mission-h2">{copy.processTitle}</h2>
+    <ol class="mission-process__steps">
+      {
+        copy.steps.map((s) => (
+          <li class="mission-step">
+            <span class="mission-step__k">{s.k}</span>
+            <div>
+              <p class="mission-step__t">{s.title}</p>
+              <p class="mission-step__s">{s.sub}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class="mission-clients mission-panel">
+    <h2 class="mission-h2">{copy.clientsTitle}</h2>
+    <ul class="mission-client-chips">
+      {
+        caseFiles.map((c) => (
+          <li class="mission-client-chip">{c.name}</li>
+        ))
+      }
+      {
+        t.portfolio.cards.slice(0, 4).map((c) => (
+          <li class="mission-client-chip mission-client-chip--soft">{c.title}</li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="mission-cta mission-panel">
+    <h2 class="mission-h2 mission-cta__title">{copy.ctaTitle}</h2>
+    <a class="mission-btn mission-btn--primary mission-cta__btn" href={`mailto:${t.contact.emails[0]}`}>
+      {copy.ctaBtn}
+    </a>
+  </section>
+
+  <footer class="mission-footer">
+    <p>
+      <a href={`/${lang}/`} class="mission-footer__link">EZ</a>
+      <span class="mission-footer__sep">·</span>
+      <a href={`mailto:${t.contact.emails[0]}`} class="mission-footer__link">{t.contact.emails[0]}</a>
+      <span class="mission-footer__sep">·</span>
+      <a href={t.contact.linkedinHref} class="mission-footer__link" target="_blank" rel="noreferrer noopener">{t.contact.linkedinLabel}</a>
+    </p>
+    <p class="mission-footer__meta">
+      {copy.footCopy}
+      {new Date().getFullYear()} · {copy.footBuilt}
+    </p>
+  </footer>
+</main>
