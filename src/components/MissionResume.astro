@@ -75,8 +75,7 @@ const copy =
     ? {
         brand: 'EZ · SYSTEM RESCUE',
         pageTitle: 'ИНЖЕНЕРНЫЙ ПУЛЬТ',
-        statusAvail: 'СТАТУС: НА СВЯЗИ',
-        statusHint: 'По графику МСК — см. классическое резюме для live-статуса',
+        statusHint: 'По графику МСК — live-статус на классическом резюме',
         heroTag: '> Стабилизирую системы, к которым другие не хотят прикасаться.',
         viewPortfolio: 'Кейсы',
         classicResume: 'Классическое резюме',
@@ -148,8 +147,7 @@ const copy =
     : {
         brand: 'EZ · SYSTEM RESCUE',
         pageTitle: 'MISSION CONTROL',
-        statusAvail: 'STATUS: AVAILABLE',
-        statusHint: 'MSK schedule — classic resume page has live status',
+        statusHint: 'MSK schedule — live status on classic resume',
         heroTag: '> I stabilize systems others avoid touching.',
         viewPortfolio: 'Case files',
         classicResume: 'Classic resume',
@@ -230,12 +228,8 @@ const sparkPaths = [
         <p class="mission-topbar__subtitle">{copy.pageTitle}</p>
       </div>
     </div>
-    <div class="mission-topbar__status">
-      <span class="mission-topbar__dot" aria-hidden="true"></span>
-      <div>
-        <p class="mission-topbar__status-line">{copy.statusAvail}</p>
-        <p class="mission-topbar__status-hint">{copy.statusHint}</p>
-      </div>
+    <div class="mission-topbar__hint">
+      <p class="mission-topbar__hint-text">{copy.statusHint}</p>
     </div>
   </header>
 
