@@ -97,10 +97,13 @@ const copy =
         symptoms: 'Симптомы',
         intervention: 'Вмешательство',
         caseTitle: 'Кейсы (файлы)',
+        caseFileLabel: 'FILE',
+        openTarget: 'Открыть',
         success: 'SUCCESS',
         incident: 'Инцидент',
         action: 'Действие',
         result: 'Результат',
+        rescueRole: 'SYSTEM RESCUE · FULLSTACK',
         techTitle: 'Стек',
         aiTitle: 'AI-augmented engineering',
         aiBody:
@@ -167,10 +170,13 @@ const copy =
         symptoms: 'Symptoms',
         intervention: 'Intervention',
         caseTitle: 'Case files',
+        caseFileLabel: 'FILE',
+        openTarget: 'Open',
         success: 'SUCCESS',
         incident: 'Incident',
         action: 'Action',
         result: 'Result',
+        rescueRole: 'SYSTEM RESCUE · FULLSTACK',
         techTitle: 'Core stack',
         aiTitle: 'AI-augmented engineering',
         aiBody:
@@ -204,6 +210,13 @@ const opFocusLines = [
   lang === 'ru' ? 'E-commerce под нагрузкой' : 'E-commerce under load',
   lang === 'ru' ? 'AI-augmented delivery' : 'AI-augmented delivery',
 ];
+
+/** Детерминированные мини-sparkline для метрик (без JS) */
+const sparkPaths = [
+  'M0,10 L6,12 L12,6 L18,11 L24,4 L30,9 L36,5 L42,8 L48,6',
+  'M0,8 L8,11 L16,5 L24,10 L32,3 L40,9 L48,7',
+  'M0,11 L10,7 L20,12 L30,4 L40,10 L48,5',
+];
 ---
 
 <main class="mission-page">
@@ -236,6 +249,7 @@ const opFocusLines = [
         </picture>
       </div>
       <p class="mission-hero__name">{t.name.toUpperCase()}</p>
+      <p class="mission-hero__rescue">{copy.rescueRole}</p>
       <p class="mission-hero__role">{t.role}</p>
       <p class="mission-hero__tag">{copy.heroTag}</p>
       <p class="mission-hero__summary">{t.sections.about.body}</p>
@@ -300,11 +314,22 @@ const opFocusLines = [
     </div>
   </section>
 
-  <section class="mission-stats mission-panel" aria-label={copy.statsBar}>
+  <section class="mission-stats mission-panel mission-panel--hud" aria-label={copy.statsBar}>
     <div class="mission-stats__inner">
       {
-        t.coreStats.map((s) => (
+        t.coreStats.map((s, i) => (
           <div class="mission-stat">
+            <svg class="mission-stat__spark" viewBox="0 0 48 14" aria-hidden="true">
+              <path
+                class="mission-stat__spark-path"
+                d={sparkPaths[i % sparkPaths.length]}
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.25"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
             <span class="mission-stat__dot" aria-hidden="true"></span>
             <p class="mission-stat__val">{s.value}</p>
             <p class="mission-stat__lbl">{s.label}</p>
@@ -314,151 +339,171 @@ const opFocusLines = [
     </div>
   </section>
 
-  <section class="mission-split mission-grid">
-    <div class="mission-panel mission-failures">
-      <h2 class="mission-h2">{copy.failuresTitle}</h2>
-      <div class="mission-table" role="table">
-        <div class="mission-table__row mission-table__row--head" role="row">
-          <span role="columnheader">{copy.symptoms}</span>
-          <span role="columnheader">{copy.intervention}</span>
+  <div class="mission-dash">
+    <div class="mission-dash__main">
+      <section class="mission-panel mission-panel--hud mission-failures">
+        <h2 class="mission-h2">{copy.failuresTitle}</h2>
+        <div class="mission-table" role="table">
+          <div class="mission-table__row mission-table__row--head" role="row">
+            <span role="columnheader">{copy.symptoms}</span>
+            <span class="mission-table__arrow" aria-hidden="true">→</span>
+            <span role="columnheader">{copy.intervention}</span>
+          </div>
+          {
+            copy.rows.map((row) => (
+              <div class="mission-table__row mission-symptom-row" role="row">
+                <span class="mission-table__sym" role="cell">{row.s}</span>
+                <span class="mission-table__arrow mission-table__arrow--row" aria-hidden="true">
+                  →
+                </span>
+                <span class="mission-table__fix" role="cell">{row.i}</span>
+              </div>
+            ))
+          }
         </div>
-        {
-          copy.rows.map((row) => (
-            <div class="mission-table__row mission-symptom-row" role="row">
-              <span class="mission-table__sym" role="cell">{row.s}</span>
-              <span class="mission-table__fix" role="cell">{row.i}</span>
-            </div>
-          ))
-        }
-      </div>
+      </section>
+
+      <section class="mission-panel mission-panel--hud mission-cases">
+        <h2 class="mission-h2">{copy.caseTitle}</h2>
+        <div class="mission-case-list">
+          {
+            caseFiles.map((c) => (
+              <article class="mission-case mission-case--file">
+                <div class="mission-case__chrome" aria-hidden="true">
+                  <span class="mission-case__chrome-dots">
+                    <span></span><span></span><span></span>
+                  </span>
+                  <span class="mission-case__chrome-path">
+                    {copy.caseFileLabel}://{c.name.slice(0, 28)}
+                    {c.name.length > 28 ? '…' : ''}
+                  </span>
+                </div>
+                <div class="mission-case__inner">
+                  <div class="mission-case__thumb">
+                    {c.preview ? (
+                      <img src={c.preview} alt="" loading="lazy" decoding="async" width={320} height={180} />
+                    ) : (
+                      <div class="mission-case__thumb-fallback" aria-hidden="true" />
+                    )}
+                  </div>
+                  <div class="mission-case__body">
+                    <div class="mission-case__head">
+                      <h3 class="mission-case__title">{c.name}</h3>
+                      <span class="mission-badge mission-badge--ok">{copy.success}</span>
+                    </div>
+                    <p class="mission-case__period">{c.period}</p>
+                    <dl class="mission-case__dl">
+                      <div>
+                        <dt>{copy.incident}</dt>
+                        <dd>{c.incident}</dd>
+                      </div>
+                      <div>
+                        <dt>{copy.action}</dt>
+                        <dd>{c.action}</dd>
+                      </div>
+                      <div>
+                        <dt>{copy.result}</dt>
+                        <dd>{c.result}</dd>
+                      </div>
+                    </dl>
+                    {c.href ? (
+                      <a class="mission-link" href={c.href} target="_blank" rel="noreferrer noopener">
+                        → {copy.openTarget}
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="mission-bottom mission-grid">
+        <div class="mission-panel mission-panel--hud mission-ai">
+          <h2 class="mission-h2">{copy.aiTitle}</h2>
+          <p class="mission-ai__body">{copy.aiBody}</p>
+        </div>
+        <div class="mission-panel mission-panel--hud mission-approach">
+          <h2 class="mission-h2">{copy.approachTitle}</h2>
+          <ul class="mission-approach-list">
+            {
+              t.sections.approach.pillars.map((p) => (
+                <li>
+                  <span class="mission-approach__mark">::</span>
+                  <div>
+                    <p class="mission-approach__title">{p.title}</p>
+                    <p class="mission-approach__body">{p.body}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </section>
+
+      <section class="mission-panel mission-panel--hud mission-process">
+        <h2 class="mission-h2">{copy.processTitle}</h2>
+        <ol class="mission-process__steps">
+          {
+            copy.steps.map((s) => (
+              <li class="mission-step">
+                <span class="mission-step__k">{s.k}</span>
+                <div>
+                  <p class="mission-step__t">{s.title}</p>
+                  <p class="mission-step__s">{s.sub}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+
+      <section class="mission-panel mission-panel--hud mission-clients">
+        <h2 class="mission-h2">{copy.clientsTitle}</h2>
+        <ul class="mission-client-chips">
+          {
+            caseFiles.map((c) => (
+              <li class="mission-client-chip">{c.name}</li>
+            ))
+          }
+          {
+            t.portfolio.cards.slice(0, 4).map((c) => (
+              <li class="mission-client-chip mission-client-chip--soft">{c.title}</li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="mission-panel mission-panel--hud mission-cta">
+        <h2 class="mission-h2 mission-cta__title">{copy.ctaTitle}</h2>
+        <a class="mission-btn mission-btn--primary mission-cta__btn" href={`mailto:${t.contact.emails[0]}`}>
+          {copy.ctaBtn}
+        </a>
+      </section>
     </div>
 
-    <div class="mission-panel mission-tech">
+    <aside class="mission-dash__rail mission-panel mission-panel--hud mission-tech-rail" aria-label={copy.techTitle}>
       <h2 class="mission-h2">{copy.techTitle}</h2>
-      <div class="mission-tech__cols">
+      <div class="mission-tech-rail__stack">
         {
-          t.sections.tech.lanes.slice(0, 5).map((lane) => (
-            <div class="mission-tech__group">
+          t.sections.tech.lanes.map((lane) => (
+            <div class="mission-tech-rail__group">
               <p class="mission-tech__lane">{lane.title}</p>
-              <ul class="mission-tech__list">
-                {lane.files.slice(0, 6).map((f) => (
-                  <li>{f.name}</li>
+              <ul class="mission-tech-rail__list">
+                {lane.files.slice(0, 8).map((f) => (
+                  <li>
+                    <span class="mission-tech-rail__name">{f.name}</span>
+                    <span class="mission-tech-rail__ext">{f.ext}</span>
+                  </li>
                 ))}
               </ul>
             </div>
           ))
         }
       </div>
-    </div>
-  </section>
-
-  <section class="mission-cases mission-panel">
-    <h2 class="mission-h2">{copy.caseTitle}</h2>
-    <div class="mission-case-list">
-      {
-        caseFiles.map((c) => (
-          <article class="mission-case">
-            <div class="mission-case__thumb">
-              {c.preview ? (
-                <img src={c.preview} alt="" loading="lazy" decoding="async" width={320} height={180} />
-              ) : (
-                <div class="mission-case__thumb-fallback" aria-hidden="true" />
-              )}
-            </div>
-            <div class="mission-case__body">
-              <div class="mission-case__head">
-                <h3 class="mission-case__title">{c.name}</h3>
-                <span class="mission-badge mission-badge--ok">{copy.success}</span>
-              </div>
-              <p class="mission-case__period">{c.period}</p>
-              <dl class="mission-case__dl">
-                <div>
-                  <dt>{copy.incident}</dt>
-                  <dd>{c.incident}</dd>
-                </div>
-                <div>
-                  <dt>{copy.action}</dt>
-                  <dd>{c.action}</dd>
-                </div>
-                <div>
-                  <dt>{copy.result}</dt>
-                  <dd>{c.result}</dd>
-                </div>
-              </dl>
-              {c.href ? (
-                <a class="mission-link" href={c.href} target="_blank" rel="noreferrer noopener">
-                  → URL
-                </a>
-              ) : null}
-            </div>
-          </article>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="mission-bottom mission-grid">
-    <div class="mission-panel mission-ai">
-      <h2 class="mission-h2">{copy.aiTitle}</h2>
-      <p class="mission-ai__body">{copy.aiBody}</p>
-    </div>
-    <div class="mission-panel mission-approach">
-      <h2 class="mission-h2">{copy.approachTitle}</h2>
-      <ul class="mission-approach-list">
-        {
-          t.sections.approach.pillars.map((p) => (
-            <li>
-              <span class="mission-approach__mark">::</span>
-              <div>
-                <p class="mission-approach__title">{p.title}</p>
-                <p class="mission-approach__body">{p.body}</p>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <section class="mission-process mission-panel">
-    <h2 class="mission-h2">{copy.processTitle}</h2>
-    <ol class="mission-process__steps">
-      {
-        copy.steps.map((s) => (
-          <li class="mission-step">
-            <span class="mission-step__k">{s.k}</span>
-            <div>
-              <p class="mission-step__t">{s.title}</p>
-              <p class="mission-step__s">{s.sub}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
-
-  <section class="mission-clients mission-panel">
-    <h2 class="mission-h2">{copy.clientsTitle}</h2>
-    <ul class="mission-client-chips">
-      {
-        caseFiles.map((c) => (
-          <li class="mission-client-chip">{c.name}</li>
-        ))
-      }
-      {
-        t.portfolio.cards.slice(0, 4).map((c) => (
-          <li class="mission-client-chip mission-client-chip--soft">{c.title}</li>
-        ))
-      }
-    </ul>
-  </section>
-
-  <section class="mission-cta mission-panel">
-    <h2 class="mission-h2 mission-cta__title">{copy.ctaTitle}</h2>
-    <a class="mission-btn mission-btn--primary mission-cta__btn" href={`mailto:${t.contact.emails[0]}`}>
-      {copy.ctaBtn}
-    </a>
-  </section>
+    </aside>
+  </div>
 
   <footer class="mission-footer">
     <p>
