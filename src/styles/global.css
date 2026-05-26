@@ -4889,6 +4889,14 @@ html.audience-mode-pending [data-audience-approach-body] {
   max-width: 40rem;
 }
 
+.mc-case-log__drum-hint {
+  margin: -0.25rem 0 0.65rem;
+  max-width: 40rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
 .mc-case-log__table {
   font-family: "JetBrains Mono Variable", ui-monospace, monospace;
   font-size: 0.8125rem;
@@ -4916,10 +4924,59 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-case-log__row {
+  min-height: var(--mc-case-row-h, 3.2rem);
+  box-sizing: border-box;
   text-decoration: none;
   color: inherit;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.15s ease;
+}
+
+.mc-case-log__body {
+  display: block;
+}
+
+.mc-case-log__table--drum .mc-case-log__drum-viewport {
+  max-height: calc(var(--mc-case-row-h, 3.2rem) * var(--mc-case-visible, 5));
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to bottom, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+.mc-case-log__table--drum .mc-case-log__drum-track {
+  will-change: transform;
+  animation: mc-case-log-drum var(--mc-case-drum-duration, 50s) linear infinite;
+}
+
+.mc-case-log__table--drum .mc-case-log__drum-viewport:hover .mc-case-log__drum-track,
+.mc-case-log__table--drum .mc-case-log__drum-viewport:focus-within .mc-case-log__drum-track {
+  animation-play-state: paused;
+}
+
+@keyframes mc-case-log-drum {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-case-log__table--drum .mc-case-log__drum-viewport {
+    max-height: min(70vh, calc(var(--mc-case-row-h, 3.2rem) * var(--mc-case-visible, 5)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    mask-image: none;
+  }
+
+  .mc-case-log__table--drum .mc-case-log__drum-track {
+    animation: none;
+  }
+
+  .mc-case-log__row--clone {
+    display: none;
+  }
 }
 
 .mc-case-log__row:hover {
@@ -5029,6 +5086,7 @@ html.audience-mode-pending [data-audience-approach-body] {
     grid-template-columns: 1fr;
     gap: 0.25rem;
     padding: 0.75rem;
+    min-height: 0;
   }
 
   .mc-case-log__arrow,
@@ -5038,6 +5096,24 @@ html.audience-mode-pending [data-audience-approach-body] {
 
   .mc-case-log__status {
     text-align: left;
+  }
+
+  .mc-case-log__table--drum .mc-case-log__drum-viewport {
+    max-height: none;
+    overflow: visible;
+    mask-image: none;
+  }
+
+  .mc-case-log__table--drum .mc-case-log__drum-track {
+    animation: none;
+  }
+
+  .mc-case-log__row--clone {
+    display: none;
+  }
+
+  .mc-case-log__drum-hint {
+    display: none;
   }
 }
 

@@ -63,6 +63,7 @@ export type MissionControlContent = {
     colStack: string;
     colStatus: string;
     rowAction: string;
+    drumHint: string;
     entries: CaseLogEntry[];
   };
   bridge: {
@@ -168,6 +169,7 @@ const ru: MissionControlContent = {
     colStack: 'Стек',
     colStatus: 'Статус',
     rowAction: 'Подробнее',
+    drumHint: 'Список прокручивается по кругу — наведите курсор, чтобы остановить.',
     entries: [
       {
         id: 'ID_01',
@@ -222,6 +224,42 @@ const ru: MissionControlContent = {
         operation: 'Платёжные интеграции и восстановление легаси',
         stack: 'PHP, API, платежи',
         status: 'Стабилизирован',
+      },
+      {
+        id: 'ID_07',
+        slug: 'biznesmashin-ru',
+        name: 'biznesmashin.ru',
+        context: 'e-commerce · грузовая техника',
+        operation: 'Интернет-магазин на «1С-Битрикс»: каталог, заказы, сопровождение',
+        stack: '1С-Битрикс, PHP, MySQL',
+        status: 'В проде',
+      },
+      {
+        id: 'ID_08',
+        slug: 'turexpertiza-ru',
+        name: 'turexpertiza.ru',
+        context: 'наука · расчёты',
+        operation: 'Уникальная система подсчёта распределённой звёздности',
+        stack: 'PHP, MySQL, прикладная математика',
+        status: 'В эксплуатации',
+      },
+      {
+        id: 'ID_09',
+        slug: 'store-finaldraft-com',
+        name: 'store.finaldraft.com',
+        context: 'e-commerce · США',
+        operation: 'Поддержка и развитие витрины на Magento',
+        stack: 'Magento, PHP, MySQL',
+        status: 'Долгий контур',
+      },
+      {
+        id: 'ID_10',
+        slug: 'nancysbeauty-com',
+        name: 'nancysbeauty.com',
+        context: 'e-commerce · США',
+        operation: 'Сопровождение витрины и релизы под нагрузкой',
+        stack: 'Magento, PHP, MySQL',
+        status: 'В проде',
       },
     ],
   },
@@ -329,6 +367,7 @@ const en: MissionControlContent = {
     colStack: 'Stack',
     colStatus: 'Status',
     rowAction: 'Details',
+    drumHint: 'The list scrolls in a loop — hover to pause.',
     entries: [
       {
         id: 'ID_01',
@@ -383,6 +422,42 @@ const en: MissionControlContent = {
         operation: 'Payment integrations and legacy recovery',
         stack: 'PHP, API, payments',
         status: 'Stabilized',
+      },
+      {
+        id: 'ID_07',
+        slug: 'biznesmashin-ru',
+        name: 'biznesmashin.ru',
+        context: 'e-commerce · heavy machinery',
+        operation: 'Bitrix store: catalog, checkout, ongoing support',
+        stack: '1C-Bitrix, PHP, MySQL',
+        status: 'Live',
+      },
+      {
+        id: 'ID_08',
+        slug: 'turexpertiza-ru',
+        name: 'turexpertiza.ru',
+        context: 'science · computation',
+        operation: 'Custom distributed star-rating calculation system',
+        stack: 'PHP, MySQL, applied math',
+        status: 'In production',
+      },
+      {
+        id: 'ID_09',
+        slug: 'store-finaldraft-com',
+        name: 'store.finaldraft.com',
+        context: 'e-commerce · USA',
+        operation: 'Magento storefront support and evolution',
+        stack: 'Magento, PHP, MySQL',
+        status: 'Long-running',
+      },
+      {
+        id: 'ID_10',
+        slug: 'nancysbeauty-com',
+        name: 'nancysbeauty.com',
+        context: 'e-commerce · USA',
+        operation: 'Storefront support and releases under load',
+        stack: 'Magento, PHP, MySQL',
+        status: 'In prod',
       },
     ],
   },

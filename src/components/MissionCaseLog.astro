@@ -1,0 +1,78 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import type { MissionControlContent } from '../i18n/mission-control-data';
+
+interface Props {
+  lang: Lang;
+  caseLog: MissionControlContent['caseLog'];
+  portfolioHref: string;
+}
+
+const { caseLog, portfolioHref } = Astro.props;
+
+const MAX_ENTRIES = 10;
+const VISIBLE_ROWS = 5;
+const entries = caseLog.entries.slice(0, MAX_ENTRIES);
+const useDrum = entries.length > VISIBLE_ROWS;
+const drumRows = useDrum ? [...entries, ...entries] : entries;
+---
+
+<section class="mc-case-log mc-surface mc-module mc-tier-2" aria-labelledby="mc-case-log-title">
+  <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{caseLog.title}</h2>
+  <p class="mc-case-log__intro">{caseLog.intro}</p>
+  <p class="mc-case-log__lead">{caseLog.lead}</p>
+  {
+    useDrum ? (
+      <p class="mc-case-log__drum-hint">{caseLog.drumHint}</p>
+    ) : null
+  }
+  <div
+    class:list={['mc-case-log__table', useDrum && 'mc-case-log__table--drum']}
+    role="table"
+    data-mc-case-log
+    data-mc-case-drum={useDrum ? 'true' : 'false'}
+    style={useDrum ? `--mc-case-visible: ${VISIBLE_ROWS}; --mc-case-drum-duration: ${entries.length * 5}s` : undefined}
+  >
+    <div class="mc-case-log__head" role="row">
+      <span role="columnheader">{caseLog.colId}</span>
+      <span role="columnheader">{caseLog.colTarget}</span>
+      <span class="mc-case-log__arrow-head" aria-hidden="true">→</span>
+      <span role="columnheader">{caseLog.colOperation}</span>
+      <span role="columnheader">{caseLog.colStack}</span>
+      <span role="columnheader">{caseLog.colStatus}</span>
+    </div>
+    <div class:list={['mc-case-log__body', useDrum && 'mc-case-log__drum-viewport']}>
+      <div class:list={['mc-case-log__drum-track', !useDrum && 'mc-case-log__drum-track--static']}>
+        {
+          drumRows.map((entry, index) => (
+            <a
+              class:list={[
+                'mc-case-log__row',
+                useDrum && index >= entries.length && 'mc-case-log__row--clone',
+              ]}
+              role="row"
+              href={`${portfolioHref}#case-${entry.slug}`}
+              aria-label={`${entry.name} — ${caseLog.rowAction}`}
+              data-mc-case-row
+              tabindex={useDrum && index >= entries.length ? -1 : undefined}
+              aria-hidden={useDrum && index >= entries.length ? 'true' : undefined}
+            >
+              <span class="mc-case-log__id" role="cell">{entry.id}</span>
+              <span class="mc-case-log__name" role="cell">
+                <span class="mc-case-log__name-primary">{entry.name}</span>
+                {entry.context ? <span class="mc-case-log__name-context">{entry.context}</span> : null}
+              </span>
+              <span class="mc-case-log__arrow" aria-hidden="true">→</span>
+              <span class="mc-case-log__op" role="cell">{entry.operation}</span>
+              <span class="mc-case-log__stack" role="cell">{entry.stack}</span>
+              <span class="mc-case-log__status" role="cell">
+                <span class="mc-case-log__status-label">{entry.status}</span>
+                <span class="mc-case-log__status-action">{caseLog.rowAction}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

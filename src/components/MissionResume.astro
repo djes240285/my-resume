@@ -6,6 +6,7 @@ import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
 import MissionMindsetPath from './MissionMindsetPath.astro';
 import MissionEngineerPassport from './MissionEngineerPassport.astro';
 import TerminalHoverSoundInit from './TerminalHoverSoundInit.astro';
+import MissionCaseLog from './MissionCaseLog.astro';
 
 interface Props {
   lang: Lang;
@@ -71,44 +72,7 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
 
   <MissionMindsetPath title={m.mindset.title} badge={m.mindset.badge} steps={m.mindset.steps} />
 
-  <section class="mc-case-log mc-surface mc-module mc-tier-2" aria-labelledby="mc-case-log-title">
-    <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{m.caseLog.title}</h2>
-    <p class="mc-case-log__intro">{m.caseLog.intro}</p>
-    <p class="mc-case-log__lead">{m.caseLog.lead}</p>
-    <div class="mc-case-log__table" role="table">
-      <div class="mc-case-log__head" role="row">
-        <span role="columnheader">{m.caseLog.colId}</span>
-        <span role="columnheader">{m.caseLog.colTarget}</span>
-        <span class="mc-case-log__arrow-head" aria-hidden="true">→</span>
-        <span role="columnheader">{m.caseLog.colOperation}</span>
-        <span role="columnheader">{m.caseLog.colStack}</span>
-        <span role="columnheader">{m.caseLog.colStatus}</span>
-      </div>
-      {
-        m.caseLog.entries.map((entry) => (
-          <a
-            class="mc-case-log__row"
-            role="row"
-            href={`${portfolioHref}#case-${entry.slug}`}
-            aria-label={`${entry.name} — ${m.caseLog.rowAction}`}
-          >
-            <span class="mc-case-log__id" role="cell">{entry.id}</span>
-            <span class="mc-case-log__name" role="cell">
-              <span class="mc-case-log__name-primary">{entry.name}</span>
-              {entry.context ? <span class="mc-case-log__name-context">{entry.context}</span> : null}
-            </span>
-            <span class="mc-case-log__arrow" aria-hidden="true">→</span>
-            <span class="mc-case-log__op" role="cell">{entry.operation}</span>
-            <span class="mc-case-log__stack" role="cell">{entry.stack}</span>
-            <span class="mc-case-log__status" role="cell">
-              <span class="mc-case-log__status-label">{entry.status}</span>
-              <span class="mc-case-log__status-action">{m.caseLog.rowAction}</span>
-            </span>
-          </a>
-        ))
-      }
-    </div>
-  </section>
+  <MissionCaseLog lang={lang} caseLog={m.caseLog} portfolioHref={portfolioHref} />
 
   <TerminalHoverSoundInit selectors=".mc-case-log__row" />
 
