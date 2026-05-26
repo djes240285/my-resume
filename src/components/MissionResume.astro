@@ -5,7 +5,6 @@ import { getMissionControl } from '../i18n/mission-control-data';
 import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
 import MissionMindsetPath from './MissionMindsetPath.astro';
 import MissionEngineerPassport from './MissionEngineerPassport.astro';
-import TerminalHoverSoundInit from './TerminalHoverSoundInit.astro';
 import MissionCaseLog from './MissionCaseLog.astro';
 
 interface Props {
@@ -73,8 +72,6 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
   <MissionMindsetPath title={m.mindset.title} badge={m.mindset.badge} steps={m.mindset.steps} />
 
   <MissionCaseLog lang={lang} caseLog={m.caseLog} portfolioHref={portfolioHref} />
-
-  <TerminalHoverSoundInit selectors=".mc-case-log__row" />
 
   <section class="mc-bridge mc-tier-1 mc-surface mc-module" aria-labelledby="mc-bridge-title">
     <h2 id="mc-bridge-title" class="mc-bridge__title mc-section-title--prose">{m.bridge.title}</h2>

@@ -3,6 +3,7 @@ import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import { PORTFOLIO_PREVIEWS } from '../config/portfolio-previews';
+import { caseSlug } from '../lib/case-slug';
 
 interface Props {
   lang: Lang;
@@ -181,21 +182,6 @@ type ShowcaseCard = {
   status?: 'stabilized' | 'delivery';
   challenges?: Array<{ broken: string; fixed: string }>;
 };
-
-function caseSlug(name: string): string {
-  const lc = name.toLowerCase();
-  if (lc.includes('windowcleaner')) return 'windowcleaner';
-  if (lc.includes('крымресурс') || lc.includes('krymresurs')) return 'krymresurs';
-  if (lc.includes('доставка') || lc.includes('dostavka-zpr') || lc.includes('dostavka')) return 'dostavka-zpr';
-  if (lc.includes('sechat')) return 'sechat';
-  if (lc.includes('gratisiskolan')) return 'gratisiskolan';
-  if (lc.includes('mozgovnet')) return 'mozgovnet';
-  if (lc.includes('verkter')) return 'verkter';
-  return lc
-    .replace(/[^a-z0-9а-яё]+/gi, '-')
-    .replace(/^-|-$/g, '')
-    .slice(0, 48);
-}
 
 function inferStack(nameLc: string, tags: string[], lang: Lang): string {
   const ru = lang === 'ru';

@@ -1,4 +1,5 @@
 import type { Lang } from './cv-data';
+import { buildMissionCaseLogEntries } from '../lib/build-mission-case-log';
 
 export type CaseLogEntry = {
   id: string;
@@ -8,6 +9,8 @@ export type CaseLogEntry = {
   context?: string;
   operation: string;
   stack: string;
+  /** slug иконок (simple-icons), как в tech-roadmap */
+  stackIcons?: string[];
   status: string;
 };
 
@@ -63,7 +66,7 @@ export type MissionControlContent = {
     colStack: string;
     colStatus: string;
     rowAction: string;
-    drumHint: string;
+    drumAriaLabel: string;
     entries: CaseLogEntry[];
   };
   bridge: {
@@ -130,31 +133,31 @@ const ru: MissionControlContent = {
   },
   mindset: {
     title: 'Как я работаю',
-    badge: 'ПРИНЦИП',
+    badge: 'ПОДХОД',
     steps: [
       {
-        phase: '01 · Диагностика',
-        title: 'Сначала контекст, не переписывание',
+        phase: '01 ·',
+        title: 'Погружение, аудит и диалог',
         detail:
-          'Разбираю бизнес-ограничения, узкие места и риски релиза — прежде чем предлагать стек или «большой рефакторинг».',
+          'Вхожу в проект через изучение кода и архитектуры. Даю честный фидбек, соотношу его с вашими ожиданиями и фиксирую цели. Для меня важно сначала выслушать бизнес и заслужить доверие, а не навязывать шаблоны.',
       },
       {
-        phase: '02 · Стабильность',
-        title: 'Предсказуемость важнее хайпа',
+        phase: '02 ·',
+        title: 'Адаптивность под ваш регламент',
         detail:
-          'Релизы, мониторинг и откатные сценарии проектирую так, чтобы команда не боялась выкатывать изменения.',
+          'Если процессов нет — помогу их выстроить и обучить команду. Если у вас уже действует жёсткий регламент, правила версионирования и работы с фичами — бесшовно встроюсь в ваш контур и буду строго следовать вашим стандартам.',
       },
       {
-        phase: '03 · Коммуникация',
-        title: 'Честные оценки и прозрачный процесс',
+        phase: '03 ·',
+        title: 'От простого к сложному',
         detail:
-          'Фиксирую объём, этапы и критерии готовности — без сюрпризов по срокам и скрытых доработок.',
+          'Двигаюсь концептуально ориентированно, не перегружая архитектуру. Сначала стабилизируем базовые узлы и выпускаем главные фичи, а затем плавно развиваем систему. Нахожу наилучший сценарий разработки под конкретный бюджет и масштаб.',
       },
       {
-        phase: '04 · Рост',
-        title: 'Система переживает нагрузку',
+        phase: '04 ·',
+        title: 'Сквозная ответственность за продукт',
         detail:
-          'Закладываю запас по архитектуре и эксплуатации: кеш, очереди, контракты API, наблюдаемость.',
+          'Отвечаю за систему целиком — от чистоты бэкенда до логики интерфейса. Гарантирую Pixel-Perfect соответствие Figma и продумываю поведение UI в краевых состояниях, чтобы бизнес получал готовый, автономный актив.',
       },
     ],
   },
@@ -169,99 +172,8 @@ const ru: MissionControlContent = {
     colStack: 'Стек',
     colStatus: 'Статус',
     rowAction: 'Подробнее',
-    drumHint: 'Список прокручивается по кругу — наведите курсор, чтобы остановить.',
-    entries: [
-      {
-        id: 'ID_01',
-        slug: 'windowcleaner',
-        name: 'windowcleaner.com',
-        context: 'e-commerce · США',
-        operation: 'Magento 1→2, кастомные платежи, релизы под нагрузкой',
-        stack: 'Magento 1/2, PHP, MySQL, Docker',
-        status: 'В проде · 5+ лет',
-      },
-      {
-        id: 'ID_02',
-        slug: 'dostavka-zpr',
-        name: 'dostavka-zpr.ru',
-        context: 'логистика · CDEK',
-        operation: 'Сервис доставки с нуля: расчёты, API, прикладная логика',
-        stack: 'Laravel, PHP, CDEK API',
-        status: 'В проде',
-      },
-      {
-        id: 'ID_03',
-        slug: 'krymresurs',
-        name: 'krymresurs.ru',
-        context: 'корпоративный контур · витрина',
-        operation: 'Документооборот, роли, генерация документов',
-        stack: 'Laravel, PHP, API, интеграции',
-        status: 'В эксплуатации',
-      },
-      {
-        id: 'ID_04',
-        slug: 'gratisiskolan',
-        name: 'gratisiskolan.se',
-        context: 'миграция · Швеция',
-        operation: 'Переход на Magento 2.4, адаптация кастомных модулей',
-        stack: 'Magento 2.4, PHP, custom modules',
-        status: 'Запущен',
-      },
-      {
-        id: 'ID_05',
-        slug: 'sechat',
-        name: 'sechat.ru',
-        context: 'коммуникационный продукт',
-        operation: 'Развитие продукта по задачам заказчика',
-        stack: 'Laravel, WebSockets, Redis',
-        status: 'В развитии',
-      },
-      {
-        id: 'ID_06',
-        slug: 'mozgovnet',
-        name: 'mozgovnet.com',
-        context: 'платежи · легаси',
-        operation: 'Платёжные интеграции и восстановление легаси',
-        stack: 'PHP, API, платежи',
-        status: 'Стабилизирован',
-      },
-      {
-        id: 'ID_07',
-        slug: 'biznesmashin-ru',
-        name: 'biznesmashin.ru',
-        context: 'e-commerce · грузовая техника',
-        operation: 'Интернет-магазин на «1С-Битрикс»: каталог, заказы, сопровождение',
-        stack: '1С-Битрикс, PHP, MySQL',
-        status: 'В проде',
-      },
-      {
-        id: 'ID_08',
-        slug: 'turexpertiza-ru',
-        name: 'turexpertiza.ru',
-        context: 'наука · расчёты',
-        operation: 'Уникальная система подсчёта распределённой звёздности',
-        stack: 'PHP, MySQL, прикладная математика',
-        status: 'В эксплуатации',
-      },
-      {
-        id: 'ID_09',
-        slug: 'store-finaldraft-com',
-        name: 'store.finaldraft.com',
-        context: 'e-commerce · США',
-        operation: 'Поддержка и развитие витрины на Magento',
-        stack: 'Magento, PHP, MySQL',
-        status: 'Долгий контур',
-      },
-      {
-        id: 'ID_10',
-        slug: 'nancysbeauty-com',
-        name: 'nancysbeauty.com',
-        context: 'e-commerce · США',
-        operation: 'Сопровождение витрины и релизы под нагрузкой',
-        stack: 'Magento, PHP, MySQL',
-        status: 'В проде',
-      },
-    ],
+    drumAriaLabel: 'Список проектов: колёсико, перетаскивание или стрелки для прокрутки',
+    entries: buildMissionCaseLogEntries('ru'),
   },
   bridge: {
     title: 'Давайте обсудим ваш проект',
@@ -328,31 +240,31 @@ const en: MissionControlContent = {
   },
   mindset: {
     title: 'How I work',
-    badge: 'PRINCIPLE',
+    badge: 'APPROACH',
     steps: [
       {
-        phase: '01 · Diagnosis',
-        title: 'Context before rewriting',
+        phase: '01 ·',
+        title: 'Immersion, audit, and dialogue',
         detail:
-          'I map business constraints, bottlenecks, and release risks before proposing a stack or a large refactor.',
+          'I start by reading the code and architecture. I give honest feedback, align it with your expectations, and agree on goals. Listening to the business and earning trust comes first — not pushing a template playbook.',
       },
       {
-        phase: '02 · Stability',
-        title: 'Predictability over hype',
+        phase: '02 ·',
+        title: 'Fit your operating rules',
         detail:
-          'Releases, monitoring, and rollback paths are designed so the team is not afraid to ship.',
+          'If you have no process yet, I help shape one and coach the team. If you already run strict versioning, feature flow, and release rules — I plug into your contour and follow your standards without friction.',
       },
       {
-        phase: '03 · Communication',
-        title: 'Honest estimates, clear process',
+        phase: '03 ·',
+        title: 'Simple first, then depth',
         detail:
-          'Scope, milestones, and done criteria are explicit — no surprise deadlines or hidden rework.',
+          'I stay concept-driven and avoid over-engineering early. We stabilize core nodes and ship the main features first, then grow the system step by step. I pick the best delivery path for your budget and scale.',
       },
       {
-        phase: '04 · Growth',
-        title: 'Systems survive load',
+        phase: '04 ·',
+        title: 'End-to-end product ownership',
         detail:
-          'Architecture and ops include cache, queues, API contracts, and observability with headroom.',
+          'I own the system as a whole — from clean backend to interface logic. Pixel-perfect Figma match and thoughtful edge-case UI so the business gets a ready, self-sufficient asset.',
       },
     ],
   },
@@ -367,99 +279,8 @@ const en: MissionControlContent = {
     colStack: 'Stack',
     colStatus: 'Status',
     rowAction: 'Details',
-    drumHint: 'The list scrolls in a loop — hover to pause.',
-    entries: [
-      {
-        id: 'ID_01',
-        slug: 'windowcleaner',
-        name: 'windowcleaner.com',
-        context: 'e-commerce · USA',
-        operation: 'Magento 1→2, custom payments, releases under load',
-        stack: 'Magento 1/2, PHP, MySQL, Docker',
-        status: 'In prod · 5+ yrs',
-      },
-      {
-        id: 'ID_02',
-        slug: 'dostavka-zpr',
-        name: 'dostavka-zpr.ru',
-        context: 'logistics · CDEK',
-        operation: 'Greenfield delivery service: pricing, API, business logic',
-        stack: 'Laravel, PHP, CDEK API',
-        status: 'Live',
-      },
-      {
-        id: 'ID_03',
-        slug: 'krymresurs',
-        name: 'krymresurs.ru',
-        context: 'enterprise · public site',
-        operation: 'Document workflows, roles, document generation',
-        stack: 'Laravel, PHP, API, integrations',
-        status: 'In production',
-      },
-      {
-        id: 'ID_04',
-        slug: 'gratisiskolan',
-        name: 'gratisiskolan.se',
-        context: 'migration · Sweden',
-        operation: 'Magento 2.4 migration, custom module adaptation',
-        stack: 'Magento 2.4, PHP, custom modules',
-        status: 'Launched',
-      },
-      {
-        id: 'ID_05',
-        slug: 'sechat',
-        name: 'sechat.ru',
-        context: 'communication product',
-        operation: 'Product evolution per client roadmap',
-        stack: 'Laravel, WebSockets, Redis',
-        status: 'In progress',
-      },
-      {
-        id: 'ID_06',
-        slug: 'mozgovnet',
-        name: 'mozgovnet.com',
-        context: 'payments · legacy',
-        operation: 'Payment integrations and legacy recovery',
-        stack: 'PHP, API, payments',
-        status: 'Stabilized',
-      },
-      {
-        id: 'ID_07',
-        slug: 'biznesmashin-ru',
-        name: 'biznesmashin.ru',
-        context: 'e-commerce · heavy machinery',
-        operation: 'Bitrix store: catalog, checkout, ongoing support',
-        stack: '1C-Bitrix, PHP, MySQL',
-        status: 'Live',
-      },
-      {
-        id: 'ID_08',
-        slug: 'turexpertiza-ru',
-        name: 'turexpertiza.ru',
-        context: 'science · computation',
-        operation: 'Custom distributed star-rating calculation system',
-        stack: 'PHP, MySQL, applied math',
-        status: 'In production',
-      },
-      {
-        id: 'ID_09',
-        slug: 'store-finaldraft-com',
-        name: 'store.finaldraft.com',
-        context: 'e-commerce · USA',
-        operation: 'Magento storefront support and evolution',
-        stack: 'Magento, PHP, MySQL',
-        status: 'Long-running',
-      },
-      {
-        id: 'ID_10',
-        slug: 'nancysbeauty-com',
-        name: 'nancysbeauty.com',
-        context: 'e-commerce · USA',
-        operation: 'Storefront support and releases under load',
-        stack: 'Magento, PHP, MySQL',
-        status: 'In prod',
-      },
-    ],
+    drumAriaLabel: 'Project list: scroll with wheel, drag, or arrow keys',
+    entries: buildMissionCaseLogEntries('en'),
   },
   bridge: {
     title: "Let's discuss your project",

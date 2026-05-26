@@ -1,6 +1,10 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import type { MissionControlContent } from '../i18n/mission-control-data';
+import MissionCaseLogDrumInit from './MissionCaseLogDrumInit.astro';
+import TerminalHoverSoundInit from './TerminalHoverSoundInit.astro';
+import { techStackIconUrlMuted } from '../config/tech-stack-icons-muted';
+import { resolveCaseStackIcons } from '../lib/resolve-stack-icons';
 
 interface Props {
   lang: Lang;
@@ -10,28 +14,23 @@ interface Props {
 
 const { caseLog, portfolioHref } = Astro.props;
 
-const MAX_ENTRIES = 10;
-const VISIBLE_ROWS = 5;
-const entries = caseLog.entries.slice(0, MAX_ENTRIES);
-const useDrum = entries.length > VISIBLE_ROWS;
-const drumRows = useDrum ? [...entries, ...entries] : entries;
+const VISIBLE_ROWS = 10;
+const entries = caseLog.entries;
+/** Циклическая прокрутка при 6+ кейсах (не зависит от числа видимых строк). */
+const loopScroll = entries.length >= 6;
+const drumRows = loopScroll ? [...entries, ...entries] : entries;
 ---
 
 <section class="mc-case-log mc-surface mc-module mc-tier-2" aria-labelledby="mc-case-log-title">
   <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{caseLog.title}</h2>
   <p class="mc-case-log__intro">{caseLog.intro}</p>
   <p class="mc-case-log__lead">{caseLog.lead}</p>
-  {
-    useDrum ? (
-      <p class="mc-case-log__drum-hint">{caseLog.drumHint}</p>
-    ) : null
-  }
   <div
-    class:list={['mc-case-log__table', useDrum && 'mc-case-log__table--drum']}
+    class:list={['mc-case-log__table', loopScroll && 'mc-case-log__table--drum']}
     role="table"
     data-mc-case-log
-    data-mc-case-drum={useDrum ? 'true' : 'false'}
-    style={useDrum ? `--mc-case-visible: ${VISIBLE_ROWS}; --mc-case-drum-duration: ${entries.length * 5}s` : undefined}
+    data-mc-case-drum={loopScroll ? 'true' : 'false'}
+    style={loopScroll ? `--mc-case-visible: ${VISIBLE_ROWS}` : undefined}
   >
     <div class="mc-case-log__head" role="row">
       <span role="columnheader">{caseLog.colId}</span>
@@ -41,38 +40,88 @@ const drumRows = useDrum ? [...entries, ...entries] : entries;
       <span role="columnheader">{caseLog.colStack}</span>
       <span role="columnheader">{caseLog.colStatus}</span>
     </div>
-    <div class:list={['mc-case-log__body', useDrum && 'mc-case-log__drum-viewport']}>
-      <div class:list={['mc-case-log__drum-track', !useDrum && 'mc-case-log__drum-track--static']}>
-        {
-          drumRows.map((entry, index) => (
-            <a
-              class:list={[
-                'mc-case-log__row',
-                useDrum && index >= entries.length && 'mc-case-log__row--clone',
-              ]}
-              role="row"
-              href={`${portfolioHref}#case-${entry.slug}`}
-              aria-label={`${entry.name} — ${caseLog.rowAction}`}
-              data-mc-case-row
-              tabindex={useDrum && index >= entries.length ? -1 : undefined}
-              aria-hidden={useDrum && index >= entries.length ? 'true' : undefined}
-            >
-              <span class="mc-case-log__id" role="cell">{entry.id}</span>
-              <span class="mc-case-log__name" role="cell">
-                <span class="mc-case-log__name-primary">{entry.name}</span>
-                {entry.context ? <span class="mc-case-log__name-context">{entry.context}</span> : null}
-              </span>
-              <span class="mc-case-log__arrow" aria-hidden="true">→</span>
-              <span class="mc-case-log__op" role="cell">{entry.operation}</span>
-              <span class="mc-case-log__stack" role="cell">{entry.stack}</span>
-              <span class="mc-case-log__status" role="cell">
-                <span class="mc-case-log__status-label">{entry.status}</span>
-                <span class="mc-case-log__status-action">{caseLog.rowAction}</span>
-              </span>
-            </a>
-          ))
-        }
+    <div class="mc-case-log__scroll-shell">
+      <div
+        class:list={['mc-case-log__body', loopScroll && 'mc-case-log__drum-viewport']}
+        {...(loopScroll
+          ? {
+              tabindex: 0,
+              'aria-label': caseLog.drumAriaLabel,
+            }
+          : {})}
+      >
+        <div class:list={['mc-case-log__drum-track', !loopScroll && 'mc-case-log__drum-track--static']}>
+          {
+            drumRows.map((entry, index) => (
+              <a
+                class:list={[
+                  'mc-case-log__row',
+                  loopScroll && index >= entries.length && 'mc-case-log__row--clone',
+                ]}
+                role="row"
+                href={`${portfolioHref}#case-${entry.slug}`}
+                aria-label={`${entry.name} — ${caseLog.rowAction}`}
+                data-mc-case-row
+                tabindex={loopScroll && index >= entries.length ? -1 : undefined}
+                aria-hidden={loopScroll && index >= entries.length ? 'true' : undefined}
+              >
+                <span class="mc-case-log__id" role="cell">{entry.id}</span>
+                <span class="mc-case-log__name" role="cell">
+                  <span class="mc-case-log__name-primary">{entry.name}</span>
+                  {entry.context ? <span class="mc-case-log__name-context">{entry.context}</span> : null}
+                </span>
+                <span class="mc-case-log__arrow" aria-hidden="true">→</span>
+                <span class="mc-case-log__op" role="cell">{entry.operation}</span>
+                <span class="mc-case-log__stack" role="cell">
+                  {
+                    (() => {
+                      const icons = resolveCaseStackIcons(entry.stackIcons, entry.stack);
+                      return (
+                        <>
+                          {icons.length ? (
+                            <span class="mc-case-log__stack-icons" aria-hidden="true">
+                              {icons.map((slug) => (
+                                <img
+                                  class="mc-case-log__stack-icon"
+                                  src={techStackIconUrlMuted(slug)}
+                                  alt=""
+                                  width="16"
+                                  height="16"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ))}
+                            </span>
+                          ) : null}
+                          <span class="mc-case-log__stack-text">{entry.stack}</span>
+                        </>
+                      );
+                    })()
+                  }
+                </span>
+                <span class="mc-case-log__status" role="cell">
+                  <span class="mc-case-log__status-label">{entry.status}</span>
+                  <span class="mc-case-log__status-action">{caseLog.rowAction}</span>
+                </span>
+              </a>
+            ))
+          }
+        </div>
       </div>
+      {
+        loopScroll ? (
+          <div class="mc-case-log__scrollbar" aria-hidden="true">
+            <div class="mc-case-log__scrollbar-track">
+              <div class="mc-case-log__scrollbar-thumb" data-mc-case-thumb />
+            </div>
+          </div>
+        ) : null
+      }
     </div>
   </div>
+  {loopScroll ? <MissionCaseLogDrumInit /> : null}
+  <TerminalHoverSoundInit
+    selectors=".mc-case-log__row:not(.mc-case-log__row--clone)"
+    rootSelector=".mc-case-log"
+  />
 </section>

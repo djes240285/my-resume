@@ -1,18 +1,20 @@
 ---
-/** Короткий hover-тон (как на резюме) для интерактивных строк и ссылок. */
+/** Короткий hover-тон (как на резюме); делегирование — работает при прокрутке списка. */
 interface Props {
   selectors: string;
+  /** Ограничить область (например .mc-case-log) */
+  rootSelector?: string;
 }
 
-const { selectors } = Astro.props;
+const { selectors, rootSelector } = Astro.props;
 ---
 
-<script define:vars={{ selectors }}>
+<script define:vars={{ selectors, rootSelector }}>
   document.addEventListener('DOMContentLoaded', function () {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    var targets = document.querySelectorAll(selectors);
-    if (!targets.length) return;
+    var root = rootSelector ? document.querySelector(rootSelector) : document;
+    if (!root) return;
 
     var AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
@@ -20,6 +22,7 @@ const { selectors } = Astro.props;
     var ctx = new AudioCtx();
     var unlocked = false;
     var lastPlayedAt = 0;
+    var lastRow = null;
 
     function unlockAudioOnce() {
       if (unlocked) return;
@@ -57,8 +60,31 @@ const { selectors } = Astro.props;
       osc.stop(now + 0.075);
     }
 
-    targets.forEach(function (el) {
-      el.addEventListener('pointerenter', playHoverTone, { passive: true });
-    });
+    root.addEventListener(
+      'pointerover',
+      function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var row = t.closest(selectors);
+        if (!row || row === lastRow) return;
+        lastRow = row;
+        playHoverTone();
+      },
+      { passive: true }
+    );
+
+    root.addEventListener(
+      'pointerout',
+      function (e) {
+        var t = e.target;
+        if (!t || !t.closest) return;
+        var row = t.closest(selectors);
+        if (!row) return;
+        var rel = e.relatedTarget;
+        if (rel && row.contains(rel)) return;
+        if (lastRow === row) lastRow = null;
+      },
+      { passive: true }
+    );
   });
 </script>
