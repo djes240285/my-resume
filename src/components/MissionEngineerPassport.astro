@@ -1,12 +1,15 @@
 ---
+import type { Lang } from '../i18n/cv-data';
 import type { MissionEngineerPassport as PassportData } from '../i18n/mission-control-data';
-import { techStackIconUrlMuted } from '../config/tech-stack-icons-muted';
+import { techStackIconUrl } from '../config/tech-stack-icons';
+import { iconsForPassportContour } from '../lib/passport-stack-from-cv';
 
 interface Props {
+  lang: Lang;
   passport: PassportData;
 }
 
-const { passport } = Astro.props;
+const { passport, lang } = Astro.props;
 
 /** Детерминированная «активность» для микро-heatmap (12×4) */
 const activityCells = [
@@ -20,7 +23,7 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
 
 <div class="mc-passport">
   <header class="mc-passport__head">
-    <p class="mc-passport__name">{passport.name}</p>
+    <p class="mc-passport__name retro-heading-soft">{passport.name}</p>
     <p class="mc-passport__role">{passport.role}</p>
   </header>
 
@@ -49,31 +52,34 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
 
   <section class="mc-passport__block" aria-labelledby="mc-passport-stack">
     <h3 id="mc-passport-stack" class="mc-passport__kicker">{passport.stackTitle}</h3>
-    <dl class="mc-passport__dl">
+    <dl class="mc-passport__dl mc-passport__dl--stack">
       {
-        passport.stackGroups.map((row) => (
-          <div class="mc-passport__row">
-            <dt>{row.label}</dt>
-            <dd>
-              {row.icons?.length ? (
-                <span class="mc-passport__stack-icons" aria-hidden="true">
-                  {row.icons.map((slug) => (
-                    <img
-                      class="mc-passport__stack-icon"
-                      src={techStackIconUrlMuted(slug)}
-                      alt=""
-                      width="15"
-                      height="15"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ))}
-                </span>
-              ) : null}
-              <span>{row.value}</span>
-            </dd>
-          </div>
-        ))
+        passport.stackGroups.map((row) => {
+          const icons = iconsForPassportContour(lang, row.contour);
+          return (
+            <div class="mc-passport__row mc-passport__row--stack">
+              <dt>{row.label}</dt>
+              <dd>
+                {icons.length ? (
+                  <span class="mc-passport__stack-icons">
+                    {icons.map((slug) => (
+                      <img
+                        class="mc-passport__stack-icon"
+                        src={techStackIconUrl(slug)}
+                        alt=""
+                        width="20"
+                        height="20"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ))}
+                  </span>
+                ) : null}
+                <span class="sr-only">{row.value}</span>
+              </dd>
+            </div>
+          );
+        })
       }
     </dl>
   </section>

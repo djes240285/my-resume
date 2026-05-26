@@ -125,6 +125,8 @@
         'wheel',
         function (e) {
           if (!drumEnabled() || loopHeight <= 1) return;
+          /* Без Shift колёсико прокручивает страницу — не ловим в ленте при глобальном скролле. */
+          if (!e.shiftKey) return;
           e.preventDefault();
           setOffset(offset + e.deltaY);
           userPause(PAUSE_AFTER_WHEEL_MS);

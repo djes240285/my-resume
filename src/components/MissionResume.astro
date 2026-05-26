@@ -22,7 +22,7 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
 
 <main class="mc-page">
   <header class="mc-hero-primary" aria-labelledby="mc-hero-title">
-    <div class="mc-surface mc-module mc-hero-primary__card">
+    <div class="mc-surface mc-module mc-hero-primary__card reveal-2026" style="--reveal-delay: 0ms">
       <div class="mc-hero-primary__pitch">
         <h1 id="mc-hero-title" class="mc-hero-primary__title mc-hero-primary__title--single">
           {m.hero.headline}
@@ -63,7 +63,7 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
         </div>
 
         <div class="mc-hero-deck__right">
-          <MissionEngineerPassport passport={m.engineerPassport} />
+          <MissionEngineerPassport lang={lang} passport={m.engineerPassport} />
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
 
   <MissionCaseLog lang={lang} caseLog={m.caseLog} portfolioHref={portfolioHref} />
 
-  <section class="mc-bridge mc-tier-1 mc-surface mc-module" aria-labelledby="mc-bridge-title">
+  <section class="mc-bridge mc-tier-1 mc-surface mc-module reveal-2026" style="--reveal-delay: 240ms" aria-labelledby="mc-bridge-title">
     <h2 id="mc-bridge-title" class="mc-bridge__title mc-section-title--prose">{m.bridge.title}</h2>
     <p class="mc-bridge__body">{m.bridge.body}</p>
     <div class="mc-bridge__actions">

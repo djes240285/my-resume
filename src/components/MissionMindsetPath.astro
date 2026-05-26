@@ -1,6 +1,6 @@
 ---
 import type { MissionMindsetStep } from '../i18n/mission-control-data';
-import { techStackIconUrlMuted } from '../config/tech-stack-icons-muted';
+import MissionWaveIndicator from './MissionWaveIndicator.astro';
 
 interface Props {
   title: string;
@@ -11,7 +11,11 @@ interface Props {
 const { title, badge, steps } = Astro.props;
 ---
 
-<section class="mc-mindset mc-surface mc-module mc-tier-2 terminal-module--success-path" aria-labelledby="mc-mindset-title">
+<section
+  class="mc-mindset mc-surface mc-module mc-tier-2 terminal-module--success-path reveal-2026"
+  style="--reveal-delay: 80ms"
+  aria-labelledby="mc-mindset-title"
+>
   <header class="success-path-module__head success-path-module__head--mission">
     <h2 id="mc-mindset-title" class="mc-section-title mc-section-title--prose success-path-module__title">{title}</h2>
     <span class="success-path-module__badge">{badge}</span>
@@ -27,23 +31,9 @@ const { title, badge, steps } = Astro.props;
               <p class="success-path__title">{step.title}</p>
               <p class="success-path__detail">{step.detail}</p>
             </div>
-            {step.toolIcons.length ? (
-              <div class="success-path__aside success-path__aside--tools" aria-hidden="true">
-                <span class="success-path__tools">
-                  {step.toolIcons.map((slug) => (
-                    <img
-                      class="success-path__tool-icon"
-                      src={techStackIconUrlMuted(slug)}
-                      alt=""
-                      width="18"
-                      height="18"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ))}
-                </span>
-              </div>
-            ) : null}
+            <div class="success-path__aside success-path__aside--wave">
+              <MissionWaveIndicator variant={step.indicator} label={step.indicatorLabel} waveIndex={idx} />
+            </div>
           </div>
         </li>
       ))

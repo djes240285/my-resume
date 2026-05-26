@@ -40,6 +40,10 @@ const SIMPLE_ICONS_HEX: Record<string, string> = {
   jira: '0052CC',
   cursor: 'EBECEF',
   claude: 'CC785C',
+  figma: 'F24E1E',
+  tailwindcss: '06B6D4',
+  php: '777BB4',
+  nodedotjs: '339933',
 };
 
 export function techStackIconUrl(slug: string): string {

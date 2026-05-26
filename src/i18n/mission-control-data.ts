@@ -23,17 +23,20 @@ export type PassportMetric = {
 
 export type PassportStackGroup = {
   label: string;
+  /** Для screen readers; в UI показываем только иконки */
   value: string;
-  /** slug иконок (simple-icons), приглушённые — как в CASE_LOG */
-  icons?: string[];
+  contour: 'backend' | 'frontend' | 'ai';
 };
+
+export type MindsetIndicatorVariant = 'audit' | 'regime' | 'scale' | 'e2e';
 
 export type MissionMindsetStep = {
   phase: string;
   title: string;
   detail: string;
-  /** slug иконок (simple-icons), приглушённые — как в CASE_LOG */
-  toolIcons: string[];
+  /** Микро-подпись над волновым индикатором */
+  indicatorLabel: string;
+  indicator: MindsetIndicatorVariant;
 };
 
 export type MissionEngineerPassport = {
@@ -68,7 +71,6 @@ export type MissionControlContent = {
   caseLog: {
     title: string;
     intro: string;
-    lead: string;
     colId: string;
     colTarget: string;
     colOperation: string;
@@ -123,17 +125,17 @@ const ru: MissionControlContent = {
       {
         label: 'Backend',
         value: 'PHP (Laravel, Magento 1/2), Node.js, REST API, SQL',
-        icons: ['php', 'laravel', 'magento', 'nodedotjs', 'mysql'],
+        contour: 'backend',
       },
       {
         label: 'Frontend',
         value: 'Vue.js, React, Blade, Tailwind CSS, Figma (Pixel Perfect)',
-        icons: ['vuedotjs', 'react', 'tailwindcss', 'figma'],
+        contour: 'frontend',
       },
       {
         label: 'AI-Driven',
         value: 'Cursor-агенты, автоматизация процессов, LLM-интеграции',
-        icons: ['cursor', 'claude', 'gitlab'],
+        contour: 'ai',
       },
     ],
     stabilityLabel: 'Стабильность продакшена',
@@ -152,43 +154,47 @@ const ru: MissionControlContent = {
         title: 'Погружение, аудит и диалог',
         detail:
           'Вхожу в проект через изучение кода и архитектуры. Даю честный фидбек, соотношу его с вашими ожиданиями и фиксирую цели. Для меня важно сначала выслушать бизнес и заслужить доверие, а не навязывать шаблоны.',
-        toolIcons: ['git', 'php', 'docker'],
+        indicatorLabel: 'АУДИТ·DIFF',
+        indicator: 'audit',
       },
       {
         phase: '02 ·',
         title: 'Адаптивность под ваш регламент',
         detail:
           'Если процессов нет — помогу их выстроить и обучить команду. Если у вас уже действует жёсткий регламент, правила версионирования и работы с фичами — бесшовно встроюсь в ваш контур и буду строго следовать вашим стандартам.',
-        toolIcons: ['git', 'gitlab', 'jira'],
+        indicatorLabel: 'GIT·FLOW',
+        indicator: 'regime',
       },
       {
         phase: '03 ·',
         title: 'От простого к сложному',
         detail:
           'Двигаюсь концептуально ориентированно, не перегружая архитектуру. Сначала стабилизируем базовые узлы и выпускаем главные фичи, а затем плавно развиваем систему. Нахожу наилучший сценарий разработки под конкретный бюджет и масштаб.',
-        toolIcons: ['docker', 'laravel', 'nginx'],
+        indicatorLabel: 'ITER·SCALE',
+        indicator: 'scale',
       },
       {
         phase: '04 ·',
         title: 'Сквозная ответственность за продукт',
         detail:
           'Отвечаю за систему целиком — от чистоты бэкенда до логики интерфейса. Гарантирую Pixel-Perfect соответствие Figma и продумываю поведение UI в краевых состояниях, чтобы бизнес получал готовый, автономный актив.',
-        toolIcons: ['laravel', 'react', 'figma'],
+        indicatorLabel: 'BE·FE·UI',
+        indicator: 'e2e',
       },
     ],
   },
   caseLog: {
     title: 'Примеры из практики',
     intro:
-      'Ниже — задокументированные операции. Каждый кейс в портфолио содержит разбор, схемы и результаты оптимизации.',
-    lead: 'Клик по строке откроет post-mortem в основном портфолио.',
+      'Сводка коммерческих контуров: проект, scope, стек и статус. Полный разбор с метриками — в портфолио.',
     colId: 'ID',
     colTarget: 'Проект',
     colOperation: 'Что сделано',
     colStack: 'Стек',
     colStatus: 'Статус',
     rowAction: 'Подробнее',
-    drumAriaLabel: 'Список проектов: колёсико, перетаскивание или стрелки для прокрутки',
+    drumAriaLabel:
+      'Список проектов: Shift+колёсико или перетаскивание внутри блока; без Shift страница прокручивается как обычно',
     entries: buildMissionCaseLogEntries('ru'),
   },
   bridge: {
@@ -237,17 +243,17 @@ const en: MissionControlContent = {
       {
         label: 'Backend',
         value: 'PHP (Laravel, Magento 1/2), Node.js, REST API, SQL',
-        icons: ['php', 'laravel', 'magento', 'nodedotjs', 'mysql'],
+        contour: 'backend',
       },
       {
         label: 'Frontend',
         value: 'Vue.js, React, Blade, Tailwind CSS, Figma (pixel-perfect)',
-        icons: ['vuedotjs', 'react', 'tailwindcss', 'figma'],
+        contour: 'frontend',
       },
       {
         label: 'AI-Driven',
         value: 'Cursor agents, workflow automation, LLM integrations',
-        icons: ['cursor', 'claude', 'gitlab'],
+        contour: 'ai',
       },
     ],
     stabilityLabel: 'Production stability',
@@ -266,28 +272,32 @@ const en: MissionControlContent = {
         title: 'Immersion, audit, and dialogue',
         detail:
           'I start by reading the code and architecture. I give honest feedback, align it with your expectations, and agree on goals. Listening to the business and earning trust comes first — not pushing a template playbook.',
-        toolIcons: ['git', 'php', 'docker'],
+        indicatorLabel: 'AUDIT·DIFF',
+        indicator: 'audit',
       },
       {
         phase: '02 ·',
         title: 'Fit your operating rules',
         detail:
           'If you have no process yet, I help shape one and coach the team. If you already run strict versioning, feature flow, and release rules — I plug into your contour and follow your standards without friction.',
-        toolIcons: ['git', 'gitlab', 'jira'],
+        indicatorLabel: 'GIT·FLOW',
+        indicator: 'regime',
       },
       {
         phase: '03 ·',
         title: 'Simple first, then depth',
         detail:
           'I stay concept-driven and avoid over-engineering early. We stabilize core nodes and ship the main features first, then grow the system step by step. I pick the best delivery path for your budget and scale.',
-        toolIcons: ['docker', 'laravel', 'nginx'],
+        indicatorLabel: 'ITER·SCALE',
+        indicator: 'scale',
       },
       {
         phase: '04 ·',
         title: 'End-to-end product ownership',
         detail:
           'I own the system as a whole — from clean backend to interface logic. Pixel-perfect Figma match and thoughtful edge-case UI so the business gets a ready, self-sufficient asset.',
-        toolIcons: ['laravel', 'react', 'figma'],
+        indicatorLabel: 'BE·FE·UI',
+        indicator: 'e2e',
       },
     ],
   },
@@ -302,7 +312,8 @@ const en: MissionControlContent = {
     colStack: 'Stack',
     colStatus: 'Status',
     rowAction: 'Details',
-    drumAriaLabel: 'Project list: scroll with wheel, drag, or arrow keys',
+    drumAriaLabel:
+      'Project list: Shift+wheel or drag inside the block; without Shift the page scrolls normally',
     entries: buildMissionCaseLogEntries('en'),
   },
   bridge: {
