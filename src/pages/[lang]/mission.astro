@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import MissionResume from '../../components/MissionResume.astro';
-import { SUPPORTED_LANGS, getCv, isLang } from '../../i18n/cv-data';
+import { SUPPORTED_LANGS, isLang } from '../../i18n/cv-data';
+import { getMissionControl } from '../../i18n/mission-control-data';
 
 export function getStaticPaths() {
   return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
@@ -13,9 +14,9 @@ if (!isLang(raw)) {
 }
 
 const lang = raw;
-const m = getCv(lang).mission;
+const mc = getMissionControl(lang);
 ---
 
-<SiteLayout lang={lang} title={m.metaTitle} description={m.metaDescription}>
+<SiteLayout lang={lang} title={mc.metaTitle} description={mc.metaDescription}>
   <MissionResume lang={lang} />
 </SiteLayout>

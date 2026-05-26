@@ -1,9 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
-import type { ProjectEntryWithCaseLink } from '../lib/resolve-project-case-links';
-import { PORTFOLIO_PREVIEWS } from '../config/portfolio-previews';
+import { getMissionControl } from '../i18n/mission-control-data';
 import { AVATAR_RETRO_CONCEPT_WEBP, AVATAR_RETRO_CONCEPT } from '../config/avatar-experience';
 
 interface Props {
@@ -12,504 +10,145 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = getCv(lang);
-const projectGroups = await resolveProjectCaseLinks(t.sections.experience.projectGroups);
-
-function normalizeUrl(input: string): string {
-  try {
-    const u = new URL(input);
-    u.hash = '';
-    if (u.pathname !== '/' && u.pathname.endsWith('/')) u.pathname = u.pathname.slice(0, -1);
-    return u.toString();
-  } catch {
-    return input;
-  }
-}
-
-function primaryHref(p: ProjectEntryWithCaseLink): string | undefined {
-  return (
-    p.resolvedLinks?.find((l) => l.show && l.kind !== 'partner')?.href ??
-    p.resolvedLinks?.find((l) => l.show)?.href
-  );
-}
-
-type CaseRow = {
-  name: string;
-  period: string;
-  href?: string;
-  preview?: string;
-  incident: string;
-  action: string;
-  result: string;
-  score: number;
-};
-
-const flat: CaseRow[] = projectGroups.flatMap((g) =>
-  g.projects.map((p) => {
-    const href = primaryHref(p);
-    const preview = href ? PORTFOLIO_PREVIEWS[normalizeUrl(href)]?.[0] : undefined;
-    const nameLc = p.name.toLowerCase();
-    let score = (p.log ? 4 : 0) + (href ? 2 : 0);
-    if (nameLc.includes('windowcleaner')) score += 100;
-    if (nameLc.includes('krymresurs') || nameLc.includes('крымресурс')) score += 95;
-    if (nameLc.includes('dostavka') || nameLc.includes('зпр')) score += 90;
-    if (nameLc.includes('gratisiskolan')) score += 85;
-    if (nameLc.includes('sechat')) score += 80;
-    return {
-      name: p.name,
-      period: g.period,
-      href,
-      preview,
-      incident: p.log?.status ?? p.detail.slice(0, 160),
-      action: p.log?.action ?? p.detail,
-      result: p.log?.result ?? (lang === 'ru' ? 'Стабильный контур и предсказуемые релизы.' : 'Stable contour and predictable releases.'),
-      score,
-    };
-  })
-);
-
-flat.sort((a, b) => b.score - a.score);
-const caseFiles = flat.filter((c) => c.href).slice(0, 3);
-
-const copy =
-  lang === 'ru'
-    ? {
-        brand: 'EZ · SYSTEM RESCUE',
-        pageTitle: 'ИНЖЕНЕРНЫЙ ПУЛЬТ',
-        statusHint: 'По графику МСК — live-статус на классическом резюме',
-        heroTag: '> Стабилизирую системы, к которым другие не хотят прикасаться.',
-        viewPortfolio: 'Кейсы',
-        classicResume: 'Классическое резюме',
-        contact: 'Связаться',
-        linkedinCta: 'LinkedIn',
-        systemCard: 'Состояние системы',
-        opFocus: 'Операционный фокус',
-        currentMode: 'Режим',
-        modeActive: 'ACTIVE',
-        location: 'Локация',
-        timezone: 'Часовой пояс',
-        remote: 'Удалённо · глобально',
-        tz: 'UTC+3 (МСК)',
-        nextSlot: 'Следующий слот',
-        nextSlotVal: 'По запросу · после короткого созвона',
-        statsBar: 'Снимок практики',
-        failuresTitle: 'Сбои, которые чиню',
-        symptoms: 'Симптомы',
-        intervention: 'Вмешательство',
-        caseTitle: 'Кейсы (файлы)',
-        caseFileLabel: 'FILE',
-        openTarget: 'Открыть',
-        success: 'SUCCESS',
-        incident: 'Инцидент',
-        action: 'Действие',
-        result: 'Результат',
-        rescueRole: 'SYSTEM RESCUE · FULLSTACK',
-        techTitle: 'Стек',
-        aiTitle: 'AI-augmented engineering',
-        aiBody:
-          'Cursor, GPT и вспомогательные агенты — для ускорения рутины: черновики кода, ревью диффов, документация и регрессионные сценарии. Архитектурные решения и ответственность за прод остаются за инженером; ИИ не заменяет контроль качества.',
-        approachTitle: 'Подход',
-        processTitle: 'Процесс rescue',
-        clientsTitle: 'Якорные проекты',
-        ctaTitle: 'Соберём устойчивую систему',
-        ctaBtn: 'Начать диалог',
-        footBuilt: 'Статический Astro · Tailwind',
-        footCopy: '©',
-        steps: [
-          { k: '01', title: 'Диагностика', sub: 'Аудит рисков и причина на уровне системы' },
-          { k: '02', title: 'Стабилизация', sub: 'Снять острые блокеры без остановки бизнеса' },
-          { k: '03', title: 'Редизайн', sub: 'Границы модулей, контракты, наблюдаемость' },
-          { k: '04', title: 'Автоматизация', sub: 'CI/CD, тесты, мониторинг, релизная дисциплина' },
-          { k: '05', title: 'Масштабирование', sub: 'Рост нагрузки и функционала без «лотереи»' },
-        ],
-        rows: [
-          {
-            s: 'Легаси-коллапс',
-            i: 'Страх релизов, «замороженные» обновления',
-          },
-          {
-            s: 'Просадка скорости',
-            i: 'Профилирование, кеш, очереди, БД, фронт',
-          },
-          {
-            s: 'Архитектурный хаос',
-            i: 'Модули, стандарты, поэтапный рефакторинг',
-          },
-          {
-            s: 'Интеграции ломаются',
-            i: 'Контракты API, идемпотентность, алерты',
-          },
-          {
-            s: 'Бизнес давит сроками',
-            i: 'Приоритеты, метрики, безопасные инкременты',
-          },
-        ],
-      }
-    : {
-        brand: 'EZ · SYSTEM RESCUE',
-        pageTitle: 'MISSION CONTROL',
-        statusHint: 'MSK schedule — live status on classic resume',
-        heroTag: '> I stabilize systems others avoid touching.',
-        viewPortfolio: 'Case files',
-        classicResume: 'Classic resume',
-        contact: 'Contact',
-        linkedinCta: 'LinkedIn',
-        systemCard: 'System state',
-        opFocus: 'Operational focus',
-        currentMode: 'Current mode',
-        modeActive: 'ACTIVE',
-        location: 'Location',
-        timezone: 'Timezone',
-        remote: 'Remote · global',
-        tz: 'UTC+3 (MSK)',
-        nextSlot: 'Next slot',
-        nextSlotVal: 'On request · after a short intro call',
-        statsBar: 'Practice snapshot',
-        failuresTitle: 'Failures I fix',
-        symptoms: 'Symptoms',
-        intervention: 'Intervention',
-        caseTitle: 'Case files',
-        caseFileLabel: 'FILE',
-        openTarget: 'Open',
-        success: 'SUCCESS',
-        incident: 'Incident',
-        action: 'Action',
-        result: 'Result',
-        rescueRole: 'SYSTEM RESCUE · FULLSTACK',
-        techTitle: 'Core stack',
-        aiTitle: 'AI-augmented engineering',
-        aiBody:
-          'Cursor, GPT, and supporting agents speed up routine: code drafts, diff review, docs, and regression scenarios. Architecture decisions and production accountability stay with the engineer; AI does not replace quality control.',
-        approachTitle: 'Work approach',
-        processTitle: 'Rescue process',
-        clientsTitle: 'Anchored projects',
-        ctaTitle: 'Let’s build something stable',
-        ctaBtn: 'Start a conversation',
-        footBuilt: 'Static Astro · Tailwind',
-        footCopy: '©',
-        steps: [
-          { k: '01', title: 'Diagnose', sub: 'Risk audit and real root-cause clarity' },
-          { k: '02', title: 'Stabilize', sub: 'Remove acute blockers without stopping the business' },
-          { k: '03', title: 'Redesign', sub: 'Module boundaries, contracts, observability' },
-          { k: '04', title: 'Automate', sub: 'CI/CD, tests, monitoring, release discipline' },
-          { k: '05', title: 'Scale', sub: 'Load + features without deploy roulette' },
-        ],
-        rows: [
-          { s: 'Legacy collapse', i: 'Release fear, frozen upgrades' },
-          { s: 'Slow performance', i: 'Profiling, cache, queues, DB, frontend' },
-          { s: 'Architecture chaos', i: 'Modules, standards, phased refactors' },
-          { s: 'Integration failures', i: 'API contracts, idempotency, alerts' },
-          { s: 'Business pressure', i: 'Priorities, metrics, safe increments' },
-        ],
-      };
-
-const opFocusLines = [
-  lang === 'ru' ? 'Легаси и миграции' : 'Legacy & migrations',
-  lang === 'ru' ? 'Стабилизация архитектуры' : 'Architecture stabilization',
-  lang === 'ru' ? 'E-commerce под нагрузкой' : 'E-commerce under load',
-  lang === 'ru' ? 'AI-augmented delivery' : 'AI-augmented delivery',
-];
-
-/** Детерминированные мини-sparkline для метрик (без JS) */
-const sparkPaths = [
-  'M0,10 L6,12 L12,6 L18,11 L24,4 L30,9 L36,5 L42,8 L48,6',
-  'M0,8 L8,11 L16,5 L24,10 L32,3 L40,9 L48,7',
-  'M0,11 L10,7 L20,12 L30,4 L40,10 L48,5',
-];
+const m = getMissionControl(lang);
+const portfolioHref = `/${lang}/portfolio`;
+const resumeHref = `/${lang}/`;
 ---
 
-<main class="mission-page">
-  <div class="mission-page__grid" aria-hidden="true"></div>
-
-  <header class="mission-topbar">
-    <div class="mission-topbar__brand">
-      <span class="mission-topbar__logo">EZ</span>
-      <div>
-        <p class="mission-topbar__title">{copy.brand}</p>
-        <p class="mission-topbar__subtitle">{copy.pageTitle}</p>
-      </div>
+<main class="mc-page">
+  <header class="mc-hero-primary" aria-labelledby="mc-hero-title">
+    <div class="mc-live" role="status">
+      <span class="mc-live__label">{m.liveStatus.label}</span>
+      <span class="mc-live__dot" aria-hidden="true"></span>
+      <span class="mc-live__value">{m.liveStatus.value}</span>
     </div>
-    <div class="mission-topbar__hint">
-      <p class="mission-topbar__hint-text">{copy.statusHint}</p>
+
+    <h1 id="mc-hero-title" class="mc-hero-primary__title">
+      <span class="mc-hero-primary__line">{m.hero.headlineLine1}</span>
+      <span class="mc-hero-primary__line mc-hero-primary__line--accent">{m.hero.headlineLine2}</span>
+    </h1>
+
+    <ul class="mc-hero-primary__subheads">
+      {m.hero.subheadLines.map((line) => <li>{line}</li>)}
+    </ul>
+
+    <div class="mc-hero-primary__bar">
+      <div class="mc-hero-primary__photo">
+        <div class="mission-hero__photo-wrap mc-hero__photo-wrap">
+          <picture>
+            <source type="image/webp" srcset={AVATAR_RETRO_CONCEPT_WEBP} />
+            <img
+              src={AVATAR_RETRO_CONCEPT}
+              alt={m.hero.identityName}
+              class="mission-hero__photo"
+              width={160}
+              height={160}
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
+        </div>
+      </div>
+      <div class="mc-hero-primary__identity">
+        <p class="mc-hero-primary__name">{m.hero.identityName}</p>
+        <p class="mc-hero-primary__role">{m.hero.identityRole}</p>
+        <p class="mc-hero-primary__focus">
+          <span class="mc-hero-primary__focus-k">{m.liveStatus.focusLabel}</span>
+          {m.liveStatus.focusValue}
+        </p>
+      </div>
+      <div class="mc-hero-primary__actions">
+        <a class="mission-btn mission-btn--primary" href={`mailto:${t.contact.emails[0]}`}>{m.cta.email}</a>
+        <a class="mission-btn mission-btn--ghost" href={portfolioHref}>{m.cta.portfolio}</a>
+        <a class="mission-btn mission-btn--ghost" href={resumeHref}>{m.cta.resume}</a>
+        <a
+          class="mission-btn mission-btn--ghost"
+          href={t.contact.linkedinHref}
+          target="_blank"
+          rel="noopener noreferrer">{m.linkedinLabel}</a
+        >
+      </div>
     </div>
   </header>
 
-  <section class="mission-hero mission-grid">
-    <div class="mission-panel mission-hero__left">
-      <div class="mission-hero__photo-wrap">
-        <span class="mission-hero__live" aria-hidden="true">LIVE</span>
-        <picture>
-          <source type="image/webp" srcset={AVATAR_RETRO_CONCEPT_WEBP} />
-          <img src={AVATAR_RETRO_CONCEPT} alt={t.name} class="mission-hero__photo" width={320} height={320} loading="eager" decoding="async" />
-        </picture>
-      </div>
-      <p class="mission-hero__name">{t.name.toUpperCase()}</p>
-      <p class="mission-hero__rescue">{copy.rescueRole}</p>
-      <p class="mission-hero__role">{t.role}</p>
-      <p class="mission-hero__tag">{copy.heroTag}</p>
-      <p class="mission-hero__summary">{t.sections.about.body}</p>
-      <div class="mission-hero__actions">
-        <a class="mission-btn mission-btn--primary" href={`/${lang}/portfolio`}>{copy.viewPortfolio}</a>
-        <a class="mission-btn mission-btn--ghost" href={`/${lang}/`}>{copy.classicResume}</a>
-      </div>
-      <div class="mission-hero__actions mission-hero__actions--row2">
-        <a class="mission-btn mission-btn--ghost" href={`mailto:${t.contact.emails[0]}`}>{copy.contact}</a>
-        <a class="mission-btn mission-btn--ghost" href={t.contact.linkedinHref} target="_blank" rel="noopener noreferrer">{copy.linkedinCta}</a>
-      </div>
-    </div>
+  <blockquote class="mc-narrative mc-tier-2">
+    <p>{m.narrative.body}</p>
+  </blockquote>
 
-    <div class="mission-panel mission-hero__right">
-      <div class="mission-pulse" aria-hidden="true">
-        <svg class="mission-pulse__svg" viewBox="0 0 120 32" preserveAspectRatio="none">
-          <polyline
-            class="mission-pulse__line"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            points="0,20 10,22 18,10 28,24 40,8 52,26 64,12 76,22 88,14 100,20 112,16 120,18"></polyline>
-        </svg>
-      </div>
-      <p class="mission-card__label">{copy.systemCard}</p>
-      <ul class="mission-hud-list">
-        {
-          opFocusLines.map((line) => (
-            <li>
-              <span class="mission-hud-list__tick">✓</span> {line}
-            </li>
-          ))
-        }
-      </ul>
-      <dl class="mission-kv">
-        <div>
-          <dt>{copy.currentMode}</dt>
-          <dd>{copy.modeActive}</dd>
-        </div>
-        <div>
-          <dt>{copy.location}</dt>
-          <dd>{copy.remote}</dd>
-        </div>
-        <div>
-          <dt>{copy.timezone}</dt>
-          <dd>{copy.tz}</dd>
-        </div>
-        <div>
-          <dt>{copy.nextSlot}</dt>
-          <dd>{copy.nextSlotVal}</dd>
-        </div>
-      </dl>
-      <p class="mission-card__label mission-card__label--muted">{copy.opFocus}</p>
-      <ul class="mission-hud-list mission-hud-list--compact">
-        {t.heroHudFacts.map((f) => (
-          <li>
-            <span class="mission-hud-list__key">{f.label}</span>
-            <span class="mission-hud-list__val">{f.value}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+  <section class="mc-mindset mc-tier-2" aria-labelledby="mc-mindset-title">
+    <h2 id="mc-mindset-title" class="mc-section-title">{m.mindset.title}</h2>
+    <ul class="mc-mindset__list">
+      {m.mindset.lines.map((line) => <li>{line}</li>)}
+    </ul>
   </section>
 
-  <section class="mission-stats mission-panel mission-panel--hud" aria-label={copy.statsBar}>
-    <div class="mission-stats__inner">
+  <section class="mc-panel mc-failures mc-tier-2" aria-labelledby="mc-failures">
+    <h2 id="mc-failures" class="mc-section-title">{m.failures.title}</h2>
+    <div class="mc-failures__table" role="table">
+      <div class="mc-failures__head" role="row">
+        <span role="columnheader">{m.failures.colFailure}</span>
+        <span class="mc-failures__head-gap" aria-hidden="true"></span>
+        <span role="columnheader">{m.failures.colResolution}</span>
+      </div>
       {
-        t.coreStats.map((s, i) => (
-          <div class="mission-stat">
-            <svg class="mission-stat__spark" viewBox="0 0 48 14" aria-hidden="true">
-              <path
-                class="mission-stat__spark-path"
-                d={sparkPaths[i % sparkPaths.length]}
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.25"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-            <span class="mission-stat__dot" aria-hidden="true"></span>
-            <p class="mission-stat__val">{s.value}</p>
-            <p class="mission-stat__lbl">{s.label}</p>
+        m.failures.rows.map((row) => (
+          <div class="mc-failures__row" role="row">
+            <span class="mc-failures__failure" role="cell">{row.failure}</span>
+            <span class="mc-failures__arrow" aria-hidden="true">→</span>
+            <span class="mc-failures__resolution" role="cell">{row.resolution}</span>
           </div>
         ))
       }
     </div>
   </section>
 
-  <div class="mission-dash">
-    <div class="mission-dash__main">
-      <section class="mission-panel mission-panel--hud mission-failures">
-        <h2 class="mission-h2">{copy.failuresTitle}</h2>
-        <div class="mission-table" role="table">
-          <div class="mission-table__row mission-table__row--head" role="row">
-            <span role="columnheader">{copy.symptoms}</span>
-            <span class="mission-table__arrow" aria-hidden="true">→</span>
-            <span role="columnheader">{copy.intervention}</span>
-          </div>
-          {
-            copy.rows.map((row) => (
-              <div class="mission-table__row mission-symptom-row" role="row">
-                <span class="mission-table__sym" role="cell">{row.s}</span>
-                <span class="mission-table__arrow mission-table__arrow--row" aria-hidden="true">
-                  →
-                </span>
-                <span class="mission-table__fix" role="cell">{row.i}</span>
-              </div>
-            ))
-          }
-        </div>
-      </section>
-
-      <section class="mission-panel mission-panel--hud mission-cases">
-        <h2 class="mission-h2">{copy.caseTitle}</h2>
-        <div class="mission-case-list">
-          {
-            caseFiles.map((c) => (
-              <article class="mission-case mission-case--file">
-                <div class="mission-case__chrome" aria-hidden="true">
-                  <span class="mission-case__chrome-dots">
-                    <span></span><span></span><span></span>
-                  </span>
-                  <span class="mission-case__chrome-path">
-                    {copy.caseFileLabel}://{c.name.slice(0, 28)}
-                    {c.name.length > 28 ? '…' : ''}
-                  </span>
-                </div>
-                <div class="mission-case__inner">
-                  <div class="mission-case__thumb">
-                    {c.preview ? (
-                      <img src={c.preview} alt="" loading="lazy" decoding="async" width={320} height={180} />
-                    ) : (
-                      <div class="mission-case__thumb-fallback" aria-hidden="true" />
-                    )}
-                  </div>
-                  <div class="mission-case__body">
-                    <div class="mission-case__head">
-                      <h3 class="mission-case__title">{c.name}</h3>
-                      <span class="mission-badge mission-badge--ok">{copy.success}</span>
-                    </div>
-                    <p class="mission-case__period">{c.period}</p>
-                    <dl class="mission-case__dl">
-                      <div>
-                        <dt>{copy.incident}</dt>
-                        <dd>{c.incident}</dd>
-                      </div>
-                      <div>
-                        <dt>{copy.action}</dt>
-                        <dd>{c.action}</dd>
-                      </div>
-                      <div>
-                        <dt>{copy.result}</dt>
-                        <dd>{c.result}</dd>
-                      </div>
-                    </dl>
-                    {c.href ? (
-                      <a class="mission-link" href={c.href} target="_blank" rel="noreferrer noopener">
-                        → {copy.openTarget}
-                      </a>
-                    ) : null}
-                  </div>
-                </div>
-              </article>
-            ))
-          }
-        </div>
-      </section>
-
-      <section class="mission-bottom mission-grid">
-        <div class="mission-panel mission-panel--hud mission-ai">
-          <h2 class="mission-h2">{copy.aiTitle}</h2>
-          <p class="mission-ai__body">{copy.aiBody}</p>
-        </div>
-        <div class="mission-panel mission-panel--hud mission-approach">
-          <h2 class="mission-h2">{copy.approachTitle}</h2>
-          <ul class="mission-approach-list">
-            {
-              t.sections.approach.pillars.map((p) => (
-                <li>
-                  <span class="mission-approach__mark">::</span>
-                  <div>
-                    <p class="mission-approach__title">{p.title}</p>
-                    <p class="mission-approach__body">{p.body}</p>
-                  </div>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-      </section>
-
-      <section class="mission-panel mission-panel--hud mission-process">
-        <h2 class="mission-h2">{copy.processTitle}</h2>
-        <ol class="mission-process__steps">
-          {
-            copy.steps.map((s) => (
-              <li class="mission-step">
-                <span class="mission-step__k">{s.k}</span>
-                <div>
-                  <p class="mission-step__t">{s.title}</p>
-                  <p class="mission-step__s">{s.sub}</p>
-                </div>
-              </li>
-            ))
-          }
-        </ol>
-      </section>
-
-      <section class="mission-panel mission-panel--hud mission-clients">
-        <h2 class="mission-h2">{copy.clientsTitle}</h2>
-        <ul class="mission-client-chips">
-          {
-            caseFiles.map((c) => (
-              <li class="mission-client-chip">{c.name}</li>
-            ))
-          }
-          {
-            t.portfolio.cards.slice(0, 4).map((c) => (
-              <li class="mission-client-chip mission-client-chip--soft">{c.title}</li>
-            ))
-          }
-        </ul>
-      </section>
-
-      <section class="mission-panel mission-panel--hud mission-cta">
-        <h2 class="mission-h2 mission-cta__title">{copy.ctaTitle}</h2>
-        <a class="mission-btn mission-btn--primary mission-cta__btn" href={`mailto:${t.contact.emails[0]}`}>
-          {copy.ctaBtn}
-        </a>
-      </section>
-    </div>
-
-    <aside class="mission-dash__rail mission-panel mission-panel--hud mission-tech-rail" aria-label={copy.techTitle}>
-      <h2 class="mission-h2">{copy.techTitle}</h2>
-      <div class="mission-tech-rail__stack">
-        {
-          t.sections.tech.lanes.map((lane) => (
-            <div class="mission-tech-rail__group">
-              <p class="mission-tech__lane">{lane.title}</p>
-              <ul class="mission-tech-rail__list">
-                {lane.files.slice(0, 8).map((f) => (
-                  <li>
-                    <span class="mission-tech-rail__name">{f.name}</span>
-                    <span class="mission-tech-rail__ext">{f.ext}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        }
+  <section class="mc-case-log mc-tier-2" aria-labelledby="mc-case-log-title">
+    <h2 id="mc-case-log-title" class="mc-section-title">{m.caseLog.title}</h2>
+    <p class="mc-case-log__lead">{m.caseLog.lead}</p>
+    <div class="mc-case-log__table" role="table">
+      <div class="mc-case-log__head" role="row">
+        <span role="columnheader">{m.caseLog.colId}</span>
+        <span role="columnheader">{m.caseLog.colTarget}</span>
+        <span class="mc-case-log__arrow-head" aria-hidden="true">→</span>
+        <span role="columnheader">{m.caseLog.colOperation}</span>
+        <span role="columnheader">{m.caseLog.colStatus}</span>
       </div>
-    </aside>
-  </div>
+      {
+        m.caseLog.entries.map((entry) => (
+          <a
+            class="mc-case-log__row"
+            role="row"
+            href={`${portfolioHref}#case-${entry.slug}`}
+          >
+            <span class="mc-case-log__id" role="cell">{entry.id}</span>
+            <span class="mc-case-log__name" role="cell">{entry.name}</span>
+            <span class="mc-case-log__arrow" aria-hidden="true">→</span>
+            <span class="mc-case-log__op" role="cell">{entry.operation}</span>
+            <span class="mc-case-log__status" role="cell">{entry.status}</span>
+          </a>
+        ))
+      }
+    </div>
+    <p class="mc-case-log__footer">
+      <span class="mc-case-log__prompt" aria-hidden="true">&gt;</span>
+      <a class="mc-case-log__cta" href={portfolioHref}>{m.caseLog.portfolioCta}</a>
+    </p>
+  </section>
 
-  <footer class="mission-footer">
-    <p>
-      <a href={`/${lang}/`} class="mission-footer__link">EZ</a>
-      <span class="mission-footer__sep">·</span>
-      <a href={`mailto:${t.contact.emails[0]}`} class="mission-footer__link">{t.contact.emails[0]}</a>
-      <span class="mission-footer__sep">·</span>
-      <a href={t.contact.linkedinHref} class="mission-footer__link" target="_blank" rel="noreferrer noopener">{t.contact.linkedinLabel}</a>
-    </p>
-    <p class="mission-footer__meta">
-      {copy.footCopy}
-      {new Date().getFullYear()} · {copy.footBuilt}
-    </p>
+  <section class="mc-bridge mc-tier-1" aria-labelledby="mc-bridge-title">
+    <h2 id="mc-bridge-title" class="mc-bridge__title">{m.bridge.title}</h2>
+    <p class="mc-bridge__body">{m.bridge.body}</p>
+    <a class="mission-btn mission-btn--primary mc-bridge__btn" href={portfolioHref}>{m.bridge.cta}</a>
+  </section>
+
+  <footer class="mc-footer mc-tier-3">
+    <p class="mc-ai-line">{m.ai.line}</p>
+    <div class="mission-footer">
+      <p>
+        <a href={resumeHref} class="mission-footer__link">EZ</a>
+        <span class="mission-footer__sep">·</span>
+        <a href={`mailto:${t.contact.emails[0]}`} class="mission-footer__link">{t.contact.emails[0]}</a>
+      </p>
+    </div>
   </footer>
 </main>

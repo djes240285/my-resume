@@ -23,10 +23,12 @@ const labels =
         enterprise: 'Enterprise',
         migrations: 'Миграции',
         process: 'Процесс',
-        cardProblem: 'Проблема',
-        cardAction: 'Что сделал',
-        cardResult: 'Результат',
-        openCase: 'Открыть кейс',
+        layerTarget: 'TARGET',
+        layerDiagnosis: 'DIAGNOSIS',
+        layerOperation: 'OPERATION',
+        layerMetrics: 'METRICS',
+        layerStack: 'STACK_USED',
+        openCase: 'Открыть контур',
         openDetails: 'Развернуть кейс',
         workStyle: 'Инженерный стандарт: от хаоса к системе',
         workStyleLead:
@@ -61,6 +63,29 @@ const labels =
         periodLabel: 'Период',
         prevSlide: 'Назад',
         nextSlide: 'Вперёд',
+        challengeTitle: 'Challenges',
+        challengeBroken: 'Что было сломано',
+        challengeFixed: 'Как починил',
+        badgeRescue: 'Rescue',
+        badgeStabilized: 'Stabilized',
+        badgeAiEnhanced: 'AI Enhanced',
+        ctaLegacy: 'Смотреть rescue-разбор',
+        ctaProfit: 'Смотреть growth-эффект',
+        ctaAi: 'Смотреть AI-контур',
+        ctaLegacyGlyph: '[R]',
+        ctaProfitGlyph: '[G]',
+        ctaAiGlyph: '[AI]',
+        storyLegacy:
+          'Rescue First: показываю, как стабилизирую легаси-контур без остановки бизнеса и лишнего риска.',
+        storyProfit:
+          'Growth First: показываю кейсы, где инженерные решения конвертируются в измеримый коммерческий эффект.',
+        storyAi:
+          'AI First: показываю, где автоматизация и AI-агенты ускоряют delivery без потери качества.',
+        diagnosticTitle: 'ИНИЦИАЛИЗАЦИЯ ДИАГНОСТИКИ СИСТЕМЫ',
+        diagnosticBody:
+          'Если проект вырос, легаси тормозит развитие, а команда боится правок в продакшене — опишите архитектуру или текущие боли. Без созвонов и брифов: точечный технический разбор и варианты стабилизации.',
+        diagnosticCta: 'Отправить симптомы на анализ',
+        postMortemLabel: 'POST-MORTEM',
       }
     : {
         section: 'Site section',
@@ -71,10 +96,12 @@ const labels =
         enterprise: 'Enterprise',
         migrations: 'Migrations',
         process: 'Process',
-        cardProblem: 'Problem',
-        cardAction: 'What I did',
-        cardResult: 'Outcome',
-        openCase: 'Open case',
+        layerTarget: 'TARGET',
+        layerDiagnosis: 'DIAGNOSIS',
+        layerOperation: 'OPERATION',
+        layerMetrics: 'METRICS',
+        layerStack: 'STACK_USED',
+        openCase: 'Open system',
         openDetails: 'View case',
         workStyle: 'Engineering standard: from chaos to system',
         workStyleLead:
@@ -109,22 +136,100 @@ const labels =
         periodLabel: 'Period',
         prevSlide: 'Prev',
         nextSlide: 'Next',
+        challengeTitle: 'Challenges',
+        challengeBroken: 'Broken',
+        challengeFixed: 'Fixed',
+        badgeRescue: 'Rescue',
+        badgeStabilized: 'Stabilized',
+        badgeAiEnhanced: 'AI Enhanced',
+        ctaLegacy: 'View rescue breakdown',
+        ctaProfit: 'View growth impact',
+        ctaAi: 'View AI delivery contour',
+        ctaLegacyGlyph: '[R]',
+        ctaProfitGlyph: '[G]',
+        ctaAiGlyph: '[AI]',
+        storyLegacy:
+          'Rescue First: cases focused on stabilizing legacy systems without business interruption.',
+        storyProfit:
+          'Growth First: cases where engineering decisions translate into measurable business results.',
+        storyAi:
+          'AI First: cases where automation and AI agents accelerate delivery without quality loss.',
+        diagnosticTitle: 'INITIALIZE SYSTEM DIAGNOSTICS',
+        diagnosticBody:
+          'If your system outgrew its architecture, legacy blocks change, and the team fears production edits — send your architecture notes or pain points. No calls or brief forms: a focused technical triage and stabilization options.',
+        diagnosticCta: 'Send symptoms for analysis',
+        postMortemLabel: 'POST-MORTEM',
       };
 
 type ShowcaseCard = {
   title: string;
   tag: string;
+  slug?: string;
   href?: string;
   problem: string;
   action: string;
   result: string;
+  stack?: string;
   tags: string[];
   score: number;
   priority: number;
   hasMedia: boolean;
   mediaSlides: string[];
   ndaSafe?: boolean;
+  rescue?: boolean;
+  aiEnhanced?: boolean;
+  status?: 'stabilized' | 'delivery';
+  challenges?: Array<{ broken: string; fixed: string }>;
 };
+
+function caseSlug(name: string): string {
+  const lc = name.toLowerCase();
+  if (lc.includes('windowcleaner')) return 'windowcleaner';
+  if (lc.includes('крымресурс') || lc.includes('krymresurs')) return 'krymresurs';
+  if (lc.includes('доставка') || lc.includes('dostavka-zpr') || lc.includes('dostavka')) return 'dostavka-zpr';
+  if (lc.includes('sechat')) return 'sechat';
+  if (lc.includes('gratisiskolan')) return 'gratisiskolan';
+  if (lc.includes('mozgovnet')) return 'mozgovnet';
+  if (lc.includes('verkter')) return 'verkter';
+  return lc
+    .replace(/[^a-z0-9а-яё]+/gi, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 48);
+}
+
+function inferStack(nameLc: string, tags: string[], lang: Lang): string {
+  const ru = lang === 'ru';
+  if (nameLc.includes('windowcleaner')) {
+    return 'Magento 1/2, PHP, MySQL, Redis, Docker, CI/CD';
+  }
+  if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
+    return ru
+      ? 'PHP, Laravel, интеграции, документооборот, API'
+      : 'PHP, Laravel, integrations, document workflows, API';
+  }
+  if (nameLc.includes('доставка') || nameLc.includes('dostavka')) {
+    return 'Laravel, PHP, CDEK API, MySQL';
+  }
+  if (nameLc.includes('sechat')) {
+    return ru ? 'Laravel, WebSockets, Redis, очереди, DevOps' : 'Laravel, WebSockets, Redis, queues, DevOps';
+  }
+  if (nameLc.includes('gratisiskolan')) {
+    return 'Magento 2.4, PHP, custom modules';
+  }
+  if (nameLc.includes('verkter')) {
+    return 'Magento 2.4, PWA, React, GraphQL';
+  }
+  if (nameLc.includes('mozgovnet')) {
+    return ru ? 'PHP, платежи, API, легаси' : 'PHP, payments, API, legacy';
+  }
+  if (tags.includes('migrations')) {
+    return ru ? 'Magento, PHP, миграции, CI/CD' : 'Magento, PHP, migrations, CI/CD';
+  }
+  if (tags.includes('ecom')) {
+    return ru ? 'PHP, e-commerce, интеграции' : 'PHP, e-commerce, integrations';
+  }
+  return ru ? 'PHP, Laravel/Magento, API, CI/CD' : 'PHP, Laravel/Magento, API, CI/CD';
+}
 
 function normalizeUrl(input: string): string {
   try {
@@ -135,6 +240,89 @@ function normalizeUrl(input: string): string {
   } catch {
     return input;
   }
+}
+
+function inferChallenges(
+  lang: Lang,
+  nameLc: string,
+  problem: string,
+  action: string
+): Array<{ broken: string; fixed: string }> {
+  if (nameLc.includes('windowcleaner')) {
+    return lang === 'ru'
+      ? [
+          {
+            broken: 'Правки делались напрямую в проде, рос риск деградации производительности.',
+            fixed: 'Введён управляемый контур релизов и стабильная инфраструктура доставки изменений.',
+          },
+          {
+            broken: 'UX-узкие места в каталоге/checkout тормозили коммерческий рост.',
+            fixed: 'Итеративно переработаны ключевые сценарии на основе поведенческой аналитики.',
+          },
+        ]
+      : [
+          {
+            broken: 'Production hot-edits were increasing performance and reliability risk.',
+            fixed: 'A controlled release contour and stable delivery infrastructure were introduced.',
+          },
+          {
+            broken: 'UX bottlenecks in catalog/checkout were limiting commercial growth.',
+            fixed: 'Critical user flows were iteratively improved using behavior analytics.',
+          },
+        ];
+  }
+  if (nameLc.includes('krymresurs') || nameLc.includes('крымресурс')) {
+    return lang === 'ru'
+      ? [
+          {
+            broken: 'Три разрозненных приложения дублировали данные и ломали синхрон процессов.',
+            fixed: 'Собран единый интеграционный контур с синхронизацией и понятной зоной ответственности.',
+          },
+          {
+            broken: 'Высокая доля ручных операций и медленное согласование изменений.',
+            fixed: 'Автоматизированы ключевые потоки и ускорено внедрение нового функционала.',
+          },
+        ]
+      : [
+          {
+            broken: 'Three separate apps duplicated data and broke process consistency.',
+            fixed: 'A unified integration contour with synchronized flows and ownership boundaries was built.',
+          },
+          {
+            broken: 'High manual workload and slow change approvals.',
+            fixed: 'Critical workflows were automated to speed up safe feature rollout.',
+          },
+        ];
+  }
+  return lang === 'ru'
+    ? [
+        { broken: problem, fixed: action },
+        {
+          broken: 'Нужна была прозрачность рисков и предсказуемость релизов.',
+          fixed: 'Добавлен пошаговый delivery-контур с контролем качества и устойчивости.',
+        },
+      ]
+    : [
+        { broken: problem, fixed: action },
+        {
+          broken: 'Risk visibility and predictable releases were missing.',
+          fixed: 'A phased delivery contour with quality and stability controls was introduced.',
+        },
+      ];
+}
+
+function narrativeTitle(
+  card: ShowcaseCard,
+  mode: 'legacy' | 'profit' | 'ai',
+  lang: Lang
+): string {
+  if (mode === 'legacy') {
+    return lang === 'ru' ? `Реанимация системы: ${card.title}` : `System rescue: ${card.title}`;
+  }
+  if (mode === 'profit') {
+    return lang === 'ru' ? `Экономика результата: ${card.title}` : `Result economics: ${card.title}`;
+  }
+  return lang === 'ru' ? `AI-ускорение delivery: ${card.title}` : `AI-accelerated delivery: ${card.title}`;
 }
 
 const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
@@ -341,10 +529,12 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
     return {
       title: project.name,
       tag: group.period,
+      slug: caseSlug(project.name),
       href: link,
       problem,
       action,
       result,
+      stack: inferStack(nameLc, tags, lang),
       tags,
       score,
       priority,
@@ -363,6 +553,7 @@ const fallbackCases = p.cards.map((card) => {
     lang === 'ru'
       ? 'Итог: рабочий контур с прозрачной зоной ответственности и понятным следующим шагом.'
       : 'Outcome: a working delivery contour with clear ownership and next-step visibility.';
+  const slug = caseSlug(card.title);
   return {
     ...card,
     tags,
@@ -370,6 +561,8 @@ const fallbackCases = p.cards.map((card) => {
     action,
     result,
     title: card.title,
+    slug,
+    stack: inferStack(card.title.toLowerCase(), tags, lang),
     score: 0,
     priority: 10,
     hasMedia: false,
@@ -545,10 +738,22 @@ const featuredLayer: ShowcaseCard[] =
         },
       ];
 
-const curatedShowcase = [...featuredLayer, ...showcase];
+const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
+  const titleLc = card.title.toLowerCase();
+  const raw = `${card.title} ${card.problem} ${card.action} ${card.result}`.toLowerCase();
+  const rescue = card.rescue ?? ((card.tags.includes('migrations') || card.tags.includes('enterprise')));
+  const aiEnhanced =
+    card.aiEnhanced ??
+    /(ai|automation|agent|pwa|graphql|xenforo|scandipwa|pixel perfect)/.test(raw);
+  const status = card.status ?? (rescue ? 'stabilized' : 'delivery');
+  const challenges = card.challenges ?? inferChallenges(lang, titleLc, card.problem, card.action);
+  const slug = card.slug ?? caseSlug(card.title);
+  const stack = card.stack ?? inferStack(titleLc, card.tags, lang);
+  return { ...card, slug, stack, rescue, aiEnhanced, status, challenges };
+});
 ---
 
-<main class="portfolio-page mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+<main class="portfolio-page mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6 sm:pt-12" data-portfolio-root data-portfolio-mode="legacy">
   <header class="border-b border-slate-800 pb-8">
     <p class="text-xs font-bold uppercase tracking-widest text-cyan-300">
       {labels.section}
@@ -620,14 +825,35 @@ const curatedShowcase = [...featuredLayer, ...showcase];
       <button class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-case-filter-btn="migrations">{labels.migrations}</button>
       <button class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-case-filter-btn="process">{labels.process}</button>
     </div>
+    <p
+      class="mode-story mt-3 rounded border border-violet-500/30 bg-violet-500/10 px-3 py-2 text-xs leading-relaxed text-violet-100"
+      data-mode-story
+      data-story-legacy={labels.storyLegacy}
+      data-story-profit={labels.storyProfit}
+      data-story-ai={labels.storyAi}
+    >
+      {labels.storyLegacy}
+    </p>
   </section>
 
   <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[3fr_1.2fr]">
     <div class="space-y-4">
       {curatedShowcase.map((card) => (
-        <article class="retro-panel-soft lift-2026 rounded-lg border border-slate-800 bg-slate-900/95 p-5 shadow-sm" data-case-card data-case-tags={card.tags.join(',')} style="order:0">
+        <article
+          id={`case-${card.slug}`}
+          class="case-card case-card--incident retro-panel-soft lift-2026 rounded-lg border border-slate-800 bg-slate-900/95 p-5 shadow-sm"
+          data-case-card
+          data-case-tags={card.tags.join(',')}
+          style="order:0"
+        >
+          <p class="case-incident__label font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
+            {labels.postMortemLabel}
+          </p>
           {card.hasMedia ? (
-            <div class="case-media mb-4" data-case-media>
+            <div class="case-media case-media--mockup mb-4" data-case-media>
+              <div class="case-media__mockup-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
               <img src={card.mediaSlides[0]} alt={card.title} loading="lazy" decoding="async" class="case-media__img" data-case-media-img data-case-media-index="0" />
               <div class="case-media__controls">
                 <button type="button" class="case-media__btn" data-case-media-prev>{labels.prevSlide}</button>
@@ -637,8 +863,32 @@ const curatedShowcase = [...featuredLayer, ...showcase];
             </div>
           ) : null}
           <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-lg font-bold text-slate-100">{card.title}</h3>
+            <h3
+              class="text-lg font-bold text-slate-100"
+              data-case-title
+              data-title-base={card.title}
+              data-title-legacy={narrativeTitle(card, 'legacy', lang)}
+              data-title-profit={narrativeTitle(card, 'profit', lang)}
+              data-title-ai={narrativeTitle(card, 'ai', lang)}
+            >
+              {card.title}
+            </h3>
             <div class="flex flex-wrap items-center gap-2">
+              {card.rescue ? (
+                <span class="rounded border border-fuchsia-400/40 bg-fuchsia-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-fuchsia-200">
+                  {labels.badgeRescue}
+                </span>
+              ) : null}
+              {card.aiEnhanced ? (
+                <span class="rounded border border-cyan-400/40 bg-cyan-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-cyan-200">
+                  {labels.badgeAiEnhanced}
+                </span>
+              ) : null}
+              {card.status === 'stabilized' ? (
+                <span class="rounded border border-emerald-500/35 bg-emerald-500/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+                  {labels.badgeStabilized}
+                </span>
+              ) : null}
               {card.ndaSafe ? (
                 <span class="rounded border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-300">
                   NDA-safe
@@ -649,23 +899,61 @@ const curatedShowcase = [...featuredLayer, ...showcase];
               </span>
             </div>
           </div>
-          <dl class="mt-3 space-y-2 text-sm">
+          <dl class="case-incident__layers mt-3 space-y-3 text-sm">
             <div>
-              <dt class="font-mono text-xs uppercase tracking-wide text-cyan-300">{labels.cardProblem}</dt>
-              <dd class="mt-1 text-slate-300">{card.problem}</dd>
+              <dt class="case-incident__dt">[{labels.layerTarget}]</dt>
+              <dd class="case-incident__dd">
+                {card.title}
+                {card.tag ? <span class="case-incident__meta"> · {card.tag}</span> : null}
+              </dd>
             </div>
             <div>
-              <dt class="font-mono text-xs uppercase tracking-wide text-cyan-300">{labels.cardAction}</dt>
-              <dd class="mt-1 text-slate-300">{card.action}</dd>
+              <dt class="case-incident__dt">[{labels.layerDiagnosis}]</dt>
+              <dd class="case-incident__dd">{card.problem}</dd>
             </div>
             <div>
-              <dt class="font-mono text-xs uppercase tracking-wide text-cyan-300">{labels.cardResult}</dt>
-              <dd class="mt-1 text-slate-400">{card.result}</dd>
+              <dt class="case-incident__dt">[{labels.layerOperation}]</dt>
+              <dd class="case-incident__dd">{card.action}</dd>
+            </div>
+            <div>
+              <dt class="case-incident__dt">[{labels.layerMetrics}]</dt>
+              <dd class="case-incident__dd case-incident__dd--metrics">{card.result}</dd>
+            </div>
+            <div>
+              <dt class="case-incident__dt">[{labels.layerStack}]</dt>
+              <dd class="case-incident__dd case-incident__dd--stack">{card.stack}</dd>
             </div>
           </dl>
+          {card.challenges?.length ? (
+            <div class="mt-4 rounded border border-slate-700/80 bg-slate-950/65 p-3">
+              <p class="font-mono text-[11px] uppercase tracking-wide text-violet-200">{labels.challengeTitle}</p>
+              <ul class="mt-2 space-y-2 text-[12px] text-slate-300">
+                {card.challenges.slice(0, 2).map((c) => (
+                  <li>
+                    <p><span class="text-rose-200">{labels.challengeBroken}:</span> {c.broken}</p>
+                    <p class="mt-0.5"><span class="text-emerald-200">{labels.challengeFixed}:</span> {c.fixed}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {card.href ? (
-            <a href={card.href} target="_blank" rel="noreferrer noopener" class="mt-4 inline-flex rounded border border-cyan-500/35 px-3 py-1.5 text-sm font-semibold text-cyan-200 transition hover:border-cyan-400 hover:bg-cyan-500/10">
-              {labels.openCase}
+            <a
+              href={card.href}
+              target="_blank"
+              rel="noreferrer noopener"
+              class="mt-4 inline-flex rounded border border-orange-400/45 bg-orange-500/10 px-3 py-1.5 text-sm font-semibold text-orange-100 transition hover:border-orange-300 hover:bg-orange-500/20"
+              data-case-cta
+              data-cta-base={labels.openCase}
+              data-cta-legacy={labels.ctaLegacy}
+              data-cta-profit={labels.ctaProfit}
+              data-cta-ai={labels.ctaAi}
+              data-cta-glyph-legacy={labels.ctaLegacyGlyph}
+              data-cta-glyph-profit={labels.ctaProfitGlyph}
+              data-cta-glyph-ai={labels.ctaAiGlyph}
+            >
+              <span class="case-cta__glyph" data-case-cta-glyph>{labels.ctaLegacyGlyph}</span>
+              <span data-case-cta-text>{labels.openCase}</span>
             </a>
           ) : (
             <span class="mt-4 inline-flex rounded border border-slate-700 px-3 py-1.5 text-sm font-semibold text-slate-400">{labels.openDetails}</span>
@@ -711,7 +999,29 @@ const curatedShowcase = [...featuredLayer, ...showcase];
     </aside>
   </section>
 
-  <p class="mt-12 text-center">
+  <section class="portfolio-diagnostic mt-12" aria-labelledby="portfolio-diagnostic-title">
+    <p class="portfolio-diagnostic__prompt font-mono text-sm text-emerald-400/90" aria-hidden="true">
+      &gt; {labels.diagnosticTitle}
+    </p>
+    <h2 id="portfolio-diagnostic-title" class="sr-only">{labels.diagnosticTitle}</h2>
+    <p class="portfolio-diagnostic__body mt-3 max-w-2xl text-pretty text-base leading-relaxed text-slate-300">
+      {labels.diagnosticBody}
+    </p>
+    <a
+      class="portfolio-diagnostic__cta mission-btn mission-btn--primary mt-5"
+      href={`mailto:${cv.contact.emails[0]}?subject=${encodeURIComponent(lang === 'ru' ? 'Симптомы системы — запрос разбора' : 'System symptoms — triage request')}`}
+    >
+      {labels.diagnosticCta}
+    </a>
+  </section>
+
+  <p class="mt-10 text-center">
+    <a
+      href={`/${lang}/mission`}
+      class="mr-4 text-sm text-slate-500 hover:text-cyan-300"
+    >
+      {lang === 'ru' ? '← Инженерный пульт' : '← Mission control'}
+    </a>
     <a
       href={`/${lang}/`}
       class="lift-2026 inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-100 shadow transition hover:border-cyan-400 hover:text-cyan-300"
@@ -759,7 +1069,11 @@ const curatedShowcase = [...featuredLayer, ...showcase];
 
     var modeBtns = Array.from(document.querySelectorAll('[data-layer-mode-btn]'));
     var panels = Array.from(document.querySelectorAll('[data-layer-mode-panel]'));
+    var portfolioRoot = document.querySelector('[data-portfolio-root]');
     function applyMode(mode: 'legacy' | 'profit' | 'ai') {
+      if (portfolioRoot instanceof HTMLElement) {
+        portfolioRoot.setAttribute('data-portfolio-mode', mode);
+      }
       modeBtns.forEach(function (btn) {
         var on = btn.getAttribute('data-layer-mode-btn') === mode;
         btn.classList.toggle('border-cyan-500/45', on);
@@ -776,6 +1090,12 @@ const curatedShowcase = [...featuredLayer, ...showcase];
         var show = panel.getAttribute('data-layer-mode-panel') === mode;
         panel.classList.toggle('hidden', !show);
       });
+      var story = document.querySelector('[data-mode-story]');
+      if (story instanceof HTMLElement) {
+        var key = mode === 'legacy' ? 'data-story-legacy' : mode === 'profit' ? 'data-story-profit' : 'data-story-ai';
+        var nextStory = story.getAttribute(key);
+        if (nextStory) story.textContent = nextStory;
+      }
 
       function getOrder(tags: string[]) {
         if (mode === 'legacy') {
@@ -800,6 +1120,24 @@ const curatedShowcase = [...featuredLayer, ...showcase];
         var tags = (card.getAttribute('data-case-tags') || '').split(',');
         var order = getOrder(tags);
         (card as HTMLElement).style.order = String(order);
+        var title = card.querySelector('[data-case-title]');
+        if (title instanceof HTMLElement) {
+          var attr = mode === 'legacy' ? 'data-title-legacy' : mode === 'profit' ? 'data-title-profit' : 'data-title-ai';
+          var nextTitle = title.getAttribute(attr) || title.getAttribute('data-title-base');
+          if (nextTitle) title.textContent = nextTitle;
+        }
+        var cta = card.querySelector('[data-case-cta]');
+        if (cta instanceof HTMLElement) {
+          var ctaAttr = mode === 'legacy' ? 'data-cta-legacy' : mode === 'profit' ? 'data-cta-profit' : 'data-cta-ai';
+          var nextCta = cta.getAttribute(ctaAttr) || cta.getAttribute('data-cta-base');
+          var ctaText = cta.querySelector('[data-case-cta-text]');
+          if (nextCta && ctaText instanceof HTMLElement) ctaText.textContent = nextCta;
+          var glyphAttr =
+            mode === 'legacy' ? 'data-cta-glyph-legacy' : mode === 'profit' ? 'data-cta-glyph-profit' : 'data-cta-glyph-ai';
+          var nextGlyph = cta.getAttribute(glyphAttr);
+          var ctaGlyph = cta.querySelector('[data-case-cta-glyph]');
+          if (nextGlyph && ctaGlyph instanceof HTMLElement) ctaGlyph.textContent = nextGlyph;
+        }
       });
 
       var preferredFilter: 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process' = 'all';

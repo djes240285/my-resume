@@ -64,9 +64,13 @@ export type CareerMilestone = {
   detail: string;
 };
 
+/** Иконка readout на /mission — линейные SVG, как на концепте пульта */
+export type CoreStatIcon = 'target' | 'layers' | 'platform' | 'trend' | 'junction';
+
 export type CoreStat = {
   label: string;
   value: string;
+  icon: CoreStatIcon;
 };
 
 /** Строка «файла» в блоке техностека (иконка = slug simple-icons v13) */
@@ -161,6 +165,10 @@ export type CVContent = {
   mission: {
     metaTitle: string;
     metaDescription: string;
+    /** Короткая позиционная строка над заголовком режима /mission (смысл — «чем занимаюсь»; на RU лучше по-русски, на EN — как слоган/оффер) */
+    headerBrand: string;
+    /** Заголовок режима в шапке на /mission */
+    headerTitle: string;
   };
   name: string;
   role: string;
@@ -228,23 +236,25 @@ export type CVContent = {
 
 export const cv: Record<Lang, CVContent> = {
   ru: {
-    metaTitle: 'Евгений Жуков — Fullstack / архитектор решений',
+    metaTitle: 'Евгений Жуков — восстановление систем, fullstack и архитектура',
     metaDescription:
-      'Резюме: 15+ лет веб-разработки, e-commerce, корпоративные и высоконагруженные системы, интеграции, архитектура и DevOps.',
+      'Fullstack и архитектор: стабилизирую легаси, миграции Magento, e-commerce и корпоративные контуры под нагрузкой. 15+ лет в продакшене. Симферополь / удалённо.',
     navResume: 'Резюме',
     navPortfolio: 'Портфолио',
     navMission: 'Пульт',
     navStatusMark: 'СТАТУС',
     navStatusReady: 'НА СВЯЗИ',
     mission: {
-      metaTitle: 'Евгений Жуков — System Rescue / инженерный пульт',
+      metaTitle: 'Евгений Жуков — инженерный пульт · восстановление систем',
       metaDescription:
-        'Резюме в формате центра управления: стабилизация легаси, миграции, архитектура, e-commerce и AI-augmented delivery. 15+ лет в продакшене.',
+        'Пульт управления: стабилизация легаси, миграции, архитектура, e-commerce и инженерия с ИИ. Более 15 лет в продакшене.',
+      headerBrand: 'ЕЖ · ИНЖЕНЕРНЫЙ ПУЛЬТ',
+      headerTitle: 'ПУЛЬТ УПРАВЛЕНИЯ',
     },
     name: 'Евгений Жуков',
-    role: 'Fullstack разработчик / архитектор решений',
+    role: 'Fullstack · архитектор · инженер восстановления систем',
     summary:
-      'Инициализация решения: инженерная чистота против хаоса, цифровой актив вместо сметы по часам; три этапа и готовность к масштабированию.',
+      'Стабилизирую системы, к которым другие не подключаются — легаси, миграции, интеграции — когда прод не терпит паузы.',
     contact: {
       emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
@@ -255,9 +265,9 @@ export const cv: Record<Lang, CVContent> = {
       maxTel: '+79781604974',
     },
     heroHudFacts: [
-      { label: 'ФОРМАТ РАБОТЫ', value: 'УДАЛЁННО' },
-      { label: 'ОПЫТ', value: '15+ ЛЕТ' },
-      { label: 'ДОСТУПНОСТЬ', value: 'ОТКРЫТ К ПРОЕКТАМ' },
+      { label: 'ФОКУС', value: 'RESCUE · LEGACY · E-COM' },
+      { label: 'ОПЫТ', value: '15+ ЛЕТ ПРОДАКШЕНА' },
+      { label: 'РЕЖИМ', value: 'УДАЛЁННО · ОТКРЫТ' },
     ],
     heroLiveStatus: {
       available: 'ONLINE · НА СВЯЗИ',
@@ -265,23 +275,25 @@ export const cv: Record<Lang, CVContent> = {
       lunch: 'AWAY · ОБЕД · МОГУ ОТСУТСТВОВАТЬ (12–14 МСК)',
     },
     heroConsole: {
-      title: 'ИНИЦИАЛИЗАЦИЯ РЕШЕНИЯ...',
+      title: 'ЗАПУСК КОНТУРА RESCUE...',
       commands: [
-        'Инженерная чистота против технического хаоса.',
-        'Вместо бесконечной сметы «по часам» я создаю цифровой актив: система, которая работает на вас, а не требует постоянного внимания.',
-        '[01/03] ЛИКВИДАЦИЯ ХАОСА',
-        'Реанимация сложных систем и стабилизация легаси. Превращаю накопленный техдолг в надёжный фундамент, готовый к нагрузкам.',
-        '[02/03] АРХИТЕКТУРА РОСТА',
-        'Масштабируемые платформы и внедрение ИИ-контуров. Использую AI-агентов для кратного ускорения разработки и поставки решений.',
-        '[03/03] ЭКОНОМИКА РЕЗУЛЬТАТА',
-        'Фокус на конверсии и автономности. Вы получаете архитектуру, которая приносит прибыль и не требует переписывания «с нуля» каждый квартал.',
-        '[STATUS] СИСТЕМА ГОТОВА К МАСШТАБИРОВАНИЮ',
+        'Стабилизирую системы, к которым другие не подключаются — когда прод не терпит паузы.',
+        'Не бесконечные часы «на доработки», а цифровой актив: меньше хаоса после каждого релиза.',
+        '[RESCUE] Восстановление',
+        'Симптом: пожары, нестабильные релизы, интеграции «на скотче». Результат: управляемый контур и понятная эксплуатация.',
+        '[ARCHITECTURE] Архитектура',
+        'Платформа под рост: миграции M1→M2, кеш, поиск, API-контракты, наблюдаемость.',
+        '[AUTOMATION] Автоматизация',
+        'CI/CD, очереди, мониторинг — и ИИ там, где ускоряет рутину без потери качества в проде.',
+        '[RELIABILITY] Надёжность',
+        'Релизы, которые не страшно катить; команда и владелец видят, что происходит.',
+        '[STATUS] КОНТУР ГОТОВ К МАСШТАБИРОВАНИЮ',
       ],
     },
     bootLines: [
-      '> инициализация профиля...',
-      '> загрузка опыта...',
-      '> система готова',
+      '> подключение к контуру rescue...',
+      '> загрузка опыта (15+ лет)...',
+      '> готов к разбору задачи',
     ],
     terminalLabels: {
       email: '[EMAIL]',
@@ -291,11 +303,11 @@ export const cv: Record<Lang, CVContent> = {
       linkedin: '[LINKEDIN]',
       about: '[ОБО МНЕ]',
       collaboration: '[ФОРМАТ РАБОТЫ]',
-      help: '[ЧЕМ ПОЛЕЗЕН]',
+      help: '[СБОИ · РЕШЕНИЯ]',
       projects: '[ЖУРНАЛ ПРОЕКТОВ]',
       successPath: '[ПУТЬ РОСТА]',
       successPathBadge: 'УСПЕХ',
-      highlights: '[СИГНАЛЫ СИСТЕМЫ]',
+      highlights: '[СИГНАЛЫ УСТОЙЧИВОСТИ]',
       partnerNote: '[ПАРТНЁР · ВИТРИНА]',
       logStatus: 'СТАТУС',
       logAction: 'КОНТЕКСТ',
@@ -304,7 +316,7 @@ export const cv: Record<Lang, CVContent> = {
       tech: '[ТЕХНОСТЕК]',
       approach: '[ПОДХОД К РАБОТЕ]',
       hudStatus: 'СТАТУС',
-      heroWindowTitle: 'СИСТЕМА: EUGENE_ZHUKOV.EXE',
+      heroWindowTitle: 'СИСТЕМА: RESCUE · EUGENE_ZHUKOV',
       contactWindowTitle: 'СИСТЕМА: КОНТАКТЫ.CFG',
       contactRestore: 'Показать КОНТАКТЫ.CFG',
       contactWinMinAria: 'Свернуть блок контактов',
@@ -323,14 +335,31 @@ export const cv: Record<Lang, CVContent> = {
       partnerShowcaseCta: 'Витрина партнёра',
     },
     coreStats: [
-      { label: 'Лет в продакшене', value: '15+' },
       {
-        label: 'Горизонт ответственности',
-        value: 'продукт · интеграции · эксплуатация',
+        icon: 'target',
+        value: '15+',
+        label: 'лет в продакшене: e-commerce, корпоративные контуры, легаси под нагрузкой',
       },
-      { label: 'Обычные поля', value: 'E-com · корп · NDA' },
-      { label: 'Характерные зоны', value: 'Laravel · новые системы с нуля · редизайн · переход на другие платформы до результата · Magento — легаси и миграции' },
-      { label: 'Стыки с внешним миром', value: 'API · webhooks · банки' },
+      {
+        icon: 'layers',
+        value: '1000+',
+        label: 'задач и релизов — от правки до архитектуры, когда система уже в бою',
+      },
+      {
+        icon: 'platform',
+        value: 'M1→M2',
+        label: 'миграции Magento и витрины без «большого взрыва»',
+      },
+      {
+        icon: 'trend',
+        value: 'API·CI',
+        label: 'интеграции, платежи, банки — контракты, которые держат рост',
+      },
+      {
+        icon: 'junction',
+        value: 'AI+инж.',
+        label: 'ИИ ускоряет рутину; решения в проде — за инженером',
+      },
     ],
     careerPath: [
       {
@@ -371,13 +400,13 @@ export const cv: Record<Lang, CVContent> = {
           'Пишите мне напрямую; юридически проект чаще оформляю через проверенного партнёра — договор и отчётность с его стороны. Процесс и документы согласуем до старта — под вашу модель или через юрлицо партнёра. На инженерной стороне ничего не перекладывается: сроки, коммуникация и результат остаются на мне.',
       },
       help: {
-        title: 'Чем могу быть полезен',
+        title: 'Сбои, которые разбираю',
         items: [
-          'Легаси: вернуть предсказуемость релизов вместо тушения пожаров',
-          'Миграции и смена стека без остановки витрины и критичных процессов',
-          'Профилирование и ускорение — базы, кеш, очереди, поиск, фронтенд',
-          'Архитектура и контракты интеграций, чтобы связки не ломались при росте',
-          'Полный цикл в одних руках: backend, frontend, инфраструктура, CI/CD, мониторинг',
+          'Легаси «живёт на адреналине» → предсказуемые релизы и понятное сопровождение',
+          'Миграция «в один выходные» → поэтапный переход без паузы критичных продаж',
+          'Медленные сценарии и «узкие места» → БД, кеш, очереди, поиск, фронтенд там, где больно',
+          'Интеграции ломаются при росте → архитектура и контракты API, которые переживают изменения',
+          'Размытая ответственность → один контур: backend, frontend, CI/CD, мониторинг',
         ],
       },
       tech: {
@@ -668,21 +697,21 @@ export const cv: Record<Lang, CVContent> = {
         ],
       },
       experience: {
-        title: 'Опыт и проекты',
+        title: 'Кейсы и контуры',
         partnerNote:
-          'Часть публичных сайтов и кейсов представлена на портфолио партнёра — там же описания отраслей и задач клиентов. Ниже — мой вклад в отдельные направления; внутренние системы и NDA-проекты по смыслу совпадают, но без публичной витрины. Годы у блоков — ориентир по основному контуру участия, не обязательно дата последнего релиза.',
+          'Отрасли и публичные кейсы — на витрине партнёра. Здесь — мой слой: задачи, стек, результат. NDA — по смыслу, без детализации. Годы эпох — ориентир участия, не дата последнего коммита.',
         partnerShowcase: {
           href: 'https://webstartechnology.ru/',
           label: 'webstartechnology.ru',
         },
         highlights: [
-          '1000+ проектов и задач разной сложности',
-          'Рост конверсии и скорости работы за счёт архитектурных и продуктовых улучшений',
-          'Успешные миграции Magento и долгосрочная поддержка крупных магазинов',
+          'Контуры, где простой и ошибка бьют по выручке — витрины, кабинеты, внутренние сервисы',
+          'M1→M2 и долгие релизы без остановки бизнеса',
+          'Интеграции с банками и API — с контрактами, которые переживают изменения',
         ],
         selectedTitle: 'Избранные проекты',
         timelineLead:
-          'Ось слева: сверху — настоящее, ниже — более ранние эпохи. При прокрутке усиливается тот срез, который в центре внимания — как слои опыта, уходящие в глубину.',
+          'Сверху — то, что веду сейчас; ниже — эпохи опыта. Прокрутите — в фокусе один слой времени.',
         projectGroups: [
           {
             period: '2022—н.в.',
@@ -691,13 +720,13 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'Доставка-ЗПР (dostavka-zpr.ru)',
                 detail:
-                  'Решение с нуля на Laravel под доставку в контуре CDEK: расчёты, работа с API и прикладная логика. Ранее — домен cdek-zpr.ru; актуальная витрина на dostavka-zpr.ru.',
+                  'Задача: сервис доставки с нуля. Решение: Laravel, API CDEK, расчёты и прикладная логика. Результат: рабочий контур на dostavka-zpr.ru (ранее cdek-zpr.ru).',
                 href: 'https://dostavka-zpr.ru/',
               },
               {
                 name: 'Крымресурс — обучающий центр',
                 detail:
-                  'Внутренний корпоративный пласт: обучение, техники, ответственные лица, менеджеры, документооборот, генерация документов, объединение данных из множества приложений в единую модель. Контур в активной разработке и сопровождении (веду сейчас); публичный krymresurs.ru — витрина, не полное описание системы.',
+                  'Симптом: разрозненные приложения и документооборот. Решение: единая модель обучения, техник, менеджеров и генерации документов. Веду контур сейчас; krymresurs.ru — публичная витрина, не весь объём системы.',
                 href: 'https://krymresurs.ru/',
               },
               {
@@ -780,7 +809,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'windowcleaner.com (США)',
                 detail:
-                  'Около пяти лет плотной работы и развития — ключевой клиент и проект. Путь: Magento 1.4 → сопровождение 1.9 → миграция на Magento 2. В том же бизнес-контуре — отдельные витрины и площадки, в т.ч. связанные с SWCR.',
+                  'Ключевой долгий контур (~5 лет): Magento 1.4 → 1.9 → M2 без «большого взрыва», кастомные платежи и релизы под нагрузкой. В том же бизнесе — связанные витрины, в т.ч. SWCR.',
                 href: 'https://windowcleaner.com/',
               },
               {
@@ -865,38 +894,38 @@ export const cv: Record<Lang, CVContent> = {
         ],
       },
       approach: {
-        title: 'Подход к работе',
+        title: 'Подход rescue',
         pillars: [
           {
-            title: 'Самостоятельность',
-            body: 'Беру ответственность за результат и довожу задачи до конца без лишней бюрократии.',
+            title: 'Диагностика',
+            body: 'Симптомы, ограничения, риски — затем план с этапами, а не «сразу переписать».',
           },
           {
-            title: 'Системное мышление',
-            body: 'Связываю бизнес-цели, архитектуру, код и эксплуатацию в одну картину.',
+            title: 'Прозрачность',
+            body: 'Варианты, сроки и цена компромиссов — до того, как катим в прод.',
           },
           {
-            title: 'Владение проблемой',
-            body: 'Не «отдал таск» — а владею проблемой: ищу корень, предлагаю варианты, внедряю.',
+            title: 'Устойчивость',
+            body: 'После релиза система остаётся понятной: команда, мониторинг, документация по смыслу.',
           },
           {
-            title: 'Непрерывное обучение',
-            body: 'Слежу за стеком и практиками индустрии; быстро осваиваю то, что нужно проекту.',
+            title: 'Владение',
+            body: 'Не «отдал таск» — владею проблемой до измеримого эффекта для бизнеса.',
           },
         ],
       },
     },
     footerQuote:
-      'Цель — не просто написать код, а построить решения, которые двигают бизнес вперёд.',
+      'Не «закрыть тикет», а вернуть контуру предсказуемость — чтобы рост снова был задачей бизнеса, а не пожаротушения.',
     portfolio: {
       metaTitle: 'Портфолио — Евгений Жуков',
       metaDescription:
         'Кейсы: Magento, корпоративные системы, проекты с Веб-Стар Технологии, интеграции и внутренние контуры.',
       title: 'Портфолио',
       lead: 'Публичные витрины и описания кейсов — частично на сайте партнёра; здесь — сжатый обзор и ссылки.',
-      introTitle: 'Про сайт и SEO',
+      introTitle: 'Как устроена витрина',
       introBody:
-        'Этот сайт — лёгкий статический Astro: быстрый HTML, предсказуемая вёрстка, нормальные заголовки h1–h3, meta description, Open Graph и разметка Person (JSON-LD) для поисковиков. У партнёра на webstartechnology.ru — отдельные URL под кейсы, тексты под отрасль и коммерческие блоки: это удобно для SEO под услуги студии. У личного резюме цели другие (поиск по имени и роли), поэтому достаточно чистой структуры, скорости и честных описаний без перегруза ключевыми словами.',
+        'Здесь — быстрое резюме и журнал контуров: имя, роль, кейсы. У партнёра — развёрнутые страницы под отрасли и коммерцию. Оба слоя дополняют друг друга: одно для «кто ты и чем занят», другое — для контекста заказчика и отрасли.',
       cards: [
         {
           title: 'Веб-Стар Технологии — кейсы',
@@ -921,23 +950,25 @@ export const cv: Record<Lang, CVContent> = {
     },
   },
   en: {
-    metaTitle: 'Eugene Zhukov — Fullstack developer / solution architect',
+    metaTitle: 'Eugene Zhukov — system rescue, fullstack & architecture',
     metaDescription:
-      'Resume: 15+ years in web development, e-commerce, enterprise and high-load systems, integrations, architecture and DevOps.',
+      'Fullstack engineer and architect: legacy stabilization, Magento migrations, e-commerce and enterprise systems under load. 15+ years in production. Crimea / remote.',
     navResume: 'Resume',
     navPortfolio: 'Portfolio',
-    navMission: 'Mission',
+    navMission: 'Control',
     navStatusMark: 'STATUS',
     navStatusReady: 'AVAILABLE',
     mission: {
-      metaTitle: 'Eugene Zhukov — System Rescue / mission control',
+      metaTitle: 'Eugene Zhukov — engineering mission control',
       metaDescription:
-        'Resume as a mission-control deck: legacy stabilization, migrations, architecture, e-commerce, and AI-augmented delivery. 15+ years in production.',
+        'Mission control page: legacy stabilization, migrations, architecture, e-commerce, and AI-augmented engineering. 15+ years in production.',
+      headerBrand: 'EZ · MISSION CONTROL',
+      headerTitle: 'ENGINEERING CONTROL',
     },
     name: 'Eugene Zhukov',
-    role: 'Fullstack developer / solution architect',
+    role: 'Fullstack · architect · system rescue engineer',
     summary:
-      'Solution init: engineering clarity vs chaos, a digital asset instead of open-ended hours; three stages and readiness to scale.',
+      'I stabilize systems others won’t touch—legacy, migrations, integrations—when production can’t pause.',
     contact: {
       emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
       linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
@@ -948,9 +979,9 @@ export const cv: Record<Lang, CVContent> = {
       maxTel: '+79781604974',
     },
     heroHudFacts: [
-      { label: 'WORK FORMAT', value: 'REMOTE' },
-      { label: 'EXPERIENCE', value: '15+ YEARS' },
-      { label: 'AVAILABILITY', value: 'OPEN TO PROJECTS' },
+      { label: 'FOCUS', value: 'RESCUE · LEGACY · E-COM' },
+      { label: 'EXPERIENCE', value: '15+ YEARS IN PROD' },
+      { label: 'MODE', value: 'REMOTE · OPEN' },
     ],
     heroLiveStatus: {
       available: 'ONLINE · AVAILABLE',
@@ -958,23 +989,25 @@ export const cv: Record<Lang, CVContent> = {
       lunch: 'AWAY · LUNCH · MAY BE AFK (12–14 MSK)',
     },
     heroConsole: {
-      title: 'INITIALIZING SOLUTION...',
+      title: 'BOOTING RESCUE CONTUR...',
       commands: [
-        'Engineering clarity vs technical chaos.',
-        'Instead of an endless hourly tab, I build a digital asset: a system that works for you—not one that demands constant babysitting.',
-        '[01/03] CHAOS LIQUIDATION',
-        'Reviving complex systems and stabilizing legacy. I turn accumulated tech debt into a load-ready foundation.',
-        '[02/03] GROWTH ARCHITECTURE',
-        'Scalable platforms and AI-augmented delivery. I use AI agents to multiply development and shipping speed.',
-        '[03/03] OUTCOME ECONOMICS',
-        'Focus on conversion and autonomy. You get architecture that drives profit—without a full rewrite every quarter.',
-        '[STATUS] SYSTEM READY TO SCALE',
+        'I stabilize systems others won’t touch—when production can’t pause.',
+        'Not endless “hourly fixes”—a digital asset with less chaos after every release.',
+        '[RESCUE] Recovery',
+        'Symptom: firefighting, brittle releases, taped integrations. Outcome: a controllable system and clear operations.',
+        '[ARCHITECTURE] Architecture',
+        'Platforms that scale: M1→M2, cache, search, API contracts, observability.',
+        '[AUTOMATION] Automation',
+        'CI/CD, queues, monitoring—and AI where it speeds routine without lowering prod quality.',
+        '[RELIABILITY] Reliability',
+        'Releases you can ship; owners and teams see what’s happening.',
+        '[STATUS] CONTUR READY TO SCALE',
       ],
     },
     bootLines: [
-      '> initializing profile...',
-      '> loading experience...',
-      '> system ready',
+      '> connecting to rescue contur...',
+      '> loading experience (15+ years)...',
+      '> ready for triage',
     ],
     terminalLabels: {
       email: '[EMAIL]',
@@ -984,11 +1017,11 @@ export const cv: Record<Lang, CVContent> = {
       linkedin: '[LINKEDIN]',
       about: '[ABOUT ME]',
       collaboration: '[ENGAGEMENT]',
-      help: '[HOW I HELP]',
+      help: '[FAILURES · FIXES]',
       projects: '[PROJECT LOG]',
       successPath: '[SUCCESS PATH]',
       successPathBadge: 'SUCCESS',
-      highlights: '[SYSTEM SIGNALS]',
+      highlights: '[STABILITY SIGNALS]',
       partnerNote: '[PARTNER · SHOWCASE]',
       logStatus: 'STATUS',
       logAction: 'CONTEXT',
@@ -997,7 +1030,7 @@ export const cv: Record<Lang, CVContent> = {
       tech: '[TECH STACK]',
       approach: '[WORK APPROACH]',
       hudStatus: 'STATUS',
-      heroWindowTitle: 'SYSTEM: EUGENE_ZHUKOV.EXE',
+      heroWindowTitle: 'SYSTEM: RESCUE · EUGENE_ZHUKOV',
       contactWindowTitle: 'SYSTEM: CONTACTS.CFG',
       contactRestore: 'Show CONTACTS.CFG',
       contactWinMinAria: 'Minimize contact block',
@@ -1016,18 +1049,31 @@ export const cv: Record<Lang, CVContent> = {
       partnerShowcaseCta: 'Partner showcase',
     },
     coreStats: [
-      { label: 'Years in production', value: '15+' },
       {
-        label: 'Ownership span',
-        value: 'product · integrations · operations',
+        icon: 'target',
+        value: '15+',
+        label: 'years in production: e-commerce, enterprise boundaries, legacy under load',
       },
-      { label: 'Typical contexts', value: 'E-com · enterprise · NDA' },
       {
-        label: 'Where I’m usually brought in',
-        value:
-          'Laravel · greenfield systems · redesign · platform moves through to outcomes · Magento in legacy/migration work',
+        icon: 'layers',
+        value: '1000+',
+        label: 'tasks and releases—from patches to architecture while systems stay live',
       },
-      { label: 'External boundaries', value: 'API · webhooks · banks' },
+      {
+        icon: 'platform',
+        value: 'M1→M2',
+        label: 'Magento migrations and storefronts without a big-bang rewrite',
+      },
+      {
+        icon: 'trend',
+        value: 'API·CI',
+        label: 'integrations, payments, banks—contracts that survive change',
+      },
+      {
+        icon: 'junction',
+        value: 'AI+eng.',
+        label: 'AI speeds routine; production decisions stay with the engineer',
+      },
     ],
     careerPath: [
       {
@@ -1068,13 +1114,13 @@ export const cv: Record<Lang, CVContent> = {
           'Message me directly; contracts and billing usually run through a trusted partner on their side. We align process and paperwork before kickoff—your workflow or the partner’s legal entity. On the engineering side, nothing gets “handed off”: timelines, communication, and delivery stay with me.',
       },
       help: {
-        title: 'How I can help',
+        title: 'Failures I work through',
         items: [
-          'Legacy: bring back predictable releases instead of constant firefighting',
-          'Platform migrations and stack shifts without storefront or critical-flow downtime',
-          'Profiling and speed: databases, cache, queues, search, frontend',
-          'Architecture and integration contracts that don’t snap under growth',
-          'Full cycle in one ownership line: backend, frontend, infra, CI/CD, monitoring',
+          'Legacy running on adrenaline → predictable releases and clear ownership',
+          '“Migrate over one weekend” → phased moves without pausing critical sales',
+          'Slow paths and bottlenecks → DB, cache, queues, search, frontend where it hurts',
+          'Integrations breaking under growth → architecture and API contracts that survive change',
+          'Blurred ownership → one thread: backend, frontend, CI/CD, monitoring',
         ],
       },
       tech: {
@@ -1365,21 +1411,21 @@ export const cv: Record<Lang, CVContent> = {
         ],
       },
       experience: {
-        title: 'Experience & projects',
+        title: 'Cases & systems',
         partnerNote:
-          'Some public sites and case pages appear on my partner’s portfolio—along with industry context and client goals. Below is my contribution; internal systems and NDA work are described at a high level only. Year ranges mark the main engagement window—not necessarily the last shipped release.',
+          'Industries and public cases live on the partner showcase. Here—my layer: tasks, stack, outcome. NDA work at meaning level only. Era years mark participation, not last commit date.',
         partnerShowcase: {
           href: 'https://webstartechnology.ru/',
           label: 'webstartechnology.ru',
         },
         highlights: [
-          '1000+ projects and tasks across a wide complexity range',
-          'Conversion and performance improvements driven by architecture and product changes',
-          'Successful Magento migrations and long-term support for large stores',
+          'Systems where downtime and errors hit revenue—storefronts, portals, internal services',
+          'M1→M2 and long release cycles without stopping the business',
+          'Bank and API integrations with contracts that survive change',
         ],
         selectedTitle: 'Selected projects',
         timelineLead:
-          'The rail on the left: present at the top, deeper past below. As you scroll, the era nearest the focus brightens—layers of experience stacking backward in time.',
+          'Top—what I run now; below—eras of experience. Scroll to bring one time layer into focus.',
         projectGroups: [
           {
             period: '2022—present',
@@ -1388,13 +1434,13 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'Dostavka-ZPR (dostavka-zpr.ru)',
                 detail:
-                  'Greenfield Laravel build for a CDEK-aligned delivery workflow: pricing logic, API usage, and operational flows. Earlier domain cdek-zpr.ru; production site moved to dostavka-zpr.ru.',
+                  'Problem: delivery service from scratch. Solution: Laravel, CDEK API, pricing and ops logic. Outcome: live contur on dostavka-zpr.ru (formerly cdek-zpr.ru).',
                 href: 'https://dostavka-zpr.ru/',
               },
               {
                 name: 'Krymresurs training center',
                 detail:
-                  'Internal corporate stack: training workflows, technicians, responsible officers, managers, document lifecycle, generation, and merging data from many apps into one model. Still in active development and maintenance on my side; krymresurs.ru is the public brochure, not the full system story.',
+                  'Symptom: scattered apps and document chaos. Solution: unified training, technicians, managers, doc generation. I still own the contur; krymresurs.ru is the public face, not the full system.',
                 href: 'https://krymresurs.ru/',
               },
               {
@@ -1477,7 +1523,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'windowcleaner.com (USA)',
                 detail:
-                  'Roughly five years of sustained engineering and growth—a core client and project. Path: Magento 1.4 → 1.9 support → Magento 2 migration. Same business umbrella included additional storefronts and properties (including SWCR-related work).',
+                  'Core long engagement (~5y): Magento 1.4 → 1.9 → M2 without big-bang, custom payments and releases under load. Same business—related storefronts including SWCR.',
                 href: 'https://windowcleaner.com/',
               },
               {
@@ -1562,38 +1608,38 @@ export const cv: Record<Lang, CVContent> = {
         ],
       },
       approach: {
-        title: 'How I work',
+        title: 'Rescue approach',
         pillars: [
           {
-            title: 'Independence',
-            body: 'I own outcomes and push work to completion without unnecessary overhead.',
+            title: 'Triage',
+            body: 'Symptoms, constraints, risks—then a staged plan, not “rewrite everything” by default.',
           },
           {
-            title: 'Systems thinking',
-            body: 'I connect business goals, architecture, code, and operations into one coherent picture.',
+            title: 'Transparency',
+            body: 'Options, timelines, and trade-off cost—before we ship to production.',
           },
           {
-            title: 'Problem ownership',
-            body: 'I don’t “check the box on a ticket”—I own the problem: find root causes, propose options, implement.',
+            title: 'Durability',
+            body: 'After release the system stays understandable: team, monitoring, docs that matter.',
           },
           {
-            title: 'Continuous learning',
-            body: 'I keep up with the stack and industry practices; I ramp quickly on what the project needs.',
+            title: 'Ownership',
+            body: 'Not “ticket closed”—I own the problem until the business sees the effect.',
           },
         ],
       },
     },
     footerQuote:
-      'The goal is not just to write code, but to build solutions that drive business forward.',
+      'Not “close the ticket”—restore predictability so growth is the business job again, not firefighting.',
     portfolio: {
       metaTitle: 'Portfolio — Eugene Zhukov',
       metaDescription:
         'Cases: Magento, enterprise systems, WebStar Technology projects, integrations and internal platforms.',
       title: 'Portfolio',
       lead: 'Public case pages partly live on the partner site; this page is a compact map with links.',
-      introTitle: 'This site and SEO',
+      introTitle: 'How the showcase is split',
       introBody:
-        'This is a lightweight static Astro site: fast HTML, predictable headings (h1–h3), meta descriptions, Open Graph, and Person JSON-LD. The partner site uses dedicated URLs per case and service-oriented copy—great for local commercial SEO. A personal resume targets different queries (name + role), so clean structure, speed, and accurate copy beat keyword stuffing.',
+        'Here—a fast resume and project log: name, role, cases. On the partner site—longer industry and commercial pages. Two layers, one story: who you are vs. client context.',
       cards: [
         {
           title: 'WebStar Technology — case hub',
