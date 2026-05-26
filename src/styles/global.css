@@ -4305,6 +4305,65 @@ html.audience-mode-pending [data-audience-approach-body] {
   margin-bottom: 0.2rem;
 }
 
+.mc-ops-metrics {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(2, 6, 23, 0.5);
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+.mc-ops-metrics__title {
+  margin: 0 0 0.35rem;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #64748b;
+}
+
+.mc-ops-metrics__comment {
+  margin: 0 0 0.55rem;
+  font-size: 0.68rem;
+  color: #475569;
+}
+
+.mc-ops-metrics__list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mc-ops-metrics__row {
+  display: grid;
+  grid-template-columns: minmax(0, 9.5rem) minmax(0, 1fr);
+  gap: 0.35rem 0.65rem;
+  align-items: baseline;
+}
+
+.mc-ops-metrics__row dt {
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #38bdf8;
+}
+
+.mc-ops-metrics__row dd {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+
+@media (max-width: 480px) {
+  .mc-ops-metrics__row {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
 .mc-hero-primary__actions {
   display: flex;
   flex-wrap: wrap;
@@ -4386,20 +4445,28 @@ html.audience-mode-pending [data-audience-approach-body] {
   border-radius: 4px;
 }
 
-/* Narrative */
-.mc-narrative {
-  margin: 0;
-  padding: 1.25rem 1.35rem;
-  max-width: none;
+.mc-failures__warning {
+  margin: 0 0 0.5rem;
 }
 
-.mc-narrative p {
-  margin: 0;
-  font-size: var(--mc-body-emphasis);
-  font-weight: 500;
-  line-height: 1.6;
-  color: #cbd5e1;
+.mc-failures__warning-tag {
+  display: inline-block;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #fbbf24;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+}
+
+.mc-failures__preface {
+  margin: 0 0 1rem;
+  max-width: 52rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #7dd3fc;
   text-wrap: pretty;
+  opacity: 0.88;
 }
 
 /* Mindset */
@@ -4562,7 +4629,8 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-case-log__row:hover {
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(56, 189, 248, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.14);
 }
 
 .mc-case-log__id {
@@ -4589,33 +4657,48 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-case-log__status {
+  position: relative;
+  text-align: right;
+  min-height: 1.15em;
+}
+
+.mc-case-log__status-label {
+  display: block;
   color: #5eead4;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-align: right;
   text-shadow: 0 0 14px rgba(94, 234, 212, 0.35);
-  text-wrap: balance;
+  transition: opacity 0.15s ease;
 }
 
-.mc-case-log__footer {
-  margin: 0.85rem 0 0;
-  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
-  font-size: 0.8125rem;
-}
-
-.mc-case-log__prompt {
-  color: #4ade80;
-  margin-right: 0.35rem;
-}
-
-.mc-case-log__cta {
+.mc-case-log__status-action {
+  position: absolute;
+  inset: 0 0 auto auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   color: #38bdf8;
-  text-decoration: none;
+  opacity: 0;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+  transition: opacity 0.15s ease;
+  pointer-events: none;
 }
 
-.mc-case-log__cta:hover {
-  color: #7dd3fc;
+.mc-case-log__row:hover .mc-case-log__status-label {
+  opacity: 0;
+}
+
+.mc-case-log__row:hover .mc-case-log__status-action {
+  opacity: 1;
+}
+
+.mc-case-log__row:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.55);
+  outline-offset: -2px;
 }
 
 @media (max-width: 720px) {
@@ -4660,8 +4743,31 @@ html.audience-mode-pending [data-audience-approach-body] {
   color: #94a3b8;
 }
 
-.mc-bridge__btn {
+.mc-bridge__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.mc-bridge__btn,
+.mc-bridge__btn-secondary {
   display: inline-flex;
+}
+
+.mc-bridge .mission-btn--primary {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 52%, #cbd5e1 100%);
+  color: #0f172a;
+  box-shadow:
+    0 0 28px rgba(148, 163, 184, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.mc-bridge .mission-btn--primary:hover {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  color: #020617;
 }
 
 /* Portfolio post-mortem cards */

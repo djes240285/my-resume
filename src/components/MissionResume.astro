@@ -14,6 +14,7 @@ const m = getMissionControl(lang);
 const portfolioHref = `/${lang}/portfolio`;
 const resumeHref = `/${lang}/`;
 const TELEGRAM_URL = 'https://t.me/DJES240285';
+const auditMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponent(m.bridge.mailtoSubject)}`;
 ---
 
 <main class="mc-page">
@@ -43,6 +44,21 @@ const TELEGRAM_URL = 'https://t.me/DJES240285';
             <span class="mc-hero-primary__focus-k">{m.liveStatus.focusLabel}</span>
             {m.liveStatus.focusValue}
           </p>
+
+          <div class="mc-ops-metrics" aria-labelledby="mc-ops-metrics-title">
+            <p id="mc-ops-metrics-title" class="mc-ops-metrics__title">{m.operationalMetrics.title}</p>
+            <p class="mc-ops-metrics__comment">{m.operationalMetrics.comment}</p>
+            <dl class="mc-ops-metrics__list">
+              {
+                m.operationalMetrics.lines.map((line) => (
+                  <div class="mc-ops-metrics__row">
+                    <dt>{line.key}</dt>
+                    <dd>{line.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
         </div>
       </div>
 
@@ -73,10 +89,6 @@ const TELEGRAM_URL = 'https://t.me/DJES240285';
     </div>
   </header>
 
-  <blockquote class="mc-narrative mc-surface mc-module mc-tier-2">
-    <p>{m.narrative.body}</p>
-  </blockquote>
-
   <section class="mc-mindset mc-surface mc-module mc-tier-2" aria-labelledby="mc-mindset-title">
     <h2 id="mc-mindset-title" class="mc-section-title">{m.mindset.title}</h2>
     <ul class="mc-mindset__list">
@@ -86,6 +98,10 @@ const TELEGRAM_URL = 'https://t.me/DJES240285';
 
   <section class="mc-failures mc-surface mc-module mc-tier-2" aria-labelledby="mc-failures">
     <h2 id="mc-failures" class="mc-section-title">{m.failures.title}</h2>
+    <p class="mc-failures__warning" role="note">
+      <span class="mc-failures__warning-tag">{m.failures.warningTag}</span>
+    </p>
+    <p class="mc-failures__preface">{m.failures.preface}</p>
     <div class="mc-failures__table" role="table">
       <div class="mc-failures__head" role="row">
         <span role="columnheader">{m.failures.colFailure}</span>
@@ -121,26 +137,33 @@ const TELEGRAM_URL = 'https://t.me/DJES240285';
             class="mc-case-log__row"
             role="row"
             href={`${portfolioHref}#case-${entry.slug}`}
+            aria-label={`${entry.name} — ${m.caseLog.rowAction}`}
           >
             <span class="mc-case-log__id" role="cell">{entry.id}</span>
             <span class="mc-case-log__name" role="cell">{entry.name}</span>
             <span class="mc-case-log__arrow" aria-hidden="true">→</span>
             <span class="mc-case-log__op" role="cell">{entry.operation}</span>
-            <span class="mc-case-log__status" role="cell">{entry.status}</span>
+            <span class="mc-case-log__status" role="cell">
+              <span class="mc-case-log__status-label">{entry.status}</span>
+              <span class="mc-case-log__status-action">{m.caseLog.rowAction}</span>
+            </span>
           </a>
         ))
       }
     </div>
-    <p class="mc-case-log__footer">
-      <span class="mc-case-log__prompt" aria-hidden="true">&gt;</span>
-      <a class="mc-case-log__cta" href={portfolioHref}>{m.caseLog.portfolioCta}</a>
-    </p>
   </section>
 
   <section class="mc-bridge mc-tier-1 mc-surface mc-module" aria-labelledby="mc-bridge-title">
     <h2 id="mc-bridge-title" class="mc-bridge__title">{m.bridge.title}</h2>
     <p class="mc-bridge__body">{m.bridge.body}</p>
-    <a class="mission-btn mission-btn--primary mc-bridge__btn" href={portfolioHref}>{m.bridge.cta}</a>
+    <div class="mc-bridge__actions">
+      <a class="mission-btn mission-btn--primary mission-btn--glow mc-bridge__btn" href={auditMailHref}>
+        {m.bridge.cta}
+      </a>
+      <a class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+        {m.cta.telegram}
+      </a>
+    </div>
   </section>
 
   <footer class="mc-footer mc-tier-3">

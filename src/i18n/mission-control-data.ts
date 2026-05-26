@@ -28,8 +28,10 @@ export type MissionControlContent = {
     focusLabel: string;
     focusValue: string;
   };
-  narrative: {
-    body: string;
+  operationalMetrics: {
+    title: string;
+    comment: string;
+    lines: { key: string; value: string }[];
   };
   mindset: {
     title: string;
@@ -37,6 +39,8 @@ export type MissionControlContent = {
   };
   failures: {
     title: string;
+    warningTag: string;
+    preface: string;
     colFailure: string;
     colResolution: string;
     rows: MissionFailurePair[];
@@ -48,13 +52,14 @@ export type MissionControlContent = {
     colTarget: string;
     colOperation: string;
     colStatus: string;
+    rowAction: string;
     entries: CaseLogEntry[];
-    portfolioCta: string;
   };
   bridge: {
     title: string;
     body: string;
     cta: string;
+    mailtoSubject: string;
   };
   ai: {
     line: string;
@@ -91,9 +96,23 @@ const ru: MissionControlContent = {
     focusLabel: 'Текущий фокус',
     focusValue: 'ИИ-ускоренная инфраструктура и восстановление легаси',
   },
-  narrative: {
-    body:
-      'Когда релиз нельзя откатить, а бизнес уже зависит от системы, важны не модные технологии, а инженерная устойчивость: диагностика, предсказуемые релизы и контур, который выдержит рост.',
+  operationalMetrics: {
+    title: '[OPERATIONAL_METRICS]',
+    comment: '// ТЕКУЩИЕ ПАРАМЕТРЫ ПРИЕМА:',
+    lines: [
+      {
+        key: '[ДОСТУПНОСТЬ]',
+        value: '1 масштабный проект или архитектурный консалтинг',
+      },
+      {
+        key: '[МАСШТАБ СИСТЕМ]',
+        value: 'Высокая нагрузка, базы >100GB, e-com с оборотом Enterprise',
+      },
+      {
+        key: '[БЕЗОПАСНОСТЬ]',
+        value: 'Работа в контуре NDA / готовность к сложным легаси-миграциям',
+      },
+    ],
   },
   mindset: {
     title: 'ИНЖЕНЕРНЫЙ ПОДХОД',
@@ -106,6 +125,9 @@ const ru: MissionControlContent = {
   },
   failures: {
     title: 'КРИТИЧЕСКИЕ СЦЕНАРИИ И УСТРАНЕНИЕ СБОЕВ',
+    warningTag: '[WARNING: CRITICAL_ZONE_ONLY]',
+    preface:
+      'Когда релиз нельзя откатить, а бизнес уже зависит от системы, важны не модные технологии, а инженерная устойчивость: диагностика, предсказуемые релизы и контур, который выдержит рост.',
     colFailure: 'Сбой',
     colResolution: 'Решение',
     rows: [
@@ -117,11 +139,12 @@ const ru: MissionControlContent = {
   },
   caseLog: {
     title: 'ДЕРЕВО ИНЦИДЕНТОВ (CASE_LOG)',
-    lead: 'Задокументированные операции — краткий индекс. Детали и разборы — в полном логе.',
+    lead: 'Индекс задокументированных операций — клик по строке открывает post-mortem в полном логе.',
     colId: 'ID',
     colTarget: 'Объект',
     colOperation: 'Операция',
     colStatus: 'Статус',
+    rowAction: '[VIEW_LOG_]',
     entries: [
       {
         id: 'ID_01',
@@ -145,12 +168,13 @@ const ru: MissionControlContent = {
         status: 'ШТАТНО · В КОНТУРЕ',
       },
     ],
-    portfolioCta: 'Смотреть полный дебаг-лог всех кейсов (портфолио)',
   },
   bridge: {
-    title: 'ВЕРИФИКАЦИЯ РЕЗУЛЬТАТОВ (INCIDENT POST-MORTEM)',
-    body: 'Объективный технический разбор: как принципы выдерживают боевую нагрузку — post-mortem по каждому контуру.',
-    cta: 'Открыть логи проектов',
+    title: 'ИНИЦИАЛИЗАЦИЯ ВЗАИМОДЕЙСТВИЯ (ЗАПРОС НА АУДИТ)',
+    body:
+      'Если ваш контур перегружен, легаси тормозит бизнес, а команда боится релизов — опишите симптомы. Проведу экспресс-диагностику архитектуры без вмешательства в продакшен.',
+    cta: 'ОТПРАВИТЬ СИМПТОМЫ СИСТЕМЫ',
+    mailtoSubject: 'Симптомы системы — запрос на аудит',
   },
   ai: {
     line: 'ИИ ускоряет анализ и поставку; архитектура и ответственность за прод остаются за инженером.',
@@ -187,9 +211,23 @@ const en: MissionControlContent = {
     focusLabel: 'Current focus',
     focusValue: 'AI-augmented infrastructure and legacy recovery',
   },
-  narrative: {
-    body:
-      'When a release cannot be rolled back and the business already depends on the system, trendy stacks matter less than engineering resilience: diagnosis, predictable releases, and a system that survives growth.',
+  operationalMetrics: {
+    title: '[OPERATIONAL_METRICS]',
+    comment: '// CURRENT INTAKE PARAMETERS:',
+    lines: [
+      {
+        key: '[AVAILABILITY]',
+        value: 'One major project or architecture consulting engagement',
+      },
+      {
+        key: '[SYSTEM SCALE]',
+        value: 'High load, DBs >100GB, enterprise-grade e-commerce',
+      },
+      {
+        key: '[SECURITY]',
+        value: 'NDA-bound work / complex legacy migrations accepted',
+      },
+    ],
   },
   mindset: {
     title: 'ENGINEERING MINDSET',
@@ -202,6 +240,9 @@ const en: MissionControlContent = {
   },
   failures: {
     title: 'CRITICAL SCENARIOS & FAILURE REMEDIATION',
+    warningTag: '[WARNING: CRITICAL_ZONE_ONLY]',
+    preface:
+      'When a release cannot be rolled back and the business already depends on the system, trendy stacks matter less than engineering resilience: diagnosis, predictable releases, and a system that survives growth.',
     colFailure: 'Failure',
     colResolution: 'Resolution',
     rows: [
@@ -213,11 +254,12 @@ const en: MissionControlContent = {
   },
   caseLog: {
     title: 'INCIDENT TREE (CASE_LOG)',
-    lead: 'Documented operations — index only. Full post-mortems live in the debug log.',
+    lead: 'Documented operations index — click a row to open the post-mortem in the full log.',
     colId: 'ID',
     colTarget: 'Target',
     colOperation: 'Operation',
     colStatus: 'Status',
+    rowAction: '[VIEW_LOG_]',
     entries: [
       {
         id: 'ID_01',
@@ -241,12 +283,13 @@ const en: MissionControlContent = {
         status: 'OPERATIONAL',
       },
     ],
-    portfolioCta: 'View full debug log of all cases (portfolio)',
   },
   bridge: {
-    title: 'RESULTS VERIFICATION (INCIDENT POST-MORTEM)',
-    body: 'Objective technical analysis: how these principles hold under production load — post-mortem per system.',
-    cta: 'Open project logs',
+    title: 'ENGAGEMENT INIT (AUDIT REQUEST)',
+    body:
+      'If your system is overloaded, legacy is blocking the business, and the team fears releases — describe the symptoms. I will run a rapid architecture triage without touching production.',
+    cta: 'SUBMIT SYSTEM SYMPTOMS',
+    mailtoSubject: 'System symptoms — audit request',
   },
   ai: {
     line: 'AI speeds analysis and delivery; architecture and production accountability stay with the engineer.',
