@@ -1137,7 +1137,34 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
         applyMode((btn.getAttribute('data-layer-mode-btn') || 'legacy') as 'legacy' | 'profit' | 'ai');
       });
     });
+
+    /** Deep-link #case-*: режим legacy включает фильтр migrations и скрывает часть карточек. */
+    function scrollToCaseHash() {
+      var raw = window.location.hash;
+      if (!raw || raw.charAt(0) !== '#') return;
+      var id = raw.slice(1);
+      if (id.indexOf('case-') !== 0) return;
+      var el = document.getElementById(id);
+      if (!(el instanceof HTMLElement) || !el.classList.contains('case-card')) return;
+
+      applyFilter('all');
+      el.classList.remove('case-card--hidden');
+
+      var reduce =
+        typeof window.matchMedia !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function go() {
+        el.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+      }
+      requestAnimationFrame(function () {
+        requestAnimationFrame(go);
+      });
+    }
+
     applyMode('legacy');
+    scrollToCaseHash();
+    window.addEventListener('hashchange', scrollToCaseHash);
 
     var mediaBlocks = Array.from(document.querySelectorAll('[data-case-media]'));
     mediaBlocks.forEach(function (block) {

@@ -5058,6 +5058,29 @@ html.audience-mode-pending [data-audience-approach-body] {
   padding: 1.25rem 1.35rem;
 }
 
+.mc-page .mc-mindset.terminal-module--success-path .success-path__phase {
+  font-size: 0.78rem;
+}
+
+.mc-page .mc-mindset.terminal-module--success-path .success-path__title {
+  font-size: clamp(0.95rem, 2.15vw, 1.08rem);
+  margin-top: 0.28rem;
+}
+
+.mc-page .mc-mindset.terminal-module--success-path .success-path__detail {
+  font-size: 0.875rem;
+  line-height: 1.62;
+  color: #b8c5d6;
+}
+
+.mc-page .mc-mindset.terminal-module--success-path .success-path__status-chip {
+  font-size: 0.58rem;
+}
+
+.mc-page .mc-mindset.terminal-module--success-path .success-path__item {
+  padding-bottom: 1.45rem;
+}
+
 .mc-case-log__arrow {
   color: #475569;
   text-align: center;

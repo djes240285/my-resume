@@ -135,6 +135,8 @@
       viewport.addEventListener('pointerdown', function (e) {
         if (!drumEnabled()) return;
         if (e.button !== 0) return;
+        /* Клик по строке — переход в портфолио; не перехватываем pointer (иначе <a> не срабатывает). */
+        if (e.target.closest('[data-mc-case-row]')) return;
         dragging = true;
         dragMoved = false;
         dragStartY = e.clientY;
