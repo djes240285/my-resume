@@ -22,12 +22,13 @@ const drumRows = loopScroll ? [...entries, ...entries] : entries;
 ---
 
 <section
-  class="mc-case-log mc-surface mc-module mc-tier-2 reveal-2026"
-  style="--reveal-delay: 160ms"
+  class="mc-case-log mc-surface mc-module mc-tier-2"
   aria-labelledby="mc-case-log-title"
 >
-  <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{caseLog.title}</h2>
-  <p class="mc-case-log__intro">{caseLog.intro}</p>
+  <div class="reveal-2026" style="--reveal-delay: 160ms">
+    <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{caseLog.title}</h2>
+    <p class="mc-case-log__intro">{caseLog.intro}</p>
+  </div>
   <div
     class:list={['mc-case-log__table', loopScroll && 'mc-case-log__table--drum']}
     role="table"

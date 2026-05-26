@@ -5595,6 +5595,10 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 @media (max-width: 900px) {
+  .mc-case-log__table {
+    overflow: visible;
+  }
+
   .mc-case-log__head {
     display: none;
   }
