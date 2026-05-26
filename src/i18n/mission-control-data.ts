@@ -78,7 +78,7 @@ const ru: MissionControlContent = {
     headlineLine1: 'Стабилизирую системы,',
     headlineLine2: 'которые бизнес боится трогать.',
     lead:
-      'Беру контуры, которые нельзя просто выключить: легаси, интеграции и релизы без права на откат. Сначала диагностика и предсказуемость — потом ускорение и рост.',
+      'Специализируюсь на стабилизации непрерывных бизнес-процессов: легаси, сложные интеграции и архитектура с нулевым допуском к простою.',
     subheadLines: [
       'Легаси и нестабильные релизы',
       'Хаос интеграций и «ручные» стыки',
@@ -109,7 +109,7 @@ const ru: MissionControlContent = {
     ],
   },
   failures: {
-    title: 'СБОИ, КОТОРЫЕ РАЗБИРАЮ',
+    title: 'КРИТИЧЕСКИЕ СЦЕНАРИИ И УСТРАНЕНИЕ СБОЕВ',
     colFailure: 'Сбой',
     colResolution: 'Решение',
     rows: [
@@ -152,8 +152,8 @@ const ru: MissionControlContent = {
     portfolioCta: 'Смотреть полный дебаг-лог всех кейсов (портфолио)',
   },
   bridge: {
-    title: 'Не верьте на слово',
-    body: 'Посмотрите, как эти принципы работают в боевых условиях — в развёрнутых post-mortem по каждому контуру.',
+    title: 'ВЕРИФИКАЦИЯ РЕЗУЛЬТАТОВ (INCIDENT POST-MORTEM)',
+    body: 'Объективный технический разбор: как принципы выдерживают боевую нагрузку — post-mortem по каждому контуру.',
     cta: 'Открыть логи проектов',
   },
   ai: {
@@ -176,7 +176,7 @@ const en: MissionControlContent = {
     headlineLine1: 'I stabilize systems',
     headlineLine2: 'businesses are afraid to touch.',
     lead:
-      'I take on systems you cannot simply switch off: legacy, integrations, and releases with no rollback window. Diagnosis and predictability first — then speed and growth.',
+      'I specialize in stabilizing always-on business processes: legacy, complex integrations, and architectures with zero tolerance for downtime.',
     subheadLines: [
       'Legacy and brittle releases',
       'Integration chaos and manual glue',
@@ -207,7 +207,7 @@ const en: MissionControlContent = {
     ],
   },
   failures: {
-    title: 'SYSTEM FAILURES I HANDLE',
+    title: 'CRITICAL SCENARIOS & FAILURE REMEDIATION',
     colFailure: 'Failure',
     colResolution: 'Resolution',
     rows: [
@@ -250,8 +250,8 @@ const en: MissionControlContent = {
     portfolioCta: 'View full debug log of all cases (portfolio)',
   },
   bridge: {
-    title: "Don't take my word for it",
-    body: 'See how these principles hold under production load — full post-mortem per system.',
+    title: 'RESULTS VERIFICATION (INCIDENT POST-MORTEM)',
+    body: 'Objective technical analysis: how these principles hold under production load — post-mortem per system.',
     cta: 'Open project logs',
   },
   ai: {
