@@ -39,32 +39,38 @@ export const prerender = true;
           go('/' + c + '/');
           return;
         }
-        /* Страна по IP: RU и СНГ → /ru/, остальное (в т.ч. AU, US, EU) → /en/ */
-        fetch('https://ipapi.co/country_code/', { cache: 'no-store' })
-          .then(function (r) {
-            return r.text();
+        function redirectFromGeo() {
+          /* Страна по IP: RU и СНГ → /ru/, остальное (в т.ч. AU, US, EU) → /en/ */
+          fetch('https://ipapi.co/country_code/', {
+            cache: 'no-store',
+            signal: typeof AbortSignal !== 'undefined' ? AbortSignal.timeout(2500) : undefined,
           })
-          .then(function (text) {
-            var cc = (text || '').trim().toUpperCase();
-            var ruRegion = {
-              RU: 1,
-              BY: 1,
-              KZ: 1,
-              UA: 1,
-              AM: 1,
-              AZ: 1,
-              GE: 1,
-              MD: 1,
-              TJ: 1,
-              TM: 1,
-              UZ: 1,
-              KG: 1,
-            };
-            go(ruRegion[cc] ? '/ru/' : '/en/');
-          })
-          .catch(function () {
-            go(fromNavigator() === 'ru' ? '/ru/' : '/en/');
-          });
+            .then(function (r) {
+              return r.text();
+            })
+            .then(function (text) {
+              var cc = (text || '').trim().toUpperCase();
+              var ruRegion = {
+                RU: 1,
+                BY: 1,
+                KZ: 1,
+                UA: 1,
+                AM: 1,
+                AZ: 1,
+                GE: 1,
+                MD: 1,
+                TJ: 1,
+                TM: 1,
+                UZ: 1,
+                KG: 1,
+              };
+              go(ruRegion[cc] ? '/ru/' : '/en/');
+            })
+            .catch(function () {
+              go(fromNavigator() === 'ru' ? '/ru/' : '/en/');
+            });
+        }
+        redirectFromGeo();
       })();
     </script>
     <noscript>
