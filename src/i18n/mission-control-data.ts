@@ -14,6 +14,8 @@ export type CaseLogEntry = {
 export type PassportMetric = {
   label: string;
   value: string;
+  /** Дополнение к value (например «частичная занятость») */
+  valueNote?: string;
 };
 
 export type MissionMindsetStep = {
@@ -72,6 +74,9 @@ export type MissionControlContent = {
   ai: {
     line: string;
   };
+  footer: {
+    contactsLabel: string;
+  };
   cta: {
     email: string;
     telegram: string;
@@ -94,11 +99,11 @@ const ru: MissionControlContent = {
     role: 'Инженер · Фулстек-архитектор',
     metricsTitle: 'Метрики разработчика',
     metrics: [
-      { label: 'STATUS', value: 'ACTIVE · свободен для проектов' },
-      { label: 'ОПЫТ', value: '15+ лет в коммерческом инжиниринге' },
-      { label: 'ПРОФИЛЬ', value: 'Fullstack Developer / Core Architect' },
-      { label: 'СПЕЦИАЛИЗАЦИЯ', value: 'Разработка и развитие core-инфраструктуры' },
-      { label: 'КОНТУРЫ', value: 'Highload, E-commerce, AI-интеграции' },
+      { label: 'Статус', value: 'Активен', valueNote: 'Частичная занятость' },
+      { label: 'Опыт', value: '15+ лет в коммерческом инжиниринге' },
+      { label: 'Профиль', value: 'Fullstack · core-архитектор' },
+      { label: 'Специализация', value: 'Разработка и развитие core-инфраструктуры' },
+      { label: 'Контуры', value: 'Highload, e-commerce, AI-интеграции' },
     ],
     stackTitle: 'Основной контур стека',
     stackGroups: [
@@ -230,6 +235,9 @@ const ru: MissionControlContent = {
   ai: {
     line: 'ИИ помогает ускорять рутину; архитектуру и ответственность за прод веду как инженер.',
   },
+  footer: {
+    contactsLabel: 'Контакты: монограмма EZ, почта и LinkedIn',
+  },
   cta: {
     email: 'Написать',
     telegram: 'Telegram',
@@ -252,11 +260,11 @@ const en: MissionControlContent = {
     role: 'Engineer · Full-stack architect',
     metricsTitle: 'Developer metrics',
     metrics: [
-      { label: 'STATUS', value: 'ACTIVE · open for projects' },
-      { label: 'EXPERIENCE', value: '15+ years in commercial engineering' },
-      { label: 'PROFILE', value: 'Fullstack Developer / Core Architect' },
-      { label: 'FOCUS', value: 'Core infrastructure build & evolution' },
-      { label: 'DOMAINS', value: 'Highload, E-commerce, AI integrations' },
+      { label: 'Status', value: 'Active', valueNote: 'part-time availability' },
+      { label: 'Experience', value: '15+ years in commercial engineering' },
+      { label: 'Profile', value: 'Fullstack · core architect' },
+      { label: 'Focus', value: 'Core infrastructure build & evolution' },
+      { label: 'Domains', value: 'Highload, e-commerce, AI integrations' },
     ],
     stackTitle: 'Primary stack contour',
     stackGroups: [
@@ -387,6 +395,9 @@ const en: MissionControlContent = {
   },
   ai: {
     line: 'AI speeds up routine work; architecture and production accountability stay with the engineer.',
+  },
+  footer: {
+    contactsLabel: 'Contacts: EZ monogram, email, and LinkedIn',
   },
   cta: {
     email: 'Email me',

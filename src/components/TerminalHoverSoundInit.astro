@@ -1,0 +1,64 @@
+---
+/** Короткий hover-тон (как на резюме) для интерактивных строк и ссылок. */
+interface Props {
+  selectors: string;
+}
+
+const { selectors } = Astro.props;
+---
+
+<script define:vars={{ selectors }}>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var targets = document.querySelectorAll(selectors);
+    if (!targets.length) return;
+
+    var AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+
+    var ctx = new AudioCtx();
+    var unlocked = false;
+    var lastPlayedAt = 0;
+
+    function unlockAudioOnce() {
+      if (unlocked) return;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(function () {
+          /* ignore */
+        });
+      }
+      unlocked = true;
+    }
+
+    document.addEventListener('pointerdown', unlockAudioOnce, { once: true, passive: true });
+    document.addEventListener('keydown', unlockAudioOnce, { once: true });
+
+    function playHoverTone() {
+      if (!unlocked) return;
+      if (ctx.state === 'suspended') return;
+
+      var nowMs = performance.now();
+      if (nowMs - lastPlayedAt < 90) return;
+      lastPlayedAt = nowMs;
+
+      var now = ctx.currentTime;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(980, now);
+      osc.frequency.exponentialRampToValueAtTime(740, now + 0.06);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.028, now + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.075);
+    }
+
+    targets.forEach(function (el) {
+      el.addEventListener('pointerenter', playHoverTone, { passive: true });
+    });
+  });
+</script>

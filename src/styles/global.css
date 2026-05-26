@@ -4012,7 +4012,24 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mission-footer__meta {
-  margin: 0.35rem 0 0;
+  margin: 0 0 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.mission-footer__links {
+  margin: 0;
+}
+
+.mc-footer .mission-footer__meta {
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-size: 0.75rem;
+  color: #64748b;
 }
 
 /* --- Engineering Mission Control (narrative /mission) --- */
@@ -4230,9 +4247,13 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 @media (min-width: 900px) {
   .mc-hero-deck {
-    grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
-    gap: 1.5rem 2rem;
+    grid-template-columns: minmax(286px, 350px) minmax(0, 1fr);
+    gap: 1.5rem 1.65rem;
     align-items: start;
+  }
+
+  .mc-hero-deck__right .mc-passport {
+    padding: 0.88rem 0.95rem;
   }
 }
 
@@ -4314,12 +4335,23 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 @media (max-width: 899px) {
   .mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
-    width: min(100%, 22rem);
-    max-width: 92vw;
+    width: min(100%, 24rem);
+    max-width: 94vw;
   }
 
   .mc-hero-deck__left .avatar-terminal-frame {
     width: 100%;
+  }
+}
+
+.mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
+  width: min(100%, 302px);
+}
+
+@media (min-width: 900px) {
+  .mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
+    width: 326px;
+    max-width: 100%;
   }
 }
 
@@ -4464,7 +4496,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 .mc-passport__name {
   margin: 0;
   font-family: inherit;
-  font-size: clamp(1.15rem, 2.4vw, 1.35rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.475rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f8fafc;
@@ -4473,7 +4505,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 .mc-passport__role {
   margin: 0.25rem 0 0;
   font-family: inherit;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #94a3b8;
 }
@@ -4486,7 +4518,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__kicker {
   margin: 0 0 0.5rem;
-  font-size: 0.58rem;
+  font-size: 0.66rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -4502,24 +4534,41 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__row {
   display: grid;
-  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 8.25rem) minmax(0, 1fr);
   gap: 0.35rem 0.65rem;
   align-items: baseline;
 }
 
 .mc-passport__row dt {
   margin: 0;
-  font-size: 0.62rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: #38bdf8;
 }
 
 .mc-passport__row dd {
   margin: 0;
-  font-size: 0.72rem;
-  line-height: 1.4;
+  font-size: 0.875rem;
+  line-height: 1.45;
   color: #b8c5d6;
+}
+
+.mc-passport__row--status dt {
+  font-size: 0.8rem;
+}
+
+.mc-passport__status-core {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #4ade80;
+}
+
+.mc-passport__status-note {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #94a3b8;
 }
 
 .mc-passport__viz {
@@ -4545,7 +4594,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__metric-pill-k {
   display: block;
-  font-size: 0.5rem;
+  font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #64748b;
@@ -4554,7 +4603,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 .mc-passport__metric-pill-v {
   display: block;
   margin-top: 0.1rem;
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   font-weight: 700;
   line-height: 1.35;
   color: #4ade80;
@@ -4580,7 +4629,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__activity-label {
   margin: 0 0 0.35rem;
-  font-size: 0.58rem;
+  font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #64748b;

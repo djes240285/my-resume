@@ -5,6 +5,7 @@ import { getMissionControl } from '../i18n/mission-control-data';
 import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
 import MissionMindsetPath from './MissionMindsetPath.astro';
 import MissionEngineerPassport from './MissionEngineerPassport.astro';
+import TerminalHoverSoundInit from './TerminalHoverSoundInit.astro';
 
 interface Props {
   lang: Lang;
@@ -109,6 +110,8 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
     </div>
   </section>
 
+  <TerminalHoverSoundInit selectors=".mc-case-log__row" />
+
   <section class="mc-bridge mc-tier-1 mc-surface mc-module" aria-labelledby="mc-bridge-title">
     <h2 id="mc-bridge-title" class="mc-bridge__title mc-section-title--prose">{m.bridge.title}</h2>
     <p class="mc-bridge__body">{m.bridge.body}</p>
@@ -125,7 +128,8 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
   <footer class="mc-footer mc-tier-3">
     <p class="mc-ai-line">{m.ai.line}</p>
     <div class="mission-footer">
-      <p>
+      <p class="mission-footer__meta">{m.footer.contactsLabel}</p>
+      <p class="mission-footer__links">
         <a href={resumeHref} class="mission-footer__link">EZ</a>
         <span class="mission-footer__sep">·</span>
         <a href={`mailto:${t.contact.emails[0]}`} class="mission-footer__link">{t.contact.emails[0]}</a>

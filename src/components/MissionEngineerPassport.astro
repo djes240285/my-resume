@@ -28,9 +28,18 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
     <dl class="mc-passport__dl">
       {
         passport.metrics.map((row) => (
-          <div class="mc-passport__row">
+          <div class:list={['mc-passport__row', row.valueNote && 'mc-passport__row--status']}>
             <dt>{row.label}</dt>
-            <dd>{row.value}</dd>
+            <dd>
+              {row.valueNote ? (
+                <>
+                  <span class="mc-passport__status-core">{row.value}</span>
+                  <span class="mc-passport__status-note"> · {row.valueNote}</span>
+                </>
+              ) : (
+                row.value
+              )}
+            </dd>
           </div>
         ))
       }
