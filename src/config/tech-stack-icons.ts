@@ -10,6 +10,7 @@ const SIMPLE_ICONS_HEX: Record<string, string> = {
   drupal: '0678BE',
   strapi: '4945FF',
   contentful: '2478CC',
+  statamic: 'FF269E',
   storyblok: '09B3AF',
   joomla: '5091CD',
   laravel: 'FF2D20',

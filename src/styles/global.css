@@ -3003,6 +3003,318 @@ html.audience-mode-pending [data-audience-approach-body] {
   .scroll-top-pacman-run {
     display: none !important;
   }
+
+  .contact-pin-lisa {
+    animation: none !important;
+  }
+}
+
+/* Закреплённая связь — Леди Лиза слева (зеркало scroll-top / Pac-Man) */
+.contact-pin-pixel {
+  position: fixed;
+  z-index: 40;
+  left: max(1rem, env(safe-area-inset-left));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+.contact-pin-pixel__btn {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.contact-pin-pixel__chrome {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: #020617;
+  border: 2px solid #f97316;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    inset 0 -8px 16px rgba(249, 115, 22, 0.16),
+    3px 3px 0 0 #0f172a,
+    4px 4px 0 0 rgba(15, 23, 42, 0.92),
+    0 0 16px rgba(249, 115, 22, 0.4);
+  color: #ffedd5;
+  image-rendering: pixelated;
+  transition:
+    transform 0.12s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.contact-pin-pixel__chrome--lisa {
+  width: 4.5rem;
+  height: 4.5rem;
+  padding: 0.05rem;
+}
+
+.contact-pin-pixel__pin-badge {
+  position: absolute;
+  top: -5px;
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  background: #fbbf24;
+  border: 1px solid #0f172a;
+  box-shadow: 1px 1px 0 0 #0f172a;
+  clip-path: polygon(50% 0%, 100% 38%, 78% 100%, 50% 78%, 22% 100%, 0% 38%);
+  z-index: 1;
+}
+
+.contact-pin-pixel__sprite {
+  display: block;
+  margin: 0;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.5));
+}
+
+.contact-pin-lisa {
+  animation: contact-pin-lisa-idle 2s steps(2) infinite;
+}
+
+@keyframes contact-pin-lisa-idle {
+  0%,
+  49% {
+    transform: translateY(0);
+  }
+  50%,
+  100% {
+    transform: translateY(-2px);
+  }
+}
+
+.contact-pin-pixel__btn:hover .contact-pin-pixel__chrome,
+.contact-pin-pixel--open .contact-pin-pixel__chrome {
+  border-color: #fb923c;
+  transform: translate(-2px, -2px);
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    inset 0 -8px 18px rgba(249, 115, 22, 0.22),
+    4px 4px 0 0 #0f172a,
+    6px 6px 0 0 rgba(15, 23, 42, 0.95),
+    0 0 22px rgba(251, 146, 60, 0.45);
+}
+
+.contact-pin-pixel__btn:active .contact-pin-pixel__chrome {
+  transform: translate(1px, 1px);
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    2px 2px 0 0 #0f172a;
+}
+
+.contact-pin-pixel__btn:focus-visible .contact-pin-pixel__chrome {
+  outline: 2px solid rgba(56, 189, 248, 0.85);
+  outline-offset: 3px;
+}
+
+.contact-pin-pixel--open .contact-pin-lisa {
+  animation: none;
+}
+
+.contact-pin-pixel--holding .contact-pin-pixel__chrome {
+  border-color: #fbbf24;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    3px 3px 0 0 #0f172a,
+    0 0 24px rgba(251, 191, 36, 0.5);
+}
+
+/* Super Mario — спрайт (Lisa: contact-pin-variant.ts → lisa) */
+.contact-pin-mario__chrome {
+  width: 4.5rem;
+  height: 4.5rem;
+  padding: 0.05rem;
+  border-color: #ef4444;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    inset 0 -8px 16px rgba(239, 68, 68, 0.16),
+    3px 3px 0 0 #0f172a,
+    4px 4px 0 0 rgba(15, 23, 42, 0.92),
+    0 0 16px rgba(239, 68, 68, 0.38);
+}
+
+.contact-pin-pixel--mario .contact-pin-pixel__sprite {
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.45));
+}
+
+.contact-pin-mario {
+  animation: contact-pin-mario-idle 2s steps(2) infinite;
+}
+
+@keyframes contact-pin-mario-idle {
+  0%,
+  49% {
+    transform: translateY(0) scale(1);
+  }
+  50%,
+  100% {
+    transform: translateY(-2px) scale(1.02);
+  }
+}
+
+.contact-pin-mario__star {
+  position: absolute;
+  top: -6px;
+  right: -3px;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  background: #fde047;
+  border: 1px solid #0f172a;
+  box-shadow: 1px 1px 0 0 #0f172a;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  animation: contact-pin-mario-star 1.2s steps(2) infinite;
+}
+
+@keyframes contact-pin-mario-star {
+  0%,
+  49% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50%,
+  100% {
+    transform: scale(1.08);
+    filter: brightness(1.2);
+  }
+}
+
+.contact-pin-pixel--mario:hover .contact-pin-mario__chrome,
+.contact-pin-pixel--mario.contact-pin-pixel--open .contact-pin-mario__chrome {
+  border-color: #f87171;
+  transform: translate(-2px, -2px);
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    inset 0 -6px 16px rgba(248, 113, 113, 0.24),
+    4px 4px 0 0 #0f172a,
+    6px 6px 0 0 rgba(15, 23, 42, 0.95),
+    0 0 22px rgba(248, 113, 113, 0.42);
+}
+
+.contact-pin-pixel--mario.contact-pin-pixel--open .contact-pin-mario {
+  animation: none;
+}
+
+.contact-pin-pixel--mario.contact-pin-pixel--holding .contact-pin-mario__chrome {
+  border-color: #fde047;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    3px 3px 0 0 #0f172a,
+    0 0 24px rgba(253, 224, 71, 0.45);
+}
+
+.contact-pin-pixel--mario.contact-pin-pixel--open .contact-pin-mario__star {
+  animation: none;
+  filter: brightness(1.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-pin-mario {
+    animation: none !important;
+  }
+
+  .contact-pin-mario__star {
+    animation: none !important;
+  }
+}
+
+.contact-pin-pixel__menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.65rem);
+  min-width: 11.5rem;
+  padding: 0.5rem 0.35rem 0.4rem;
+  border: 2px solid #f97316;
+  background: #020617;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    4px 4px 0 0 #0f172a,
+    0 0 20px rgba(249, 115, 22, 0.28);
+  image-rendering: pixelated;
+}
+
+.contact-pin-pixel__menu[hidden] {
+  display: none !important;
+}
+
+.contact-pin-pixel__menu-title {
+  margin: 0 0 0.35rem;
+  padding: 0 0.45rem 0.35rem;
+  border-bottom: 1px solid rgba(251, 146, 60, 0.45);
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: #fdba74;
+}
+
+.contact-pin-pixel__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  text-decoration: none;
+  border-radius: 2px;
+}
+
+.contact-pin-pixel__menu-item:hover,
+.contact-pin-pixel__menu-item:focus-visible {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fff7ed;
+  outline: none;
+}
+
+.contact-pin-pixel__menu-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(15, 23, 42, 0.9);
+  font-size: 0.625rem;
+  font-weight: 800;
+  color: #a5f3fc;
+}
+
+.contact-pin-pixel__menu-glyph--max {
+  color: #c4b5fd;
+}
+
+@media (max-width: 767px) {
+  .contact-pin-pixel__menu {
+    min-width: 10.5rem;
+  }
 }
 
 /* --- Mission Control (/mission) — та же ширина и поля, что у .terminal-page-root (резюме) --- */
@@ -6506,6 +6818,20 @@ html.audience-mode-pending [data-audience-approach-body] {
   cursor: default;
 }
 
+.case-card__cta--expand {
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+.case-card--collapsible:not(.case-card--expanded) .case-card__expandable {
+  display: none;
+}
+
+.case-card--collapsible:not(.case-card--expanded) .case-card__grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .case-card__corner {
   position: absolute;
   right: 0.65rem;
@@ -7038,7 +7364,8 @@ html.audience-mode-pending [data-audience-approach-body] {
     border-bottom: 1px solid #e2e8f0 !important;
   }
 
-  .scroll-top-pixel {
+  .scroll-top-pixel,
+  .contact-pin-pixel {
     display: none !important;
   }
 }

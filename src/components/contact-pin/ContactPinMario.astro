@@ -1,0 +1,19 @@
+---
+interface Props {
+  menuTitle: string;
+}
+
+const { menuTitle } = Astro.props;
+---
+
+<span class="contact-pin-pixel__chrome contact-pin-mario__chrome" aria-hidden="true">
+  <span class="contact-pin-mario__star" title={menuTitle} aria-hidden="true"></span>
+  <img
+    class="contact-pin-pixel__sprite contact-pin-mario"
+    src="/contact-pin-mario.png"
+    width="44"
+    height="52"
+    alt=""
+    decoding="async"
+  />
+</span>

@@ -1,0 +1,314 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+import { getContactMenuLabels, SITE_TELEGRAM_URL } from '../config/contact-links';
+import { CONTACT_PIN_VARIANT } from '../config/contact-pin-variant';
+import ContactPinLisa from './contact-pin/ContactPinLisa.astro';
+import ContactPinMario from './contact-pin/ContactPinMario.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const cv = getCv(lang);
+const labels = getContactMenuLabels(lang, CONTACT_PIN_VARIANT);
+const email = cv.contact.emails[0];
+const maxHref = cv.contact.maxHref;
+const mailto = `mailto:${email}?subject=${encodeURIComponent(lang === 'ru' ? 'Связь с сайта' : 'Message from site')}`;
+const isMario = CONTACT_PIN_VARIANT === 'mario';
+---
+
+<div
+  class:list={['contact-pin-pixel', isMario && 'contact-pin-pixel--mario']}
+  data-contact-pin-root
+  data-contact-pin-variant={CONTACT_PIN_VARIANT}
+>
+  <button
+    type="button"
+    class="contact-pin-pixel__btn"
+    data-contact-pin-btn
+    aria-label={labels.button}
+    aria-haspopup="menu"
+    aria-expanded="false"
+    aria-controls="contact-pin-menu"
+  >
+    {isMario ? (
+      <ContactPinMario menuTitle={labels.menuTitle} />
+    ) : (
+      <ContactPinLisa menuTitle={labels.menuTitle} />
+    )}
+  </button>
+
+  <div
+    id="contact-pin-menu"
+    class="contact-pin-pixel__menu"
+    data-contact-pin-menu
+    role="menu"
+    aria-label={labels.menuTitle}
+    hidden
+  >
+    <p class="contact-pin-pixel__menu-title" aria-hidden="true">{labels.menuTitle}</p>
+    <a
+      class="contact-pin-pixel__menu-item"
+      role="menuitem"
+      href={mailto}
+      {...(isMario ? { 'data-contact-sfx': 'coin' } : {})}
+    >
+      <span class="contact-pin-pixel__menu-glyph" aria-hidden="true">@</span>
+      {labels.email}
+    </a>
+    <a
+      class="contact-pin-pixel__menu-item"
+      role="menuitem"
+      href={SITE_TELEGRAM_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...(isMario ? { 'data-contact-sfx': 'jump' } : {})}
+    >
+      <span class="contact-pin-pixel__menu-glyph" aria-hidden="true">TG</span>
+      {labels.telegram}
+    </a>
+    <a
+      class="contact-pin-pixel__menu-item"
+      role="menuitem"
+      href={maxHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...(isMario ? { 'data-contact-sfx': 'powerup' } : {})}
+    >
+      <span class="contact-pin-pixel__menu-glyph contact-pin-pixel__menu-glyph--max" aria-hidden="true">M</span>
+      {labels.max}
+    </a>
+  </div>
+</div>
+
+<script is:inline>
+  // @ts-nocheck
+  (function () {
+    var root = document.querySelector('[data-contact-pin-root]');
+    var btn = document.querySelector('[data-contact-pin-btn]');
+    var menu = document.querySelector('[data-contact-pin-menu]');
+    if (!root || !btn || !menu) return;
+
+    var isMario = root.getAttribute('data-contact-pin-variant') === 'mario';
+    var marioAudioCtx = null;
+    var marioSfxMuted =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function getMarioAudioCtx() {
+      if (marioSfxMuted) return null;
+      var Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return null;
+      if (!marioAudioCtx) marioAudioCtx = new Ctor();
+      if (marioAudioCtx.state === 'suspended') {
+        marioAudioCtx.resume().catch(function () {});
+      }
+      return marioAudioCtx;
+    }
+
+    /** @param {'coin'|'jump'|'powerup'} kind */
+    function playMarioSfx(kind) {
+      if (!isMario || marioSfxMuted) return;
+      var ctx = getMarioAudioCtx();
+      if (!ctx) return;
+      var t0 = ctx.currentTime;
+      var master = ctx.createGain();
+      master.gain.value = 0.24;
+      master.connect(ctx.destination);
+
+      function blip(freq, start, dur, type, gainMul) {
+        var osc = ctx.createOscillator();
+        var g = ctx.createGain();
+        osc.type = type || 'square';
+        osc.frequency.setValueAtTime(freq, start);
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.exponentialRampToValueAtTime(0.22 * (gainMul || 1), start + 0.008);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+        osc.connect(g);
+        g.connect(master);
+        osc.start(start);
+        osc.stop(start + dur + 0.02);
+      }
+
+      if (kind === 'jump') {
+        var osc = ctx.createOscillator();
+        var g = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, t0);
+        osc.frequency.exponentialRampToValueAtTime(600, t0 + 0.11);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.2, t0 + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.13);
+        osc.connect(g);
+        g.connect(master);
+        osc.start(t0);
+        osc.stop(t0 + 0.14);
+        return;
+      }
+
+      if (kind === 'coin') {
+        blip(988, t0, 0.07, 'square', 1);
+        blip(1319, t0 + 0.045, 0.09, 'square', 0.95);
+        return;
+      }
+
+      if (kind === 'powerup') {
+        var notes = [262, 330, 392, 523, 659, 784, 1047];
+        for (var i = 0; i < notes.length; i++) {
+          blip(notes[i], t0 + i * 0.042, 0.055, 'square', 0.85 - i * 0.04);
+        }
+      }
+    }
+
+    var HOLD_MS = 480;
+    var holdTimer = 0;
+    var holdFired = false;
+    var suppressClick = false;
+    var open = false;
+
+    function setOpen(next, opts) {
+      var wasOpen = open;
+      open = next;
+      btn.setAttribute('aria-expanded', next ? 'true' : 'false');
+      root.classList.toggle('contact-pin-pixel--open', next);
+      if (next) {
+        menu.removeAttribute('hidden');
+        if (isMario && (!opts || opts.playSfx !== false) && !wasOpen) {
+          playMarioSfx('coin');
+        }
+      } else {
+        menu.setAttribute('hidden', '');
+      }
+    }
+
+    function toggle() {
+      setOpen(!open);
+    }
+
+    function clearHold() {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = 0;
+      }
+    }
+
+    function onHoldComplete() {
+      holdFired = true;
+      suppressClick = true;
+      setOpen(true);
+      try {
+        if (navigator.vibrate) navigator.vibrate(12);
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    btn.addEventListener('pointerdown', function (e) {
+      if (e.button !== 0) return;
+      holdFired = false;
+      clearHold();
+      root.classList.add('contact-pin-pixel--holding');
+      holdTimer = window.setTimeout(onHoldComplete, HOLD_MS);
+    });
+
+    function endHold() {
+      clearHold();
+      root.classList.remove('contact-pin-pixel--holding');
+    }
+
+    btn.addEventListener('pointerup', endHold);
+    btn.addEventListener('pointerleave', endHold);
+    btn.addEventListener('pointercancel', endHold);
+
+    btn.addEventListener('click', function (e) {
+      if (suppressClick) {
+        suppressClick = false;
+        e.preventDefault();
+        return;
+      }
+      if (holdFired) {
+        holdFired = false;
+        e.preventDefault();
+        return;
+      }
+      toggle();
+    });
+
+    if (isMario) {
+      var lastHoverSfxItem = null;
+      var hoverCapable =
+        typeof window.matchMedia === 'function' && window.matchMedia('(hover: hover)').matches;
+
+      function playMenuItemSfx(item) {
+        if (!item || !menu.contains(item)) return;
+        var kind = item.getAttribute('data-contact-sfx');
+        if (kind === 'coin' || kind === 'jump' || kind === 'powerup') {
+          playMarioSfx(kind);
+        }
+      }
+
+      menu.addEventListener('mouseover', function (e) {
+        if (!open || !hoverCapable) return;
+        var item = e.target instanceof Element ? e.target.closest('[data-contact-sfx]') : null;
+        if (!item || item === lastHoverSfxItem) return;
+        lastHoverSfxItem = item;
+        playMenuItemSfx(item);
+      });
+
+      menu.addEventListener('mouseleave', function () {
+        lastHoverSfxItem = null;
+      });
+
+      menu.addEventListener('click', function (e) {
+        var item = e.target instanceof Element ? e.target.closest('[data-contact-sfx]') : null;
+        playMenuItemSfx(item);
+      });
+
+      menu.addEventListener('focusin', function (e) {
+        var item = e.target instanceof Element ? e.target.closest('[data-contact-sfx]') : null;
+        if (!item || item === lastHoverSfxItem) return;
+        lastHoverSfxItem = item;
+        playMenuItemSfx(item);
+      });
+    }
+
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && open) {
+        e.preventDefault();
+        setOpen(false);
+        btn.focus();
+      }
+      if (e.key === 'ArrowDown' && !open) {
+        e.preventDefault();
+        setOpen(true);
+        var first = menu.querySelector('[role="menuitem"]');
+        if (first && first.focus) first.focus();
+      }
+    });
+
+    menu.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setOpen(false);
+        btn.focus();
+      }
+    });
+
+    document.addEventListener('pointerdown', function (e) {
+      if (!open) return;
+      var t = e.target;
+      if (t instanceof Node && root.contains(t)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && open) {
+        setOpen(false);
+        btn.focus();
+      }
+    });
+  })();
+</script>

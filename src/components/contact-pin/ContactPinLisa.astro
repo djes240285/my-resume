@@ -1,0 +1,20 @@
+---
+/** Зафиксированный вариант «Леди Лиза» — не менять при экспериментах с Mario. */
+interface Props {
+  menuTitle: string;
+}
+
+const { menuTitle } = Astro.props;
+---
+
+<span class="contact-pin-pixel__chrome contact-pin-pixel__chrome--lisa" aria-hidden="true">
+  <span class="contact-pin-pixel__pin-badge" title={menuTitle}></span>
+  <img
+    class="contact-pin-pixel__sprite contact-pin-lisa"
+    src="/contact-pin-lisa.png"
+    width="44"
+    height="52"
+    alt=""
+    decoding="async"
+  />
+</span>

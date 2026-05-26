@@ -102,7 +102,19 @@ function projectPriority(nameLc: string): number {
 
 function inferStack(nameLc: string, lang: Lang): string {
   const ru = lang === 'ru';
-  if (nameLc.includes('windowcleaner')) return 'Magento 1/2, PHP, MySQL, Redis, Docker';
+  if (nameLc.includes('windowcleaner')) return 'Magento 1/2, PHP, MySQL, Redis';
+  if (nameLc.includes('102 пэс') || nameLc.includes('102 pes')) {
+    return ru ? 'Laravel, PHP, MySQL, API' : 'Laravel, PHP, MySQL, API';
+  }
+  if (nameLc.includes('кпск') || nameLc.includes('kpsk')) {
+    return ru ? 'Laravel, PHP, банк, API' : 'Laravel, PHP, banking, API';
+  }
+  if (nameLc.includes('гагарин') || nameLc.includes('gagarin')) {
+    return ru ? 'Laravel, Statamic, PHP' : 'Laravel, Statamic, PHP';
+  }
+  if (nameLc.includes('колл-центр') || nameLc.includes('call center')) {
+    return 'Laravel, PHP, MySQL';
+  }
   if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
     return ru
       ? 'PHP, Laravel, интеграции, документооборот, API'
@@ -123,7 +135,7 @@ function inferStack(nameLc: string, lang: Lang): string {
   if (nameLc.includes('bitrix') || nameLc.includes('битрикс')) return ru ? '1С-Битрикс, PHP, MySQL' : '1C-Bitrix, PHP, MySQL';
   if (nameLc.includes('vue') || nameLc.includes('kolyom')) return 'Vue.js, PHP, MySQL';
   if (/(magento|m1|m2)/.test(nameLc)) return 'Magento, PHP, MySQL';
-  return ru ? 'PHP, Laravel/Magento, API' : 'PHP, Laravel/Magento, API';
+  return ru ? 'PHP, Laravel, API' : 'PHP, Laravel, API';
 }
 
 function primaryHref(project: ProjectEntry): string | undefined {

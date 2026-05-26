@@ -32,6 +32,7 @@ const labels =
         layerStack: 'СТЕК',
         openCase: 'Открыть контур',
         openDetails: 'Развернуть кейс',
+        closeDetails: 'Свернуть кейс',
         ndaBadge: 'NDA',
         workStyle: 'Инженерный стандарт: от хаоса к системе',
         workStyleLead:
@@ -130,6 +131,7 @@ const labels =
         layerStack: 'STACK',
         openCase: 'Open contour',
         openDetails: 'View case',
+        closeDetails: 'Collapse case',
         ndaBadge: 'NDA-safe',
         workStyle: 'Engineering standard: from chaos to system',
         workStyleLead:
@@ -235,10 +237,46 @@ type ShowcaseCard = {
   challenges?: Array<{ broken: string; fixed: string }>;
 };
 
+function inferAiEnhanced(nameLc: string, titleLc: string, explicit?: boolean): boolean {
+  if (explicit !== undefined) return explicit;
+  const raw = `${nameLc} ${titleLc}`;
+  if (/(magento|windowcleaner|gratisiskolan|verkter|rattan|finaldraft|microline|nancysbeauty)/.test(raw)) {
+    return false;
+  }
+  if (/(крымресурс|krymresurs)/.test(raw)) return true;
+  return false;
+}
+
 function inferStack(nameLc: string, tags: string[], lang: Lang): string {
   const ru = lang === 'ru';
   if (nameLc.includes('windowcleaner')) {
-    return 'Magento 1/2, PHP, MySQL, Redis, Docker, CI/CD';
+    return 'Magento 1/2, PHP, MySQL, Redis';
+  }
+  if (nameLc.includes('102 пэс') || nameLc.includes('102 pes')) {
+    return ru
+      ? 'Laravel, PHP, MySQL, API, корпоративные кабинеты'
+      : 'Laravel, PHP, MySQL, API, corporate portals';
+  }
+  if (nameLc.includes('кпск') || nameLc.includes('kpsk')) {
+    return ru
+      ? 'Laravel, PHP, банковский контур, API, страховые интеграции'
+      : 'Laravel, PHP, banking layer, API, insurance integrations';
+  }
+  if (nameLc.includes('гагарин') || nameLc.includes('gagarin')) {
+    return ru ? 'Laravel, Statamic, PHP, интеграции' : 'Laravel, Statamic, PHP, integrations';
+  }
+  if (
+    nameLc.includes('музыкальный') ||
+    nameLc.includes('пневматика') ||
+    nameLc.includes('кко') ||
+    nameLc.includes('muzteatr') ||
+    nameLc.includes('pneumo') ||
+    nameLc.includes('kko')
+  ) {
+    return ru ? 'Laravel/PHP, CMS, поддержка и доработки' : 'Laravel/PHP, CMS, support and enhancements';
+  }
+  if (nameLc.includes('колл-центр') || nameLc.includes('call center')) {
+    return ru ? 'Laravel, PHP, MySQL, API' : 'Laravel, PHP, MySQL, API';
   }
   if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
     return ru
@@ -260,13 +298,13 @@ function inferStack(nameLc: string, tags: string[], lang: Lang): string {
   if (nameLc.includes('mozgovnet')) {
     return ru ? 'PHP, платежи, API, легаси' : 'PHP, payments, API, legacy';
   }
-  if (tags.includes('migrations')) {
-    return ru ? 'Magento, PHP, миграции, CI/CD' : 'Magento, PHP, migrations, CI/CD';
+  if (tags.includes('migrations') && /(magento|m1|m2|windowcleaner|gratisiskolan|verkter)/.test(nameLc)) {
+    return ru ? 'Magento, PHP, миграции' : 'Magento, PHP, migrations';
   }
   if (tags.includes('ecom')) {
     return ru ? 'PHP, e-commerce, интеграции' : 'PHP, e-commerce, integrations';
   }
-  return ru ? 'PHP, Laravel/Magento, API, CI/CD' : 'PHP, Laravel/Magento, API, CI/CD';
+  return ru ? 'PHP, Laravel, API' : 'PHP, Laravel, API';
 }
 
 function normalizeUrl(input: string): string {
@@ -291,7 +329,7 @@ function inferChallenges(
       ? [
           {
             broken: 'Правки делались напрямую в проде, рос риск деградации производительности.',
-            fixed: 'Введён управляемый контур релизов и стабильная инфраструктура доставки изменений.',
+            fixed: 'Введён управляемый контур релизов: этапные выкладки и проверка перед продом без остановки продаж.',
           },
           {
             broken: 'UX-узкие места в каталоге/checkout тормозили коммерческий рост.',
@@ -301,7 +339,7 @@ function inferChallenges(
       : [
           {
             broken: 'Production hot-edits were increasing performance and reliability risk.',
-            fixed: 'A controlled release contour and stable delivery infrastructure were introduced.',
+            fixed: 'A controlled release contour was introduced: phased deploys and pre-prod checks without stopping sales.',
           },
           {
             broken: 'UX bottlenecks in catalog/checkout were limiting commercial growth.',
@@ -510,6 +548,117 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       }
     }
 
+    if (nameLc.includes('102 пэс') || nameLc.includes('102 pes')) {
+      if (lang === 'ru') {
+        problem =
+          'Нужен был корпоративный контур на Laravel с нуля: кабинеты техников, клиентов, менеджеров и администратора, плюс публичная витрина — без Magento и без «чужого» каркаса.';
+        action =
+          'Самостоятельно проектировал и писал код на Laravel, разбирал предметную область и собирал разнообразный стек под задачи заказчика; параллельно проходил полугосударственный контур согласований, планирования и эстимейтов.';
+        result =
+          'Система вышла в рабочее состояние: сложный регламент заказчика освоен, релизы и доработки доведены до конца, проект остаётся понятным по архитектуре и стеку.';
+      } else {
+        problem =
+          'A corporate Laravel contour was needed from scratch—technician, client, manager, and admin areas plus a public shell—without Magento or an off-the-shelf core.';
+        action =
+          'Designed and implemented the Laravel codebase end-to-end, learned the domain, and shaped a diverse stack—while navigating semi-government approval, planning, and estimation cycles.';
+        result =
+          'The system reached production: the client’s governance model was mastered, delivery completed, and the architecture remains clear and maintainable.';
+      }
+    }
+
+    if (nameLc.includes('кпск') || nameLc.includes('kpsk')) {
+      if (lang === 'ru') {
+        problem =
+          'Тяжёлый банковский легаси-слой и страховая витрина: старый код, жёсткая безопасность, долгий вход в полный контур без ИИ-инструментов того времени.';
+        action =
+          'Адаптировал существующую систему к новым задачам страхования и интеграций на Laravel/PHP, разбирал чужой код и банковские ограничения поэтапно.';
+        result =
+          'Контур стабилизирован и развит под задачи витрины; втягивание в сложный домен заняло время, но результат принят заказчиком и партнёром.';
+      } else {
+        problem =
+          'A heavy banking legacy layer plus insurance storefront: old code, strict security, and a long ramp-up into the full contour without modern AI tooling.';
+        action =
+          'Adapted the existing system to new insurance and integration needs on Laravel/PHP, unpacking legacy and bank constraints in phases.';
+        result =
+          'The contour was stabilized and extended for the insurance front office; onboarding was slow, but delivery was accepted by the client and partner.';
+      }
+    }
+
+    if (nameLc.includes('гагарин') || nameLc.includes('gagarin')) {
+      if (lang === 'ru') {
+        problem =
+          'Корпоративному сайту нужна была системная структура и интеграция с редакционным контуром Statamic, а не разовые правки.';
+        action =
+          'Экспериментировал с Laravel, выстроил систематизацию под Statamic и интеграции под особенности платформы и процесс партнёра.';
+        result =
+          'Сайт получил предсказуемую структуру и сопровождение; контент и техника работают в одном согласованном контуре.';
+      } else {
+        problem =
+          'The corporate site needed systematic structure and Statamic integration—not one-off patches.';
+        action =
+          'Used Laravel to structure delivery for Statamic, integrating around platform specifics and the partner workflow.';
+        result =
+          'The site gained a predictable structure and support rhythm; content and engineering stay aligned.';
+      }
+    }
+
+    if (
+      nameLc.includes('музыкальный') ||
+      nameLc.includes('пневматика') ||
+      nameLc.includes('кко') ||
+      nameLc.includes('muzteatr') ||
+      nameLc.includes('pneumo') ||
+      nameLc.includes('kko')
+    ) {
+      if (lang === 'ru') {
+        problem = 'Отдельные блоки функциональности в проектах партнёра требовали точечной поддержки без раздувания scope.';
+        action =
+          'Подключался к сложным участкам по задачам и этапам: доработки, сопровождение, согласование с контуром партнёра — без Magento.';
+        result = 'Задачи закрывались в срок; критичные участки оставались стабильными между релизами партнёра.';
+      } else {
+        problem = 'Specific functional blocks in partner-led projects needed focused support without scope creep.';
+        action =
+          'Joined for complex slices by phase: enhancements and maintenance aligned with the partner contour—no Magento involvement.';
+        result = 'Tasks closed on schedule; critical areas stayed stable between partner releases.';
+      }
+    }
+
+    if (nameLc.includes('колл-центр') || nameLc.includes('call center')) {
+      if (lang === 'ru') {
+        problem =
+          'Закрытая система колл-центра на стыке со страховым контуром КПСК: нужен был Laravel с нуля на уже проработанном ТЗ.';
+        action =
+          'Реализовал backend и прикладную логику на Laravel по отработанным скетчам процессов и дизайну; связал с контуром страховых случаев и больниц.';
+        result =
+          'Проект вышел по срокам и расписанию: проработанное ТЗ и дизайн сняли основной риск; сейчас не развивается по внешним причинам заказчика.';
+      } else {
+        problem =
+          'A closed call-center system tied to the KPSK insurance contour needed greenfield Laravel on top of mature specs.';
+        action =
+          'Built Laravel backend and business logic from refined process sketches and design, linked to insurance and hospital flows.';
+        result =
+          'Delivery met timeline: strong specs and design reduced risk; the project is archived for external client reasons.';
+      }
+    }
+
+    if (nameLc.includes('корпоративные решения') || nameLc.includes('corporate solutions')) {
+      if (lang === 'ru') {
+        problem =
+          'Закрытые контуры без публичных URL (энергетика, фитнес, образование) — единая строка в резюме вместо отдельных ссылок.';
+        action =
+          'См. карточки 102 ПЭС, «Гагарин», медколл-центр и смежные партнёрские кейсы выше: мониторинг, админки, интеграции.';
+        result =
+          'Это не отдельный проект, а сводка NDA-работ; детали раскрыты в названных кейсах и по запросу.';
+      } else {
+        problem =
+          'Closed contours without public URLs (energy, fitness, education)—one résumé line instead of separate links.';
+        action =
+          'See 102 PES, Gagarin, medical call center, and related partner cases above: monitoring, admin tooling, integrations.';
+        result =
+          'Not a standalone project—a summary of NDA work; details live in the named cases and on request.';
+      }
+    }
+
     const tags = (() => {
       const manual = new Set<string>(['all']);
       if (nameLc.includes('доставка-зпр') || nameLc.includes('dostavka-zpr')) {
@@ -535,6 +684,25 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
         manual.add('process');
       } else if (nameLc.includes('biznesmashin')) {
         manual.add('ecom');
+        manual.add('process');
+      } else if (
+        nameLc.includes('102 пэс') ||
+        nameLc.includes('102 pes') ||
+        nameLc.includes('кпск') ||
+        nameLc.includes('kpsk') ||
+        nameLc.includes('гагарин') ||
+        nameLc.includes('gagarin') ||
+        nameLc.includes('колл-центр') ||
+        nameLc.includes('call center')
+      ) {
+        manual.add('enterprise');
+        manual.add('process');
+      } else if (
+        nameLc.includes('музыкальный') ||
+        nameLc.includes('пневматика') ||
+        nameLc.includes('кко')
+      ) {
+        manual.add('enterprise');
         manual.add('process');
       } else {
         // Conservative fallback: do not over-classify unknown projects
@@ -578,6 +746,7 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       priority,
       hasMedia,
       mediaSlides,
+      aiEnhanced: inferAiEnhanced(nameLc, project.name),
     };
   })
 );
@@ -660,6 +829,7 @@ const featuredLayer: ShowcaseCard[] =
           priority: 120,
           hasMedia: false,
           mediaSlides: [],
+          aiEnhanced: false,
         },
         {
           title: 'Техдолг в профит: windowcleaner.com',
@@ -668,7 +838,7 @@ const featuredLayer: ShowcaseCard[] =
           problem:
             'Хаотичные правки в продакшене снижали производительность и делали развитие непредсказуемым.',
           action:
-            'Внедрил управляемый контур релизов: Docker-окружение, CI/CD, дисциплину выкладок и улучшения UX на основе поведенческой аналитики.',
+            'Ввёл дисциплину релизов: этапные выкладки, проверки перед продом и улучшения UX на основе поведенческой аналитики — без Docker/CI/CD в том контуре.',
           result:
             'Платформа масштабируется и стабильно живёт более 5 лет; суммарный эффект релизов дал измеримый рост коммерческой эффективности.',
           tags: ['all', 'ecom', 'process', 'enterprise'],
@@ -676,10 +846,11 @@ const featuredLayer: ShowcaseCard[] =
           priority: 118,
           hasMedia: false,
           mediaSlides: [],
+          aiEnhanced: false,
         },
         {
           title: 'Интерфейсная точность: Pixel Perfect + high-load',
-          tag: 'ИИ · интерфейс',
+          tag: 'UI · NDA',
           problem:
             'Высокая сложность интерфейсов (PWA/XenForo/ScandiPWA): нужно 100% соответствие макету без просадки скорости.',
           action:
@@ -692,6 +863,7 @@ const featuredLayer: ShowcaseCard[] =
           hasMedia: false,
           mediaSlides: [],
           ndaSafe: true,
+          aiEnhanced: false,
         },
       ]
     : [
@@ -741,6 +913,7 @@ const featuredLayer: ShowcaseCard[] =
           priority: 120,
           hasMedia: false,
           mediaSlides: [],
+          aiEnhanced: false,
         },
         {
           title: 'Tech debt to profit: windowcleaner.com',
@@ -749,7 +922,7 @@ const featuredLayer: ShowcaseCard[] =
           problem:
             'Chaotic production edits were degrading performance and making delivery unpredictable.',
           action:
-            'Built a controlled delivery contour: Docker environment, CI/CD, release discipline, and behavior-driven UX optimization.',
+            'Introduced release discipline: phased deploys, pre-production checks, and behavior-driven UX—without Docker/CI/CD in that contour.',
           result:
             'The platform has scaled and remained stable for 5+ years, with release cycles producing measurable commercial impact.',
           tags: ['all', 'ecom', 'process', 'enterprise'],
@@ -757,10 +930,11 @@ const featuredLayer: ShowcaseCard[] =
           priority: 118,
           hasMedia: false,
           mediaSlides: [],
+          aiEnhanced: false,
         },
         {
           title: 'Interface precision: Pixel Perfect + high-load',
-          tag: 'AI & Automation',
+          tag: 'UI · NDA',
           problem:
             'High complexity UI (PWA/XenForo/ScandiPWA): 100% fidelity to design while keeping performance under load.',
           action:
@@ -773,16 +947,14 @@ const featuredLayer: ShowcaseCard[] =
           hasMedia: false,
           mediaSlides: [],
           ndaSafe: true,
+          aiEnhanced: false,
         },
       ];
 
 const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
   const titleLc = card.title.toLowerCase();
-  const raw = `${card.title} ${card.problem} ${card.action} ${card.result}`.toLowerCase();
   const rescue = card.rescue ?? ((card.tags.includes('migrations') || card.tags.includes('enterprise')));
-  const aiEnhanced =
-    card.aiEnhanced ??
-    /(ai|automation|agent|pwa|graphql|xenforo|scandipwa|pixel perfect)/.test(raw);
+  const aiEnhanced = inferAiEnhanced(titleLc, card.title, card.aiEnhanced);
   const status = card.status ?? (rescue ? 'stabilized' : 'delivery');
   const challenges = card.challenges ?? inferChallenges(lang, titleLc, card.problem, card.action);
   const slug = card.slug ?? caseSlug(card.title);
@@ -872,9 +1044,13 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
       {curatedShowcase.map((card) => (
         <article
           id={`case-${card.slug}`}
-          class="case-card case-card--incident case-card--postmortem retro-panel-soft lift-2026"
+          class:list={[
+            'case-card case-card--incident case-card--postmortem retro-panel-soft lift-2026',
+            !card.href && 'case-card--collapsible',
+          ]}
           data-case-card
           data-case-tags={card.tags.join(',')}
+          data-case-collapsible={card.href ? undefined : 'true'}
           style="order:0"
         >
           <div class="case-card__veil" aria-hidden="true"></div>
@@ -924,28 +1100,28 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
                   </dt>
                   <dd class="case-layer__body">{card.problem}</dd>
                 </div>
-                <div class="case-layer">
-                  <dt>
-                    <span class="case-layer__tag">[{labels.layerOperation}]</span>
-                  </dt>
-                  <dd class="case-layer__body">{card.action}</dd>
-                </div>
-                <div class="case-layer">
-                  <dt>
-                    <span class="case-layer__tag">[{labels.layerMetrics}]</span>
-                  </dt>
-                  <dd class="case-layer__body case-layer__body--metrics">{card.result}</dd>
-                </div>
-                <div class="case-layer">
-                  <dt>
-                    <span class="case-layer__tag">[{labels.layerStack}]</span>
-                  </dt>
-                  <dd class="case-layer__body case-layer__body--stack">{card.stack}</dd>
-                </div>
-              </dl>
+                <div class="case-card__expandable">
+                  <div class="case-layer">
+                    <dt>
+                      <span class="case-layer__tag">[{labels.layerOperation}]</span>
+                    </dt>
+                    <dd class="case-layer__body">{card.action}</dd>
+                  </div>
+                  <div class="case-layer">
+                    <dt>
+                      <span class="case-layer__tag">[{labels.layerMetrics}]</span>
+                    </dt>
+                    <dd class="case-layer__body case-layer__body--metrics">{card.result}</dd>
+                  </div>
+                  <div class="case-layer">
+                    <dt>
+                      <span class="case-layer__tag">[{labels.layerStack}]</span>
+                    </dt>
+                    <dd class="case-layer__body case-layer__body--stack">{card.stack}</dd>
+                  </div>
 
-              {card.challenges?.length ? (
-                <div class="case-incident-log">
+                  {card.challenges?.length ? (
+                    <div class="case-incident-log">
                   <div class="case-incident-log__chrome">
                     <span class="case-incident-log__lights" aria-hidden="true">
                       <i></i><i></i><i></i>
@@ -972,8 +1148,10 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
                       </li>
                     ))}
                   </ul>
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
+              </dl>
 
               <footer class="case-card__footer">
                 {card.href ? (
@@ -995,12 +1173,22 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
                     <span data-case-cta-text>{labels.openCase}</span>
                   </a>
                 ) : (
-                  <span class="case-card__cta case-card__cta--muted">{labels.openDetails}</span>
+                  <button
+                    type="button"
+                    class="case-card__cta case-card__cta--expand"
+                    data-case-expand
+                    aria-expanded="false"
+                    data-label-open={labels.openDetails}
+                    data-label-close={labels.closeDetails}
+                  >
+                    <span class="case-cta__glyph" aria-hidden="true">[+]</span>
+                    <span data-case-expand-text>{labels.openDetails}</span>
+                  </button>
                 )}
               </footer>
             </div>
 
-            <div class="case-card__viz">
+            <div class:list={['case-card__viz', !card.href && 'case-card__expandable']}>
               {card.hasMedia ? (
                 <div class="case-media case-media--mockup" data-case-media>
                   <div class="case-media__mockup-bar" aria-hidden="true">
@@ -1223,6 +1411,29 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
       });
     });
 
+    function setCaseExpanded(card: HTMLElement, open: boolean) {
+      card.classList.toggle('case-card--expanded', open);
+      var btn = card.querySelector('[data-case-expand]');
+      if (!(btn instanceof HTMLButtonElement)) return;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var label = btn.querySelector('[data-case-expand-text]');
+      var next = open ? btn.getAttribute('data-label-close') : btn.getAttribute('data-label-open');
+      if (label instanceof HTMLElement && next) label.textContent = next;
+      var glyph = btn.querySelector('.case-cta__glyph');
+      if (glyph instanceof HTMLElement) glyph.textContent = open ? '[-]' : '[+]';
+    }
+
+    var expandBtns = Array.from(document.querySelectorAll('[data-case-expand]'));
+    expandBtns.forEach(function (btn) {
+      if (!(btn instanceof HTMLButtonElement)) return;
+      btn.addEventListener('click', function () {
+        var card = btn.closest('[data-case-card]');
+        if (!(card instanceof HTMLElement)) return;
+        var open = !card.classList.contains('case-card--expanded');
+        setCaseExpanded(card, open);
+      });
+    });
+
     /** Deep-link #case-*: режим legacy включает фильтр migrations и скрывает часть карточек. */
     function scrollToCaseHash() {
       var raw = window.location.hash;
@@ -1234,6 +1445,9 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
       applyFilter('all');
       el.classList.remove('case-card--hidden');
+      if (el.getAttribute('data-case-collapsible') === 'true') {
+        setCaseExpanded(el, true);
+      }
 
       var reduce =
         typeof window.matchMedia !== 'undefined' &&

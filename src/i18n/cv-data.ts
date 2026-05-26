@@ -455,6 +455,12 @@ export const cv: Record<Lang, CVContent> = {
                 hint: 'облачная модель контента, локали, доставка в каналы',
               },
               {
+                name: 'Statamic',
+                ext: '.yaml',
+                icon: 'statamic',
+                hint: 'Laravel CMS, контент-модели, интеграции под корпоративные сайты',
+              },
+              {
                 name: 'Storyblok',
                 ext: '.json',
                 icon: 'storyblok',
@@ -721,7 +727,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'Крымресурс — обучающий центр',
                 detail:
-                  'Симптом: разрозненные приложения и документооборот. Решение: единая модель обучения, техник, менеджеров и генерации документов. Веду контур сейчас; krymresurs.ru — публичная витрина, не весь объём системы.',
+                  'Симптом: разрозненные приложения и документооборот. Решение: единая модель на Laravel, интеграции и генерация документов; сейчас в работе — в том числе с ИИ-инструментами в рутине разработки. krymresurs.ru — публичная витрина, не весь объём системы.',
                 href: 'https://krymresurs.ru/',
               },
               {
@@ -753,7 +759,8 @@ export const cv: Record<Lang, CVContent> = {
           },
           {
             period: '2019—2024',
-            context: 'Корпоративные контуры и кейсы с партнёром; крупные миграции Magento 2.x.',
+            context:
+              'Корпоративные контуры на Laravel с партнёром; отдельно — миграции Magento 2.x (gratisiskolan и др.).',
             projects: [
               {
                 name: 'gratisiskolan.se (Швеция)',
@@ -763,7 +770,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: '102 ПЭС (Минобороны электрических сетей)',
                 detail:
-                  'Корпоративный контур для техников, клиентов, менеджеров и администратора; публичная витрина и рекламная оболочка.',
+                  'Laravel с нуля: весь код писал сам, изучал предметную область и стек. Кабинеты техников, клиентов, менеджеров и администратора; публичная витрина. Сложность — полугосударственный регламент (планирование, эстимейты, согласования); в итоге довели до рабочего контура. Magento не использовался.',
                 links: [
                   { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
                   { kind: 'customer', href: 'https://102pes.ru/' },
@@ -772,33 +779,35 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'КПСК (страхование) — кейс партнёра',
                 detail:
-                  'Работа с системой банка: развитие и доработка уже существующего проекта под задачи страховой витрины и интеграций.',
+                  'Laravel/PHP, без Magento: адаптация тяжёлого банковского легаси под страховую витрину и интеграции. Долго входил в контур (без ИИ того периода), жёсткая security; в итоге стабилизировали и развили — заказчик и партнёр оценили результат.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
               },
               {
                 name: 'Фитнес-клуб «Гагарин»',
-                detail: 'Корпоративный сайт: структура, вёрстка, интеграции и сопровождение по процессу партнёра.',
+                detail:
+                  'Laravel и систематизация под Statamic: структура сайта, интеграции под особенности CMS и процесс партнёра. Magento не использовался.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
               },
               {
                 name: 'Музыкальный театр Крыма, Завод Пневматика, концертный зал ККО',
                 detail:
-                  'Участие в отдельных блоках функциональности и доработках в рамках проектов партнёра (по задачам и этапам).',
+                  'Точечная поддержка и доработки сложных участков в проектах партнёра (по задачам и этапам). Magento не использовался.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
               },
               {
                 name: 'Медицинский колл-центр (архив)',
                 detail:
-                  'Закрытая система под бизнес заказчика; опиралась на контур КПСК (страховые случаи, больницы). Проект был технически сложным; сейчас не развивается по внешним причинам заказчика.',
+                  'Laravel с нуля на проработанном ТЗ: скетчи процессов и дизайн — проект лёг по срокам. Связка со страховым контуром КПСК (случаи, больницы). Сейчас не развивается по внешним причинам заказчика.',
               },
               {
                 name: 'Корпоративные решения (NDA)',
-                detail: 'Мониторинг, управление и интеграции для энергетики, фитнеса и образования без публичного доступа.',
+                detail:
+                  'Сводная строка для закрытых контуров без публичной ссылки — не отдельный проект. Детали см. в 102 ПЭС, «Гагарин», медколл-центр и смежных кейсах выше; по запросу — уточнение scope.',
               },
             ],
           },
           {
-            period: '≈2012—2021',
+            period: '≈2012—2018',
             context: 'Долгие международные витрины, сопровождение под нагрузкой, эволюция платформ.',
             projects: [
               {
@@ -1168,6 +1177,12 @@ export const cv: Record<Lang, CVContent> = {
                 hint: 'cloud content models, locales, multi-channel delivery',
               },
               {
+                name: 'Statamic',
+                ext: '.yaml',
+                icon: 'statamic',
+                hint: 'Laravel CMS, content models, corporate site integrations',
+              },
+              {
                 name: 'Storyblok',
                 ext: '.json',
                 icon: 'storyblok',
@@ -1434,7 +1449,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'Krymresurs training center',
                 detail:
-                  'Symptom: scattered apps and document chaos. Solution: unified training, technicians, managers, doc generation. I still own the contur; krymresurs.ru is the public face, not the full system.',
+                  'Symptom: scattered apps and document chaos. Solution: unified Laravel contour, integrations, doc generation—now including AI tooling in day-to-day engineering. krymresurs.ru is the public face, not the full system.',
                 href: 'https://krymresurs.ru/',
               },
               {
@@ -1466,7 +1481,8 @@ export const cv: Record<Lang, CVContent> = {
           },
           {
             period: '2019–2024',
-            context: 'Corporate programs and partner-led cases; larger Magento 2.x migrations.',
+            context:
+              'Corporate Laravel programs with a partner; separately—Magento 2.x migrations (e.g. gratisiskolan).',
             projects: [
               {
                 name: 'gratisiskolan.se (Sweden)',
@@ -1476,7 +1492,7 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: '102 PES (Ministry of Defense electrical networks)',
                 detail:
-                  'Corporate layer for technicians, customers, managers, and admins; public marketing shell.',
+                  'Greenfield Laravel—I wrote the codebase end-to-end and learned the domain. Portals for technicians, customers, managers, admins; public shell. Hard part: semi-government governance (planning, estimates, approvals); delivered a working contour. No Magento.',
                 links: [
                   { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
                   { kind: 'customer', href: 'https://102pes.ru/' },
@@ -1485,28 +1501,30 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'KPSK (insurance) — partner case page',
                 detail:
-                  'Work on a bank-related system: extending and hardening an existing project for the insurance front office and integrations.',
+                  'Laravel/PHP, no Magento: adapting heavy banking legacy for the insurance storefront and integrations. Long onboarding (pre-AI era), strict security; stabilized and extended—client and partner were happy with the outcome.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
               },
               {
                 name: 'Gagarin fitness club',
-                detail: 'Corporate site: structure, implementation, integrations, and ongoing work within the partner delivery process.',
+                detail:
+                  'Laravel structuring for Statamic: site architecture and integrations around CMS specifics and the partner process. No Magento.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
               },
               {
                 name: 'Crimean Musical Theatre, Pneumo plant, KKO concert hall',
                 detail:
-                  'Contributions to specific functional areas and iterations inside partner-led projects (scope varied by phase).',
+                  'Focused support and enhancements on complex slices inside partner projects (by phase). No Magento.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
               },
               {
                 name: 'Medical call center (archived)',
                 detail:
-                  'A bespoke system for the client’s operations, tied to the KPSK insurance/hospital workflow. Technically demanding; no longer active for external client reasons.',
+                  'Greenfield Laravel on mature specs—process sketches and design kept delivery on schedule. Tied to KPSK insurance/hospital flows; archived for external client reasons.',
               },
               {
                 name: 'Corporate solutions (NDA)',
-                detail: 'Monitoring, management, and integrations for energy, fitness, and education without public access.',
+                detail:
+                  'Summary line for closed contours without a public URL—not a separate project. See 102 PES, Gagarin, medical call center, and related cases above; scope on request.',
               },
             ],
           },

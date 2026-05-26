@@ -4,6 +4,7 @@ import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import SiteHeader from '../components/SiteHeader.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
+import ContactPin from '../components/ContactPin.astro';
 import { UI_FLAGS } from '../config/ui';
 
 interface Props {
@@ -88,6 +89,7 @@ const personJsonLd = {
         <p class="-mt-2">{t.footerQuote}</p>
       </div>
     </footer>
+    <ContactPin lang={lang} />
     <ScrollToTop label={scrollTopLabel} />
     <script is:inline>
       (function () {

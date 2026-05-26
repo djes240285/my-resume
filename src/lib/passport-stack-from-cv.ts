@@ -24,7 +24,7 @@ const LANE_TITLES: Record<Lang, Record<PassportContour, string[]>> = {
 /** Порядок иконок в строке (сначала ключевые для контура). */
 const ICON_PRIORITY: Record<PassportContour, string[]> = {
   backend: ['php', 'laravel', 'magento', 'mysql', 'docker', 'nginx', 'python', 'redis', 'postgresql', 'zend'],
-  frontend: ['vuedotjs', 'react', 'html5', 'vite', 'tailwindcss', 'figma', 'jquery'],
+  frontend: ['vuedotjs', 'react', 'statamic', 'html5', 'vite', 'tailwindcss', 'figma', 'jquery'],
   ai: ['cursor', 'claude', 'git', 'gitlab', 'visualstudiocode', 'npm'],
 };
 
