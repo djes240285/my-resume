@@ -4284,16 +4284,6 @@ html.audience-mode-pending [data-audience-approach-body] {
   width: 100%;
 }
 
-.mc-hero-primary__lead {
-  margin: 1rem 0 0;
-  max-width: none;
-  font-size: clamp(1.02rem, 2.2vw, 1.15rem);
-  font-weight: 500;
-  line-height: 1.58;
-  color: #b8c5d6;
-  text-wrap: pretty;
-}
-
 .mc-hero-primary__title {
   margin: 0;
   max-width: none;
@@ -4311,28 +4301,31 @@ html.audience-mode-pending [data-audience-approach-body] {
   color: #f1f5f9;
 }
 
+/* Короткий pitch — пиксель; длинный lead — Inter (читаемость кириллицы) */
 .mc-hero-primary__title.retro-heading-soft {
   font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
-  font-size: clamp(0.62rem, 2.35vw, 0.9rem);
+  font-size: clamp(0.68rem, 2.5vw, 0.95rem);
   font-weight: 400;
-  line-height: 1.85;
-  letter-spacing: 0.04em;
+  line-height: 1.9;
+  letter-spacing: 0.03em;
   color: #f1f5f9;
   text-shadow:
     0 0 0 rgba(56, 189, 248, 0.2),
     1px 1px 0 rgba(34, 197, 94, 0.18);
 }
 
-.mc-hero-primary__lead.retro-heading-soft {
-  font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
-  font-size: clamp(0.5rem, 1.8vw, 0.68rem);
+.mc-hero-primary__lead {
+  margin: 1rem 0 0;
+  max-width: 52rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid rgba(56, 189, 248, 0.35);
+  font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1rem, 2.1vw, 1.125rem);
   font-weight: 400;
-  line-height: 1.9;
-  letter-spacing: 0.03em;
-  color: #94a3b8;
-  text-shadow:
-    0 0 0 rgba(56, 189, 248, 0.12),
-    1px 1px 0 rgba(34, 197, 94, 0.12);
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: #b8c5d6;
+  text-wrap: pretty;
 }
 
 .mc-hero-primary__line {
