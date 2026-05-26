@@ -920,12 +920,13 @@ export const cv: Record<Lang, CVContent> = {
     portfolio: {
       metaTitle: 'Портфолио — Евгений Жуков',
       metaDescription:
-        'Кейсы: Magento, корпоративные системы, проекты с Веб-Стар Технологии, интеграции и внутренние контуры.',
+        'Кейсы в формате post-mortem: Magento, корпоративные системы, e-commerce, миграции. Фильтры и режимы экспертизы.',
       title: 'Портфолио',
-      lead: 'Публичные витрины и описания кейсов — частично на сайте партнёра; здесь — сжатый обзор и ссылки.',
-      introTitle: 'Как устроена витрина',
+      lead:
+        'Сжатые разборы коммерческих проектов: что было сломано, что сделано, какой результат. Ниже — карточки, фильтры по типу системы и переключатель акцента.',
+      introTitle: 'Как пользоваться страницей',
       introBody:
-        'Здесь — быстрое резюме и журнал контуров: имя, роль, кейсы. У партнёра — развёрнутые страницы под отрасли и коммерцию. Оба слоя дополняют друг друга: одно для «кто ты и чем занят», другое — для контекста заказчика и отрасли.',
+        'Каждая карточка — post-mortem: цель, диагноз, работы, метрики и стек. Фильтры «Фокус» показывают только нужный тип (e-commerce, enterprise, миграции, процесс). «Режим экспертизы» меняет подачу заголовков и кнопок. Ссылка «Открыть контур» ведёт на материалы кейса, если они доступны публично.',
       cards: [
         {
           title: 'Веб-Стар Технологии — кейсы',
@@ -1634,12 +1635,13 @@ export const cv: Record<Lang, CVContent> = {
     portfolio: {
       metaTitle: 'Portfolio — Eugene Zhukov',
       metaDescription:
-        'Cases: Magento, enterprise systems, WebStar Technology projects, integrations and internal platforms.',
+        'Post-mortem cases: Magento, enterprise systems, e-commerce, migrations. Filters and expertise modes.',
       title: 'Portfolio',
-      lead: 'Public case pages partly live on the partner site; this page is a compact map with links.',
-      introTitle: 'How the showcase is split',
+      lead:
+        'Compact post-mortems from commercial work: what broke, what was done, what changed. Cards, filters by system type, and an expertise mode switch below.',
+      introTitle: 'How to use this page',
       introBody:
-        'Here—a fast resume and project log: name, role, cases. On the partner site—longer industry and commercial pages. Two layers, one story: who you are vs. client context.',
+        'Each card is a post-mortem: target, diagnosis, work done, metrics, and stack. Focus filters narrow the list (e-commerce, enterprise, migrations, process). Expertise mode changes how titles and CTAs are framed. “Open contour” links to public case material when available.',
       cards: [
         {
           title: 'WebStar Technology — case hub',

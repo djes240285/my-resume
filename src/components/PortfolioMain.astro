@@ -19,151 +19,199 @@ const labels =
   lang === 'ru'
     ? {
         section: 'Раздел сайта',
-        heroLine: 'Кейсы в формате: проблема -> решение -> результат.',
         filtersTitle: 'Фокус',
         all: 'Все',
-        ecom: 'E-com',
-        enterprise: 'Enterprise',
+        ecom: 'E-commerce',
+        enterprise: 'Корпоративные',
         migrations: 'Миграции',
         process: 'Процесс',
-        layerTarget: 'TARGET',
-        layerDiagnosis: 'DIAGNOSIS',
-        layerOperation: 'OPERATION',
-        layerMetrics: 'METRICS',
-        layerStack: 'STACK_USED',
+        layerTarget: 'ЦЕЛЬ',
+        layerDiagnosis: 'ДИАГНОЗ',
+        layerOperation: 'РАБОТЫ',
+        layerMetrics: 'РЕЗУЛЬТАТ',
+        layerStack: 'СТЕК',
         openCase: 'Открыть контур',
         openDetails: 'Развернуть кейс',
+        ndaBadge: 'NDA',
         workStyle: 'Инженерный стандарт: от хаоса к системе',
         workStyleLead:
           'Прозрачный протокол, который снижает риск для продакшена и делает результат предсказуемым.',
-        runbookTitle: 'PROJECT_RUNBOOK.SH',
-        statusDone: 'COMPLETED',
-        statusProgress: 'IN_PROGRESS',
-        statusReady: 'READY',
+        runbookTitle: 'ПРОТОКОЛ.SH',
+        statusDone: 'ГОТОВО',
+        statusProgress: 'В РАБОТЕ',
+        statusReady: 'ГОТОВ К ЗАПУСКУ',
+        metricsTrustTitle: 'Метрики и доверие',
+        metricsTrustItems: [
+          '5+ лет поддержки сложных контуров без аварийных остановок.',
+          'Миграции и рефакторинг поэтапными релизами, без «большого взрыва».',
+          'Фокус: PSR/SOLID, CI/CD, предсказуемая поставка.',
+        ],
         noFitTitle: 'Как принимаю проект в работу',
         noFitBody:
           'Любой проект начинаю с оценки ТЗ, ограничений и реалистичности сроков/бюджета. Если вижу, что могу дать качественный и безопасный результат — беру в работу. Если нет, честно говорю об этом и предлагаю более реалистичный путь.',
         steps: [
           {
-            cmd: '[STEP 01] AUDIT_SYSTEM --scope "риски, техдолг, узкие места"',
+            cmd: '[ШАГ 01] АУДИТ — риски, техдолг, узкие места',
             outcome:
-              'Ценность: продакшен защищён от «правок на живую», у вас есть понятная карта рисков и приоритетов.',
+              'Продакшен защищён от «правок на живую», у вас есть карта рисков и приоритетов.',
             status: 'done',
           },
           {
-            cmd: '[STEP 02] STABILIZATION --mode "итеративное оздоровление"',
+            cmd: '[ШАГ 02] СТАБИЛИЗАЦИЯ — итеративное оздоровление',
             outcome:
-              'Ценность: система улучшается без остановки бизнес-процессов — эволюция вместо дорогой революции.',
+              'Система улучшается без остановки бизнес-процессов — эволюция вместо дорогой революции.',
             status: 'progress',
           },
           {
-            cmd: '[STEP 03] SCALE_AUTOMATION --target "CI/CD, мониторинг, поддерживаемость"',
+            cmd: '[ШАГ 03] МАСШТАБ — CI/CD, мониторинг, поддерживаемость',
             outcome:
-              'Ценность: получаете не «разовую правку», а управляемый цифровой актив, который можно безопасно развивать.',
+              'Не разовая правка, а управляемый цифровой актив, который можно безопасно развивать.',
             status: 'ready',
           },
         ],
+        expertiseTitle: 'Режим экспертизы',
+        modeLegacy: 'Легаси и стабильность',
+        modeProfit: 'Архитектор результата',
+        modeAi: 'ИИ и автоматизация',
+        modeLegacyDesc:
+          'Акцент на эволюцию легаси без остановки продакшена: сначала защита бизнес-контура, затем поэтапная модернизация.',
+        modeProfitDesc:
+          'Акцент на измеримый эффект для бизнеса, а не на объём часов в отчёте.',
+        modeAiDesc:
+          'Акцент на Laravel и ИИ-контуры (агенты, автоматизация) при соблюдении PSR/SOLID.',
+        packageLegacyTitle: 'Пакет: легаси',
+        packageLegacyBody: 'Аудит рисков, план миграции, безопасный релиз.',
+        packageProfitTitle: 'Пакет: рост',
+        packageProfitBody: 'Стабилизация, CI/CD, конверсия через UX и процесс.',
+        packageInterfaceTitle: 'Пакет: интерфейс',
+        packageInterfaceBody: 'Вёрстка по Figma для Blade/Vue/React без потери скорости.',
         periodLabel: 'Период',
         prevSlide: 'Назад',
         nextSlide: 'Вперёд',
         challengeTitle: 'КРИТИЧЕСКИЙ ЖУРНАЛ ИНЦИДЕНТОВ',
-        schemaTitle: 'ИНФРАСТРУКТУРНАЯ СХЕМА (PRE-POST DEPLOY)',
+        schemaTitle: 'ИНФРАСТРУКТУРНАЯ СХЕМА (ДО/ПОСЛЕ ВНЕДРЕНИЯ)',
         challengeBroken: 'Что было сломано',
         challengeFixed: 'Как починил',
-        badgeRescue: 'Rescue',
-        badgeStabilized: 'Stabilized',
-        badgeAiEnhanced: 'AI Enhanced',
-        ctaLegacy: 'Смотреть rescue-разбор',
-        ctaProfit: 'Смотреть growth-эффект',
-        ctaAi: 'Смотреть AI-контур',
-        ctaLegacyGlyph: '[R]',
-        ctaProfitGlyph: '[G]',
-        ctaAiGlyph: '[AI]',
+        badgeRescue: 'Реанимация',
+        badgeStabilized: 'Стабилизирован',
+        badgeAiEnhanced: 'С ИИ',
+        ctaLegacy: 'Смотреть разбор реанимации',
+        ctaProfit: 'Смотреть эффект для бизнеса',
+        ctaAi: 'Смотреть ИИ-контур',
+        ctaLegacyGlyph: '[Р]',
+        ctaProfitGlyph: '[Б]',
+        ctaAiGlyph: '[ИИ]',
         storyLegacy:
-          'Rescue First: показываю, как стабилизирую легаси-контур без остановки бизнеса и лишнего риска.',
+          'Режим «Реанимация»: кейсы стабилизации легаси без остановки бизнеса и лишнего риска.',
         storyProfit:
-          'Growth First: показываю кейсы, где инженерные решения конвертируются в измеримый коммерческий эффект.',
+          'Режим «Результат»: инженерные решения с измеримым коммерческим эффектом.',
         storyAi:
-          'AI First: показываю, где автоматизация и AI-агенты ускоряют delivery без потери качества.',
-        diagnosticTitle: 'ИНИЦИАЛИЗАЦИЯ ДИАГНОСТИКИ СИСТЕМЫ',
+          'Режим «ИИ»: автоматизация и агенты ускоряют поставку без потери качества.',
+        diagnosticTitle: 'Запрос диагностики системы',
         diagnosticBody:
           'Если проект вырос, легаси тормозит развитие, а команда боится правок в продакшене — опишите архитектуру или текущие боли. Без созвонов и брифов: точечный технический разбор и варианты стабилизации.',
         diagnosticCta: 'Отправить симптомы на анализ',
-        postMortemLabel: 'POST-MORTEM',
+        postMortemLabel: 'РАЗБОР КЕЙСА',
+        backToMission: '← Инженерный пульт',
+        mailSubject: 'Симптомы системы — запрос разбора',
       }
     : {
         section: 'Site section',
-        heroLine: 'Cases in format: problem -> solution -> outcome.',
         filtersTitle: 'Focus',
         all: 'All',
-        ecom: 'E-com',
+        ecom: 'E-commerce',
         enterprise: 'Enterprise',
         migrations: 'Migrations',
         process: 'Process',
         layerTarget: 'TARGET',
         layerDiagnosis: 'DIAGNOSIS',
-        layerOperation: 'OPERATION',
-        layerMetrics: 'METRICS',
-        layerStack: 'STACK_USED',
-        openCase: 'Open system',
+        layerOperation: 'WORK',
+        layerMetrics: 'OUTCOME',
+        layerStack: 'STACK',
+        openCase: 'Open contour',
         openDetails: 'View case',
+        ndaBadge: 'NDA-safe',
         workStyle: 'Engineering standard: from chaos to system',
         workStyleLead:
           'A transparent protocol that reduces production risk and makes delivery predictable.',
-        runbookTitle: 'PROJECT_RUNBOOK.SH',
-        statusDone: 'COMPLETED',
-        statusProgress: 'IN_PROGRESS',
+        runbookTitle: 'RUNBOOK.SH',
+        statusDone: 'DONE',
+        statusProgress: 'IN PROGRESS',
         statusReady: 'READY',
+        metricsTrustTitle: 'Metrics & trust',
+        metricsTrustItems: [
+          '5+ years supporting complex contours without emergency downtime.',
+          'Migrations and refactors through phased releases, not big-bang cutovers.',
+          'Focus: PSR/SOLID, CI/CD, predictable delivery.',
+        ],
         noFitTitle: 'How I accept projects',
         noFitBody:
           'I start every engagement with a clear review of scope, constraints, and budget/timeline realism. If I can deliver a safe, high-quality outcome, I commit. If not, I say it directly and suggest a more realistic path.',
         steps: [
           {
-            cmd: '[STEP 01] AUDIT_SYSTEM --scope "risks, tech debt, bottlenecks"',
+            cmd: '[STEP 01] AUDIT — risks, tech debt, bottlenecks',
             outcome:
-              'Value: production is protected from risky hot edits, with a clear risk map and first priorities.',
+              'Production is protected from risky hot edits, with a clear risk map and priorities.',
             status: 'done',
           },
           {
-            cmd: '[STEP 02] STABILIZATION --mode "iterative recovery"',
+            cmd: '[STEP 02] STABILIZATION — iterative recovery',
             outcome:
-              'Value: the system improves without stopping business workflows — evolution over costly revolution.',
+              'The system improves without stopping business workflows — evolution over costly revolution.',
             status: 'progress',
           },
           {
-            cmd: '[STEP 03] SCALE_AUTOMATION --target "CI/CD, monitoring, maintainability"',
+            cmd: '[STEP 03] SCALE — CI/CD, monitoring, maintainability',
             outcome:
-              'Value: you get a manageable digital asset, not a one-off patch, with safe paths for future growth.',
+              'A manageable digital asset you can evolve safely, not a one-off patch.',
             status: 'ready',
           },
         ],
+        expertiseTitle: 'Expertise mode',
+        modeLegacy: 'Legacy & stability',
+        modeProfit: 'Result architect',
+        modeAi: 'AI & automation',
+        modeLegacyDesc:
+          'Legacy evolution without stopping production: protect the business contour first, then modernize in phases.',
+        modeProfitDesc:
+          'Measurable business impact over billable-hour volume.',
+        modeAiDesc:
+          'Laravel plus AI workflows (agents, automation) while keeping PSR/SOLID quality.',
+        packageLegacyTitle: 'Legacy package',
+        packageLegacyBody: 'Risk audit, migration plan, safe release.',
+        packageProfitTitle: 'Growth package',
+        packageProfitBody: 'Stabilization, CI/CD, conversion via UX and process.',
+        packageInterfaceTitle: 'Interface package',
+        packageInterfaceBody: 'Figma-accurate Blade/Vue/React without performance loss.',
         periodLabel: 'Period',
         prevSlide: 'Prev',
         nextSlide: 'Next',
         challengeTitle: 'CRITICAL INCIDENT LOG',
-        schemaTitle: 'INFRA SCHEMA (PRE-POST DEPLOY)',
-        challengeBroken: 'Broken',
-        challengeFixed: 'Fixed',
+        schemaTitle: 'INFRA SCHEMA (PRE / POST DEPLOY)',
+        challengeBroken: 'What broke',
+        challengeFixed: 'How it was fixed',
         badgeRescue: 'Rescue',
         badgeStabilized: 'Stabilized',
-        badgeAiEnhanced: 'AI Enhanced',
+        badgeAiEnhanced: 'AI enhanced',
         ctaLegacy: 'View rescue breakdown',
-        ctaProfit: 'View growth impact',
-        ctaAi: 'View AI delivery contour',
+        ctaProfit: 'View business impact',
+        ctaAi: 'View AI contour',
         ctaLegacyGlyph: '[R]',
         ctaProfitGlyph: '[G]',
         ctaAiGlyph: '[AI]',
         storyLegacy:
-          'Rescue First: cases focused on stabilizing legacy systems without business interruption.',
+          'Rescue mode: stabilizing legacy systems without business interruption.',
         storyProfit:
-          'Growth First: cases where engineering decisions translate into measurable business results.',
+          'Result mode: engineering work with measurable business outcomes.',
         storyAi:
-          'AI First: cases where automation and AI agents accelerate delivery without quality loss.',
-        diagnosticTitle: 'INITIALIZE SYSTEM DIAGNOSTICS',
+          'AI mode: automation and agents that speed up delivery without quality loss.',
+        diagnosticTitle: 'System diagnostics request',
         diagnosticBody:
-          'If your system outgrew its architecture, legacy blocks change, and the team fears production edits — send your architecture notes or pain points. No calls or brief forms: a focused technical triage and stabilization options.',
+          'If your system outgrew its architecture, legacy blocks change, and the team fears production edits — send architecture notes or pain points. No calls or brief forms: focused triage and stabilization options.',
         diagnosticCta: 'Send symptoms for analysis',
-        postMortemLabel: 'POST-MORTEM',
+        postMortemLabel: 'CASE POST-MORTEM',
+        backToMission: '← Mission control',
+        mailSubject: 'System symptoms — triage request',
       };
 
 type ShowcaseCard = {
@@ -289,7 +337,7 @@ function inferChallenges(
         { broken: problem, fixed: action },
         {
           broken: 'Нужна была прозрачность рисков и предсказуемость релизов.',
-          fixed: 'Добавлен пошаговый delivery-контур с контролем качества и устойчивости.',
+            fixed: 'Добавлен пошаговый контур поставки с контролем качества и устойчивости.',
         },
       ]
     : [
@@ -312,7 +360,7 @@ function narrativeTitle(
   if (mode === 'profit') {
     return lang === 'ru' ? `Экономика результата: ${card.title}` : `Result economics: ${card.title}`;
   }
-  return lang === 'ru' ? `AI-ускорение delivery: ${card.title}` : `AI-accelerated delivery: ${card.title}`;
+  return lang === 'ru' ? `ИИ-контур: ${card.title}` : `AI-accelerated delivery: ${card.title}`;
 }
 
 const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
@@ -600,7 +648,7 @@ const featuredLayer: ShowcaseCard[] =
         },
         {
           title: 'Magento-реанимация: эволюция без остановки продаж',
-          tag: 'Legacy & Stability',
+          tag: 'Легаси · миграция',
           problem:
             'Система с 5-летним слоем кастомного кода на Magento 1.4, высокий риск падения базы и простой продаж при обновлении.',
           action:
@@ -615,12 +663,12 @@ const featuredLayer: ShowcaseCard[] =
         },
         {
           title: 'Техдолг в профит: windowcleaner.com',
-          tag: 'Profit Architect',
+          tag: 'E-commerce · рост',
           href: 'https://windowcleaner.com/',
           problem:
             'Хаотичные правки в продакшене снижали производительность и делали развитие непредсказуемым.',
           action:
-            'Внедрил управляемый delivery-контур: Docker-окружение, CI/CD, дисциплину релизов и улучшения UX на основе поведенческой аналитики.',
+            'Внедрил управляемый контур релизов: Docker-окружение, CI/CD, дисциплину выкладок и улучшения UX на основе поведенческой аналитики.',
           result:
             'Платформа масштабируется и стабильно живёт более 5 лет; суммарный эффект релизов дал измеримый рост коммерческой эффективности.',
           tags: ['all', 'ecom', 'process', 'enterprise'],
@@ -631,13 +679,13 @@ const featuredLayer: ShowcaseCard[] =
         },
         {
           title: 'Интерфейсная точность: Pixel Perfect + high-load',
-          tag: 'AI & Automation',
+          tag: 'ИИ · интерфейс',
           problem:
             'Высокая сложность интерфейсов (PWA/XenForo/ScandiPWA): нужно 100% соответствие макету без просадки скорости.',
           action:
-            'Реализовал Pixel Perfect слой и кастомные аддоны, используя модульную архитектуру и автоматизацию рутинных этапов проверки.',
+            'Реализовал вёрстку по Figma и кастомные аддоны, используя модульную архитектуру и автоматизацию рутинных этапов проверки.',
           result:
-            'UI точно соответствует Figma, система остаётся быстрой и пригодной к развитию. Детали проекта показаны в NDA-safe формате.',
+            'Интерфейс точно соответствует макету, система остаётся быстрой и пригодной к развитию. Детали проекта — в формате NDA.',
           tags: ['all', 'process', 'enterprise'],
           score: 997,
           priority: 116,
@@ -750,7 +798,6 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
     </p>
     <h1 class="retro-heading-soft mt-2 text-3xl font-bold tracking-tight text-slate-100 sm:text-4xl">{p.title}</h1>
     <p class="mt-3 max-w-3xl text-pretty text-base leading-relaxed text-slate-300">{p.lead}</p>
-    <p class="mt-2 text-sm font-mono text-emerald-300/90">{labels.heroLine}</p>
   </header>
 
   <section class="mt-10 border-t border-slate-800 pt-8">
@@ -761,47 +808,41 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
   <section class="mt-8 rounded-lg border border-cyan-500/25 bg-slate-900/95 p-4 sm:p-5" data-layer-switch>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <h2 class="retro-heading-soft text-sm font-bold uppercase tracking-wider text-cyan-300">
-        {lang === 'ru' ? 'Режим экспертизы' : 'Expertise mode'}
+        {labels.expertiseTitle}
       </h2>
       <div class="flex flex-wrap gap-2">
         <button type="button" class="rounded border border-cyan-500/45 bg-cyan-500/10 px-2.5 py-1 text-xs font-mono text-cyan-200" data-layer-mode-btn="legacy">
-          {lang === 'ru' ? 'Legacy & Stability' : 'Legacy & Stability'}
+          {labels.modeLegacy}
         </button>
         <button type="button" class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-layer-mode-btn="profit">
-          {lang === 'ru' ? 'Profit Architect' : 'Profit Architect'}
+          {labels.modeProfit}
         </button>
         <button type="button" class="rounded border border-slate-700 px-2.5 py-1 text-xs font-mono text-slate-300 hover:border-cyan-500/45" data-layer-mode-btn="ai">
-          {lang === 'ru' ? 'AI & Automation' : 'AI & Automation'}
+          {labels.modeAi}
         </button>
       </div>
     </div>
     <p class="mt-3 text-sm text-slate-300" data-layer-mode-panel="legacy">
-      {lang === 'ru'
-        ? 'Фокус: эволюция легаси без ломания продакшена. Сначала защищаю бизнес-контур, затем провожу системную модернизацию.'
-        : 'Focus: legacy evolution without breaking production. First protect the business contour, then modernize in controlled phases.'}
+      {labels.modeLegacyDesc}
     </p>
     <p class="mt-3 hidden text-sm text-slate-300" data-layer-mode-panel="profit">
-      {lang === 'ru'
-        ? 'Фокус: экономика результата. Приоритет — измеримый эффект для бизнеса, а не количество часов в отчёте.'
-        : 'Focus: result economics. Priority is measurable business impact, not billable-hour volume.'}
+      {labels.modeProfitDesc}
     </p>
     <p class="mt-3 hidden text-sm text-slate-300" data-layer-mode-panel="ai">
-      {lang === 'ru'
-        ? 'Фокус: Laravel + AI-контуры (агенты, автоматизация) для ускорения delivery при соблюдении инженерных стандартов PSR/SOLID.'
-        : 'Focus: Laravel + AI workflows (agents, automation) to accelerate delivery while preserving PSR/SOLID engineering quality.'}
+      {labels.modeAiDesc}
     </p>
     <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
       <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
-        <p class="font-mono uppercase tracking-wide text-cyan-300">Legacy Package</p>
-        <p class="mt-1">{lang === 'ru' ? 'Аудит рисков -> план миграции -> безопасный релиз.' : 'Risk audit -> migration plan -> safe release.'}</p>
+        <p class="font-mono uppercase tracking-wide text-cyan-300">{labels.packageLegacyTitle}</p>
+        <p class="mt-1">{labels.packageLegacyBody}</p>
       </div>
       <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
-        <p class="font-mono uppercase tracking-wide text-cyan-300">Profit Package</p>
-        <p class="mt-1">{lang === 'ru' ? 'Стабилизация -> CI/CD -> рост конверсии через UX и процесс.' : 'Stabilization -> CI/CD -> conversion growth via UX and process.'}</p>
+        <p class="font-mono uppercase tracking-wide text-cyan-300">{labels.packageProfitTitle}</p>
+        <p class="mt-1">{labels.packageProfitBody}</p>
       </div>
       <div class="rounded border border-slate-800 bg-slate-950/70 p-3 text-xs text-slate-300">
-        <p class="font-mono uppercase tracking-wide text-cyan-300">Interface Package</p>
-        <p class="mt-1">{lang === 'ru' ? 'Pixel Perfect Implementation для Blade/Vue/React без потери производительности.' : 'Pixel Perfect Implementation for Blade/Vue/React without performance loss.'}</p>
+        <p class="font-mono uppercase tracking-wide text-cyan-300">{labels.packageInterfaceTitle}</p>
+        <p class="mt-1">{labels.packageInterfaceBody}</p>
       </div>
     </div>
   </section>
@@ -858,7 +899,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
               {card.status === 'stabilized' ? (
                 <span class="case-badge case-badge--stable">{labels.badgeStabilized}</span>
               ) : null}
-              {card.ndaSafe ? <span class="case-badge case-badge--nda">NDA-safe</span> : null}
+              {card.ndaSafe ? <span class="case-badge case-badge--nda">{labels.ndaBadge}</span> : null}
               <span class="case-badge case-badge--period">
                 {labels.periodLabel}: {card.tag}
               </span>
@@ -998,12 +1039,12 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
       <div class="p-4">
         <div class="mb-3 rounded border border-emerald-500/30 bg-emerald-500/8 px-2.5 py-2">
           <p class="font-mono text-[11px] uppercase tracking-wide text-emerald-300">
-            {lang === 'ru' ? 'METRICS & TRUST' : 'METRICS & TRUST'}
+            {labels.metricsTrustTitle}
           </p>
           <ul class="mt-1 space-y-1 text-[12px] leading-relaxed text-slate-300">
-            <li>{lang === 'ru' ? '• 5+ лет поддержки сложных контуров без аварийных остановок.' : '• 5+ years supporting complex contours without emergency downtime.'}</li>
-            <li>{lang === 'ru' ? '• Миграции и рефакторинг через поэтапные релизы вместо «большого взрыва».' : '• Migration and refactoring through phased releases, not big-bang cutovers.'}</li>
-            <li>{lang === 'ru' ? '• Инженерный фокус: PSR/SOLID, CI/CD, предсказуемый delivery.' : '• Engineering focus: PSR/SOLID, CI/CD, predictable delivery.'}</li>
+            {labels.metricsTrustItems.map((item) => (
+              <li>• {item}</li>
+            ))}
           </ul>
         </div>
         <p class="text-sm leading-relaxed text-slate-300">{labels.workStyleLead}</p>
@@ -1038,7 +1079,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
     </p>
     <a
       class="portfolio-diagnostic__cta mission-btn mission-btn--primary mt-5"
-      href={`mailto:${cv.contact.emails[0]}?subject=${encodeURIComponent(lang === 'ru' ? 'Симптомы системы — запрос разбора' : 'System symptoms — triage request')}`}
+      href={`mailto:${cv.contact.emails[0]}?subject=${encodeURIComponent(labels.mailSubject)}`}
     >
       {labels.diagnosticCta}
     </a>
@@ -1046,7 +1087,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
   <p class="mt-10 text-center">
     <a href={siteMissionHref(lang)} class="mr-4 text-sm text-slate-500 hover:text-cyan-300">
-      {lang === 'ru' ? '← Инженерный пульт' : '← Mission control'}
+      {labels.backToMission}
     </a>
     {
       SITE_SHOW_RESUME ? (
