@@ -1,0 +1,61 @@
+---
+import type { HeroLiveStatus } from '../i18n/cv-data';
+
+interface Props {
+  textId: string;
+  dotId: string;
+  messages: HeroLiveStatus;
+  dotClassPrefix: string;
+}
+
+const { textId, dotId, messages, dotClassPrefix } = Astro.props;
+---
+
+<script define:vars={{ textId, dotId, messages, dotClassPrefix }}>
+  (function initLiveStatusMsk() {
+    function mskTotalMinutes() {
+      var parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Moscow',
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: false,
+      }).formatToParts(new Date());
+      var h = 0;
+      var m = 0;
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i].type === 'hour') h = parseInt(parts[i].value, 10) || 0;
+        if (parts[i].type === 'minute') m = parseInt(parts[i].value, 10) || 0;
+      }
+      return h * 60 + m;
+    }
+
+    function liveStatusKey() {
+      var t = mskTotalMinutes();
+      if (t >= 22 * 60 || t < 7 * 60) return 'unavailable';
+      if (t >= 12 * 60 && t < 14 * 60) return 'lunch';
+      return 'available';
+    }
+
+    function paint() {
+      var el = document.getElementById(textId);
+      var dot = document.getElementById(dotId);
+      if (!el || !messages) return;
+      var k = liveStatusKey();
+      el.textContent = messages[k] || messages.available;
+      if (dot) {
+        dot.className = dotClassPrefix + ' ' + dotClassPrefix + '--' + k;
+      }
+    }
+
+    function boot() {
+      paint();
+      window.setInterval(paint, 60000);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  })();
+</script>

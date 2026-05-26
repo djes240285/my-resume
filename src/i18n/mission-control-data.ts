@@ -25,8 +25,6 @@ export type MissionControlContent = {
     identityRole: string;
   };
   liveStatus: {
-    label: string;
-    value: string;
     focusLabel: string;
     focusValue: string;
   };
@@ -90,8 +88,6 @@ const ru: MissionControlContent = {
     identityRole: 'Инженер восстановления систем · фулстек · архитектор',
   },
   liveStatus: {
-    label: 'СТАТУС',
-    value: 'Открыт к точечным проектам',
     focusLabel: 'Текущий фокус',
     focusValue: 'ИИ-ускоренная инфраструктура и восстановление легаси',
   },
@@ -132,21 +128,21 @@ const ru: MissionControlContent = {
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
         operation: 'Реанимация ядра Magento 1→2',
-        status: 'ACTIVE_5+YRS',
+        status: 'В ПРОДЕ · 5+ ЛЕТ',
       },
       {
         id: 'ID_02',
         slug: 'krymresurs',
         name: 'Крымресурс',
         operation: 'Интеграция документооборота',
-        status: 'IN_PRODUCTION',
+        status: 'В ЭКСПЛУАТАЦИИ',
       },
       {
         id: 'ID_03',
         slug: 'dostavka-zpr',
         name: 'Доставка-ЗПР',
         operation: 'Автоматизация логистики',
-        status: 'OPERATIONAL',
+        status: 'ШТАТНО · В КОНТУРЕ',
       },
     ],
     portfolioCta: 'Смотреть полный дебаг-лог всех кейсов (портфолио)',
@@ -188,8 +184,6 @@ const en: MissionControlContent = {
     identityRole: 'Systems recovery engineer · full-stack · architect',
   },
   liveStatus: {
-    label: 'STATUS',
-    value: 'Open to selective engagements',
     focusLabel: 'Current focus',
     focusValue: 'AI-augmented infrastructure and legacy recovery',
   },
@@ -230,14 +224,14 @@ const en: MissionControlContent = {
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
         operation: 'Magento core recovery 1→2',
-        status: 'ACTIVE_5+YRS',
+        status: 'IN PROD · 5+ YRS',
       },
       {
         id: 'ID_02',
         slug: 'krymresurs',
         name: 'Krymresurs',
         operation: 'Document workflow integration',
-        status: 'IN_PRODUCTION',
+        status: 'IN PRODUCTION',
       },
       {
         id: 'ID_03',

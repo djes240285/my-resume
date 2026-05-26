@@ -10,6 +10,7 @@ import {
 } from '../config/avatar-experience';
 import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
 import ContactCopyIcon from './ContactCopyIcon.astro';
+import LiveStatusInit from './LiveStatusInit.astro';
 import TechRoadmap from './TechRoadmap.astro';
 
 interface Props {
@@ -784,6 +785,13 @@ const audienceMode = {
   </section>
 </main>
 
+<LiveStatusInit
+  textId="hero-live-status"
+  dotId="hero-live-status-dot"
+  messages={t.heroLiveStatus}
+  dotClassPrefix="hero-live-status__dot"
+/>
+
 <script define:vars={{ audienceMode }}>
   (function initAudienceModeEarly() {
     if (!audienceMode || !audienceMode.modes) return;
@@ -932,7 +940,6 @@ const audienceMode = {
   stackSlides,
   shutterSrc: AVATAR_SHUTTER_MP3,
   shutterCutMs: AVATAR_SHUTTER_PLAY_MS,
-  heroLiveStatus: t.heroLiveStatus,
   heroConsole: t.heroConsole,
   contactCopied: L.contactCopied,
   contactCopyToast: L.contactCopyToast,
@@ -961,42 +968,7 @@ const audienceMode = {
       });
     }
 
-    (function initHeroLiveAndTypewriter() {
-      var msgs = heroLiveStatus;
-      function mskTotalMinutes() {
-        var parts = new Intl.DateTimeFormat('en-GB', {
-          timeZone: 'Europe/Moscow',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: false,
-        }).formatToParts(new Date());
-        var h = 0;
-        var m = 0;
-        for (var i = 0; i < parts.length; i++) {
-          if (parts[i].type === 'hour') h = parseInt(parts[i].value, 10) || 0;
-          if (parts[i].type === 'minute') m = parseInt(parts[i].value, 10) || 0;
-        }
-        return h * 60 + m;
-      }
-      function liveStatusKey() {
-        var t = mskTotalMinutes();
-        if (t >= 22 * 60 || t < 7 * 60) return 'unavailable';
-        if (t >= 12 * 60 && t < 14 * 60) return 'lunch';
-        return 'available';
-      }
-      function paintLiveStatus() {
-        var el = document.getElementById('hero-live-status');
-        var dot = document.getElementById('hero-live-status-dot');
-        if (!el || !msgs) return;
-        var k = liveStatusKey();
-        el.textContent = msgs[k] || msgs.available;
-        if (dot) {
-          dot.className = 'hero-live-status__dot hero-live-status__dot--' + k;
-        }
-      }
-      paintLiveStatus();
-      window.setInterval(paintLiveStatus, 60000);
-
+    (function initHeroTypewriter() {
       var hc = heroConsole;
       var con = document.querySelector('[data-hero-console]');
       var conTitle = con && con.querySelector('[data-hero-console-title]');

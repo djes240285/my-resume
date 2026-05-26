@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
+import LiveStatusInit from './LiveStatusInit.astro';
 
 interface Props {
   lang: Lang;
@@ -93,11 +94,19 @@ const isMission = path.includes('/mission');
       </div>
       {
         isMission ? (
-          <div class="terminal-header-status" role="status" aria-live="polite">
-            <span class="terminal-header-status__mark">{t.navStatusMark}</span>
-            <span class="terminal-header-status__dot" aria-hidden="true" />
-            <span class="terminal-header-status__ready">{t.navStatusReady}</span>
-          </div>
+          <>
+            <div class="terminal-header-status" role="status" aria-live="polite">
+              <span class="terminal-header-status__mark">{t.navStatusMark}</span>
+              <span class="terminal-header-status__dot" id="header-live-status-dot" aria-hidden="true" />
+              <span class="terminal-header-status__ready" id="header-live-status">—</span>
+            </div>
+            <LiveStatusInit
+              textId="header-live-status"
+              dotId="header-live-status-dot"
+              messages={t.heroLiveStatus}
+              dotClassPrefix="terminal-header-status__dot"
+            />
+          </>
         ) : null
       }
     </div>
