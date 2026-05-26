@@ -85,15 +85,19 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
   </section>
 
   <section class="mc-passport__viz" aria-label={passport.vizAriaLabel}>
-    <div class="mc-passport__viz-row">
-      <div class="mc-passport__metric-pill">
-        <span class="mc-passport__metric-pill-k">{passport.stabilityLabel}</span>
-        <span class="mc-passport__metric-pill-v">{passport.stabilityValue}</span>
-      </div>
-      <div class="mc-passport__metric-pill">
-        <span class="mc-passport__metric-pill-k">{passport.aiContourLabel}</span>
-        <span class="mc-passport__metric-pill-v">{passport.aiContourValue}</span>
-      </div>
+    <div class="mc-passport__readouts">
+      {
+        passport.readouts.map((readout) => (
+          <article class:list={['mc-passport__readout', `mc-passport__readout--${readout.tone}`]}>
+            <header class="mc-passport__readout-head">
+              <span class="mc-passport__readout-code">{readout.code}</span>
+              <span class="mc-passport__readout-label">{readout.label}</span>
+            </header>
+            <p class="mc-passport__readout-headline">{readout.headline}</p>
+            <p class="mc-passport__readout-detail">{readout.detail}</p>
+          </article>
+        ))
+      }
     </div>
 
     <div class="mc-passport__ecg-wrap">
@@ -111,7 +115,10 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
     </div>
 
     <div class="mc-passport__activity">
-      <p class="mc-passport__activity-label">{passport.activityLabel}</p>
+      <p class="mc-passport__activity-label">
+        {passport.activityLabel}
+        <span class="mc-passport__activity-hint">{passport.activityHint}</span>
+      </p>
       <svg class="mc-passport__activity-grid" viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         {
           activityCells.map((opacity, i) => {

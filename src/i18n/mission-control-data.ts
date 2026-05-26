@@ -28,6 +28,15 @@ export type PassportStackGroup = {
   contour: 'backend' | 'frontend' | 'ai';
 };
 
+/** Бортовой readout в паспорте (вместо «голых» процентов) */
+export type PassportReadout = {
+  code: string;
+  label: string;
+  headline: string;
+  detail: string;
+  tone: 'stability' | 'ai';
+};
+
 export type MindsetIndicatorVariant = 'audit' | 'regime' | 'scale' | 'e2e';
 
 export type MissionMindsetStep = {
@@ -46,11 +55,9 @@ export type MissionEngineerPassport = {
   metrics: PassportMetric[];
   stackTitle: string;
   stackGroups: PassportStackGroup[];
-  stabilityLabel: string;
-  stabilityValue: string;
-  aiContourLabel: string;
-  aiContourValue: string;
+  readouts: PassportReadout[];
   activityLabel: string;
+  activityHint: string;
   vizAriaLabel: string;
 };
 
@@ -138,12 +145,27 @@ const ru: MissionControlContent = {
         contour: 'ai',
       },
     ],
-    stabilityLabel: 'Стабильность продакшена',
-    stabilityValue: '99.9%',
-    aiContourLabel: 'AI в рабочих процессах',
-    aiContourValue: 'ускоряет поставку',
-    activityLabel: 'Активность в контурах (12 мес.)',
-    vizAriaLabel: 'График стабильности и индикатор активности',
+    readouts: [
+      {
+        code: 'STAB',
+        label: 'Стабильность продакшена',
+        headline: 'Эволюция без «большого взрыма»',
+        detail:
+          'Итеративные релизы, rollback-план и мониторинг. P1 разбираю в SLA команды — без остановки бизнес-процессов.',
+        tone: 'stability',
+      },
+      {
+        code: 'AI-OPS',
+        label: 'AI в рабочих процессах',
+        headline: 'Cursor-агенты и LLM в daily-workflow',
+        detail:
+          'Оценка ТЗ, ревью diff, бойлерплейт, миграции и поиск регрессий в легаси. Архитектуру и критичные узлы проектирую вручную.',
+        tone: 'ai',
+      },
+    ],
+    activityLabel: 'Вовлечённость по контурам',
+    activityHint: '12 мес. · интенсивность коммерческой работы',
+    vizAriaLabel: 'Пульс стабильности и тепловая карта вовлечённости',
   },
   mindset: {
     title: 'Как я работаю',
@@ -256,12 +278,27 @@ const en: MissionControlContent = {
         contour: 'ai',
       },
     ],
-    stabilityLabel: 'Production stability',
-    stabilityValue: '99.9%',
-    aiContourLabel: 'AI in workflows',
-    aiContourValue: 'faster delivery',
-    activityLabel: 'Contour activity (12 mo.)',
-    vizAriaLabel: 'Stability chart and activity heatmap',
+    readouts: [
+      {
+        code: 'STAB',
+        label: 'Production stability',
+        headline: 'Evolution, not big-bang',
+        detail:
+          'Iterative releases, rollback plan, and monitoring. P1 triage within team SLA — business flows keep running.',
+        tone: 'stability',
+      },
+      {
+        code: 'AI-OPS',
+        label: 'AI in workflows',
+        headline: 'Cursor agents + LLM in daily work',
+        detail:
+          'Scope review, diff review, boilerplate, migrations, legacy regression hunts. Architecture and critical paths stay hand-owned.',
+        tone: 'ai',
+      },
+    ],
+    activityLabel: 'Contour involvement',
+    activityHint: '12 mo. · commercial engagement intensity',
+    vizAriaLabel: 'Stability pulse and involvement heatmap',
   },
   mindset: {
     title: 'How I work',
