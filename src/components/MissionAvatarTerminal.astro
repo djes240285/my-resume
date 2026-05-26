@@ -1,0 +1,208 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import {
+  AVATAR_SHUTTER_MP3,
+  AVATAR_SHUTTER_PLAY_MS,
+  AVATAR_STACK_SLIDES,
+  avatarSlideLabel,
+} from '../config/avatar-experience';
+import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
+
+interface Props {
+  lang: Lang;
+  alt: string;
+}
+
+const { lang, alt } = Astro.props;
+const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
+  id: slide.id,
+  src: slide.src,
+  webpSrc: slide.webpSrc ?? '',
+  label: avatarSlideLabel(slide, lang),
+}));
+const ariaLabel =
+  lang === 'ru'
+    ? 'Фото профиля: кадр стека. Наведите — видоискатель. Клик или Enter — следующий кадр.'
+    : 'Profile stack: hover for viewfinder. Click or Enter for next frame.';
+---
+
+<div
+  class="avatar-terminal-group mc-avatar-terminal"
+  role="button"
+  tabindex="0"
+  data-mc-avatar-stack
+  aria-label={ariaLabel}
+>
+  <div class="avatar-terminal-frame">
+    <div class="avatar-terminal-inner hud-frame">
+      <div class="avatar-terminal-deco" aria-hidden="true"></div>
+      <div class="avatar-terminal-slot-window">
+        <picture data-avatar-picture>
+          <source type="image/webp" srcset={AVATAR_STACK_SLIDES[0].webpSrc} data-avatar-webp-source />
+          <img
+            class="avatar-terminal-slot-img avatar-terminal-film-img--retro"
+            data-mc-avatar-slot
+            src={AVATAR_STACK_SLIDES[0].src}
+            alt={alt}
+            width={320}
+            height={320}
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+        <AvatarViewfinderOverlay />
+        <div class="avatar-terminal-crt" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+  <p class="avatar-stack-chip" data-mc-avatar-chip aria-live="polite">
+    {avatarSlideLabel(AVATAR_STACK_SLIDES[0], lang)}
+  </p>
+</div>
+
+<script define:vars={{ stackSlides, shutterSrc: AVATAR_SHUTTER_MP3, shutterCutMs: AVATAR_SHUTTER_PLAY_MS }}>
+  (function initMcAvatarStack() {
+    var group = document.querySelector('[data-mc-avatar-stack]');
+    var slot = document.querySelector('[data-mc-avatar-slot]');
+    var slotWindow = group && group.querySelector('.avatar-terminal-slot-window');
+    var chip = document.querySelector('[data-mc-avatar-chip]');
+    if (!group || !slot || !(slot instanceof HTMLImageElement) || !stackSlides.length) return;
+
+    var vfSuppressTimer = null;
+    var idx = 0;
+    var avatarSwapBusy = false;
+    var motionOkAvatar = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    function clearVfSuppressTimer() {
+      if (vfSuppressTimer) {
+        clearTimeout(vfSuppressTimer);
+        vfSuppressTimer = null;
+      }
+    }
+
+    function scheduleViewfinderSuppress() {
+      clearVfSuppressTimer();
+      vfSuppressTimer = window.setTimeout(function () {
+        vfSuppressTimer = null;
+        if (group.matches(':hover')) {
+          group.classList.add('avatar-terminal-group--vf-suppressed');
+        }
+      }, 1000);
+    }
+
+    group.addEventListener('mouseleave', function () {
+      clearVfSuppressTimer();
+      group.classList.remove('avatar-terminal-group--vf-suppressed');
+    });
+
+    var shutterAudio = null;
+    var shutterCutTimer = null;
+    var shutterPlayingHandler = null;
+
+    function applyRetroClass() {
+      var id = stackSlides[idx] && stackSlides[idx].id;
+      slot.classList.toggle('avatar-terminal-film-img--retro', id === 'retro');
+    }
+
+    function render() {
+      var s = stackSlides[idx];
+      if (!s) return;
+      var pic = slot.closest('picture');
+      var webpEl = pic && pic.querySelector('[data-avatar-webp-source]');
+      if (webpEl instanceof HTMLSourceElement) {
+        if (s.webpSrc) webpEl.setAttribute('srcset', s.webpSrc);
+        else webpEl.removeAttribute('srcset');
+      }
+      slot.src = s.src;
+      if (chip) chip.textContent = s.label;
+      applyRetroClass();
+    }
+
+    function clearShutterCutTimer() {
+      if (shutterCutTimer) {
+        clearTimeout(shutterCutTimer);
+        shutterCutTimer = null;
+      }
+    }
+
+    function playShutterSound() {
+      if (!shutterSrc) return;
+      try {
+        if (!shutterAudio) {
+          shutterAudio = new Audio(shutterSrc);
+          shutterAudio.preload = 'auto';
+          shutterAudio.volume = 0.95;
+        }
+        clearShutterCutTimer();
+        if (shutterPlayingHandler && shutterAudio) {
+          shutterAudio.removeEventListener('playing', shutterPlayingHandler);
+          shutterPlayingHandler = null;
+        }
+        shutterAudio.pause();
+        shutterAudio.currentTime = 0;
+        var ms = Number(shutterCutMs);
+        if (!(ms > 0)) ms = 900;
+        shutterPlayingHandler = function () {
+          if (!shutterAudio || !shutterPlayingHandler) return;
+          shutterAudio.removeEventListener('playing', shutterPlayingHandler);
+          shutterPlayingHandler = null;
+          shutterCutTimer = window.setTimeout(function () {
+            shutterCutTimer = null;
+            if (!shutterAudio) return;
+            shutterAudio.pause();
+            shutterAudio.currentTime = 0;
+          }, ms);
+        };
+        shutterAudio.addEventListener('playing', shutterPlayingHandler);
+        var p = shutterAudio.play();
+        if (p && typeof p.then === 'function') {
+          void p.catch(function () {
+            clearShutterCutTimer();
+          });
+        }
+      } catch (e) {
+        /* ignore */
+      }
+    }
+
+    function nextSlide() {
+      group.classList.remove('avatar-terminal-group--vf-suppressed');
+      playShutterSound();
+      scheduleViewfinderSuppress();
+      if (!motionOkAvatar) {
+        idx = (idx + 1) % stackSlides.length;
+        render();
+        return;
+      }
+      if (avatarSwapBusy) return;
+      avatarSwapBusy = true;
+      var fadeCommitted = false;
+      function commitFadeOut() {
+        if (fadeCommitted) return;
+        fadeCommitted = true;
+        idx = (idx + 1) % stackSlides.length;
+        render();
+        slot.classList.remove('avatar-terminal-slot-img--swap-out');
+        if (slotWindow) slotWindow.classList.remove('avatar-terminal-slot-window--show-ez');
+        window.setTimeout(function () {
+          avatarSwapBusy = false;
+        }, 440);
+      }
+      if (slotWindow) slotWindow.classList.add('avatar-terminal-slot-window--show-ez');
+      slot.classList.add('avatar-terminal-slot-img--swap-out');
+      window.setTimeout(commitFadeOut, 400);
+    }
+
+    group.addEventListener('click', function (ev) {
+      if (ev.target.closest('a, button')) return;
+      nextSlide();
+    });
+    group.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        nextSlide();
+      }
+    });
+    render();
+  })();
+</script>

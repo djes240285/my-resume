@@ -19,6 +19,7 @@ export type MissionControlContent = {
   hero: {
     headlineLine1: string;
     headlineLine2: string;
+    lead: string;
     subheadLines: string[];
     identityName: string;
     identityRole: string;
@@ -62,10 +63,11 @@ export type MissionControlContent = {
   };
   cta: {
     email: string;
+    telegram: string;
+    max: string;
     portfolio: string;
     resume: string;
   };
-  linkedinLabel: string;
 };
 
 const ru: MissionControlContent = {
@@ -75,10 +77,14 @@ const ru: MissionControlContent = {
   hero: {
     headlineLine1: 'Стабилизирую системы,',
     headlineLine2: 'которые бизнес боится трогать.',
+    lead:
+      'Беру контуры, которые нельзя просто выключить: легаси, интеграции и релизы без права на откат. Сначала диагностика и предсказуемость — потом ускорение и рост.',
     subheadLines: [
       'Легаси и нестабильные релизы',
-      'Хаос интеграций',
+      'Хаос интеграций и «ручные» стыки',
       'Миграции без права на простой',
+      'Регрессии без владельца',
+      'Масштаб, который ломает то, что «и так работало»',
     ],
     identityName: 'Евгений Жуков',
     identityRole: 'Инженер восстановления систем · фулстек · архитектор',
@@ -155,10 +161,11 @@ const ru: MissionControlContent = {
   },
   cta: {
     email: 'Написать',
+    telegram: 'Telegram',
+    max: 'MAX',
     portfolio: 'Портфолио',
     resume: 'Резюме',
   },
-  linkedinLabel: 'Профиль в LinkedIn',
 };
 
 const en: MissionControlContent = {
@@ -168,10 +175,14 @@ const en: MissionControlContent = {
   hero: {
     headlineLine1: 'I stabilize systems',
     headlineLine2: 'businesses are afraid to touch.',
+    lead:
+      'I take on systems you cannot simply switch off: legacy, integrations, and releases with no rollback window. Diagnosis and predictability first — then speed and growth.',
     subheadLines: [
       'Legacy and brittle releases',
-      'Integration chaos',
+      'Integration chaos and manual glue',
       'Migrations with no downtime window',
+      'Regressions with no owner',
+      'Scale that breaks what “already worked”',
     ],
     identityName: 'Eugene Zhukov',
     identityRole: 'Systems recovery engineer · full-stack · architect',
@@ -248,10 +259,11 @@ const en: MissionControlContent = {
   },
   cta: {
     email: 'Email me',
+    telegram: 'Telegram',
+    max: 'MAX',
     portfolio: 'Portfolio',
     resume: 'Resume',
   },
-  linkedinLabel: 'LinkedIn profile',
 };
 
 export function getMissionControl(lang: Lang): MissionControlContent {

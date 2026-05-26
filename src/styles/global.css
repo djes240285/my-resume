@@ -4052,10 +4052,35 @@ html.audience-mode-pending [data-audience-approach-body] {
   color: #4ade80;
 }
 
+.mc-surface {
+  border: 1px solid rgba(100, 116, 139, 0.38);
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(51, 65, 85, 0.42), rgba(15, 23, 42, 0.88));
+  box-shadow: 0 12px 32px rgba(2, 6, 23, 0.28);
+}
+
+.mc-hero-primary__card {
+  width: 100%;
+  padding: 1.35rem 1.4rem;
+}
+
+.mc-hero-primary__pitch {
+  width: 100%;
+}
+
+.mc-hero-primary__lead {
+  margin: 1rem 0 0;
+  max-width: none;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  line-height: 1.55;
+  color: #cbd5e1;
+  text-wrap: pretty;
+}
+
 .mc-hero-primary__title {
   margin: 0;
-  max-width: 20ch;
-  font-size: clamp(1.75rem, 4.5vw, 2.65rem);
+  max-width: none;
+  font-size: clamp(1.85rem, 4.8vw, 2.85rem);
   font-weight: 700;
   line-height: 1.12;
   letter-spacing: -0.03em;
@@ -4077,13 +4102,13 @@ html.audience-mode-pending [data-audience-approach-body] {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem 1.25rem;
-  max-width: 42rem;
+  max-width: none;
 }
 
 .mc-hero-primary__subheads li {
-  font-size: 0.9375rem;
-  line-height: 1.4;
-  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #b8c5d6;
 }
 
 .mc-hero-primary__subheads li::before {
@@ -4091,78 +4116,111 @@ html.audience-mode-pending [data-audience-approach-body] {
   color: #475569;
 }
 
-.mc-hero-primary__bar {
+.mc-hero-primary__profile {
   display: grid;
   gap: 1.25rem;
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(51, 65, 85, 0.45);
+  margin-top: 1.5rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid rgba(100, 116, 139, 0.28);
+  align-items: center;
 }
 
-@media (min-width: 768px) {
-  .mc-hero-primary__bar {
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
+@media (min-width: 640px) {
+  .mc-hero-primary__profile {
+    grid-template-columns: auto 1fr;
     gap: 1.5rem 2rem;
   }
 }
 
-.mc-hero-primary__photo .mc-hero__photo-wrap {
-  max-width: 160px;
+.mc-hero-primary__photo {
+  justify-self: center;
 }
 
-.mc-hero-primary__photo .mission-hero__photo {
-  max-height: 160px;
+@media (min-width: 640px) {
+  .mc-hero-primary__photo {
+    justify-self: start;
+  }
+}
+
+.mc-avatar-terminal.avatar-terminal-group {
+  width: min(100%, 280px);
+}
+
+@media (min-width: 768px) {
+  .mc-avatar-terminal.avatar-terminal-group {
+    width: 300px;
+  }
+}
+
+.mc-hero-primary__identity {
+  min-width: 0;
 }
 
 .mc-hero-primary__name {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem);
   font-weight: 700;
-  color: #f1f5f9;
+  color: #f8fafc;
 }
 
 .mc-hero-primary__role {
-  margin: 0.3rem 0 0;
-  font-size: 0.875rem;
+  margin: 0.35rem 0 0;
+  font-size: clamp(1rem, 2vw, 1.0625rem);
   line-height: 1.45;
-  color: #94a3b8;
+  color: #b8c5d6;
 }
 
 .mc-hero-primary__focus {
-  margin: 0.65rem 0 0;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: #64748b;
+  margin: 0.75rem 0 0;
+  font-size: clamp(0.9375rem, 1.8vw, 1.0625rem);
+  line-height: 1.5;
+  color: #94a3b8;
 }
 
 .mc-hero-primary__focus-k {
   display: block;
   font-family: "JetBrains Mono Variable", ui-monospace, monospace;
-  font-size: 0.58rem;
+  font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: #475569;
-  margin-bottom: 0.15rem;
+  color: #64748b;
+  margin-bottom: 0.2rem;
 }
 
 .mc-hero-primary__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(100, 116, 139, 0.22);
 }
 
 .mc-hero-primary .mission-btn {
-  font-size: 0.75rem;
-  padding: 0.42rem 0.7rem;
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.mission-btn--icon {
+  gap: 0.45rem;
+}
+
+.mission-btn__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.mission-btn__icon--max {
+  border-radius: 4px;
 }
 
 /* Narrative */
 .mc-narrative {
   margin: 0;
-  padding: 0;
-  border: none;
-  max-width: 44rem;
+  padding: 1.25rem 1.35rem;
+  max-width: none;
 }
 
 .mc-narrative p {
@@ -4175,6 +4233,10 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 /* Mindset */
+.mc-mindset {
+  padding: 1.25rem 1.35rem;
+}
+
 .mc-mindset__list {
   margin: 0;
   padding: 0;
@@ -4481,10 +4543,22 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-panel {
-  border: 1px solid rgba(51, 65, 85, 0.55);
-  background: rgba(15, 23, 42, 0.72);
-  border-radius: 12px;
-  padding: 1.1rem 1.25rem;
+  border: 1px solid rgba(100, 116, 139, 0.38);
+  background: linear-gradient(165deg, rgba(51, 65, 85, 0.38), rgba(15, 23, 42, 0.82));
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+}
+
+.mc-page .mc-failures.mc-panel {
+  background: linear-gradient(165deg, rgba(51, 65, 85, 0.5), rgba(15, 23, 42, 0.78));
+}
+
+.mc-case-log.mc-surface {
+  padding: 1.25rem 1.35rem;
+}
+
+.mc-bridge.mc-surface {
+  padding: 1.5rem 1.4rem;
 }
 
 .mc-hero .mc-panel,
@@ -4648,7 +4722,7 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-failures__head {
-  background: rgba(2, 6, 23, 0.65);
+  background: rgba(30, 41, 59, 0.75);
   font-family: "JetBrains Mono Variable", ui-monospace, monospace;
   font-size: 0.58rem;
   font-weight: 700;
