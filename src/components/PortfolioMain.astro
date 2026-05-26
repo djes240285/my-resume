@@ -64,7 +64,8 @@ const labels =
         periodLabel: 'Период',
         prevSlide: 'Назад',
         nextSlide: 'Вперёд',
-        challengeTitle: 'Challenges',
+        challengeTitle: 'КРИТИЧЕСКИЙ ЖУРНАЛ ИНЦИДЕНТОВ',
+        schemaTitle: 'ИНФРАСТРУКТУРНАЯ СХЕМА (PRE-POST DEPLOY)',
         challengeBroken: 'Что было сломано',
         challengeFixed: 'Как починил',
         badgeRescue: 'Rescue',
@@ -137,7 +138,8 @@ const labels =
         periodLabel: 'Period',
         prevSlide: 'Prev',
         nextSlide: 'Next',
-        challengeTitle: 'Challenges',
+        challengeTitle: 'CRITICAL INCIDENT LOG',
+        schemaTitle: 'INFRA SCHEMA (PRE-POST DEPLOY)',
         challengeBroken: 'Broken',
         challengeFixed: 'Fixed',
         badgeRescue: 'Rescue',
@@ -827,30 +829,16 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
       {curatedShowcase.map((card) => (
         <article
           id={`case-${card.slug}`}
-          class="case-card case-card--incident retro-panel-soft lift-2026 rounded-lg border border-slate-800 bg-slate-900/95 p-5 shadow-sm"
+          class="case-card case-card--incident case-card--postmortem retro-panel-soft lift-2026"
           data-case-card
           data-case-tags={card.tags.join(',')}
           style="order:0"
         >
-          <p class="case-incident__label font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
-            {labels.postMortemLabel}
-          </p>
-          {card.hasMedia ? (
-            <div class="case-media case-media--mockup mb-4" data-case-media>
-              <div class="case-media__mockup-bar" aria-hidden="true">
-                <span></span><span></span><span></span>
-              </div>
-              <img src={card.mediaSlides[0]} alt={card.title} loading="lazy" decoding="async" class="case-media__img" data-case-media-img data-case-media-index="0" />
-              <div class="case-media__controls">
-                <button type="button" class="case-media__btn" data-case-media-prev>{labels.prevSlide}</button>
-                <button type="button" class="case-media__btn" data-case-media-next>{labels.nextSlide}</button>
-              </div>
-              <div class="case-media__slides" hidden>{card.mediaSlides.join('|')}</div>
-            </div>
-          ) : null}
-          <div class="flex flex-wrap items-center justify-between gap-2">
+          <p class="case-incident__label">{labels.postMortemLabel}</p>
+
+          <header class="case-card__hero">
             <h3
-              class="text-lg font-bold text-slate-100"
+              class="case-card__title"
               data-case-title
               data-title-base={card.title}
               data-title-legacy={narrativeTitle(card, 'legacy', lang)}
@@ -859,91 +847,134 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
             >
               {card.title}
             </h3>
-            <div class="flex flex-wrap items-center gap-2">
-              {card.rescue ? (
-                <span class="rounded border border-fuchsia-400/40 bg-fuchsia-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-fuchsia-200">
-                  {labels.badgeRescue}
-                </span>
-              ) : null}
-              {card.aiEnhanced ? (
-                <span class="rounded border border-cyan-400/40 bg-cyan-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-cyan-200">
-                  {labels.badgeAiEnhanced}
-                </span>
-              ) : null}
+            <div class="case-card__badges">
+              {card.rescue ? <span class="case-badge case-badge--rescue">{labels.badgeRescue}</span> : null}
+              {card.aiEnhanced ? <span class="case-badge case-badge--ai">{labels.badgeAiEnhanced}</span> : null}
               {card.status === 'stabilized' ? (
-                <span class="rounded border border-emerald-500/35 bg-emerald-500/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
-                  {labels.badgeStabilized}
-                </span>
+                <span class="case-badge case-badge--stable">{labels.badgeStabilized}</span>
               ) : null}
-              {card.ndaSafe ? (
-                <span class="rounded border border-amber-500/35 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-300">
-                  NDA-safe
-                </span>
-              ) : null}
-              <span class="rounded border border-emerald-500/35 bg-emerald-500/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+              {card.ndaSafe ? <span class="case-badge case-badge--nda">NDA-safe</span> : null}
+              <span class="case-badge case-badge--period">
                 {labels.periodLabel}: {card.tag}
               </span>
             </div>
+          </header>
+
+          <div class="case-card__grid">
+            <div class="case-card__copy">
+              <dl class="case-incident__layers">
+                <div>
+                  <dt class="case-incident__dt">[{labels.layerTarget}]</dt>
+                  <dd class="case-incident__dd">
+                    {card.title}
+                    {card.tag ? <span class="case-incident__meta"> · {card.tag}</span> : null}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="case-incident__dt">[{labels.layerDiagnosis}]</dt>
+                  <dd class="case-incident__dd">{card.problem}</dd>
+                </div>
+                <div>
+                  <dt class="case-incident__dt">[{labels.layerOperation}]</dt>
+                  <dd class="case-incident__dd">{card.action}</dd>
+                </div>
+                <div>
+                  <dt class="case-incident__dt">[{labels.layerMetrics}]</dt>
+                  <dd class="case-incident__dd case-incident__dd--metrics">{card.result}</dd>
+                </div>
+                <div>
+                  <dt class="case-incident__dt">[{labels.layerStack}]</dt>
+                  <dd class="case-incident__dd case-incident__dd--stack">{card.stack}</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="case-card__viz">
+              {card.hasMedia ? (
+                <div class="case-media case-media--mockup" data-case-media>
+                  <div class="case-media__mockup-bar" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <img
+                    src={card.mediaSlides[0]}
+                    alt={card.title}
+                    loading="lazy"
+                    decoding="async"
+                    class="case-media__img"
+                    data-case-media-img
+                    data-case-media-index="0"
+                  />
+                  <div class="case-media__controls">
+                    <button type="button" class="case-media__btn" data-case-media-prev>{labels.prevSlide}</button>
+                    <button type="button" class="case-media__btn" data-case-media-next>{labels.nextSlide}</button>
+                  </div>
+                  <div class="case-media__slides" hidden>{card.mediaSlides.join('|')}</div>
+                </div>
+              ) : (
+                <div class="case-card__schema" aria-hidden="true">
+                  <p class="case-card__schema-title">{labels.schemaTitle}</p>
+                  <svg class="case-card__schema-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id={`schema-glow-${card.slug}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="rgba(56,189,248,0.55)" />
+                        <stop offset="100%" stop-color="rgba(74,222,128,0.45)" />
+                      </linearGradient>
+                    </defs>
+                    <rect x="12" y="58" width="36" height="28" rx="2" fill="none" stroke="url(#schema-glow-${card.slug})" stroke-width="1.2" />
+                    <rect x="82" y="42" width="40" height="36" rx="2" fill="none" stroke="url(#schema-glow-${card.slug})" stroke-width="1.2" />
+                    <rect x="148" y="28" width="40" height="48" rx="2" fill="none" stroke="url(#schema-glow-${card.slug})" stroke-width="1.2" />
+                    <path d="M48 72 L82 60 M122 60 L148 52" stroke="rgba(56,189,248,0.35)" stroke-width="1" stroke-dasharray="3 2" />
+                    <circle cx="30" cy="72" r="3" fill="rgba(74,222,128,0.7)" />
+                    <circle cx="102" cy="60" r="3" fill="rgba(56,189,248,0.75)" />
+                    <circle cx="168" cy="52" r="3" fill="rgba(167,139,250,0.7)" />
+                  </svg>
+                </div>
+              )}
+            </div>
           </div>
-          <dl class="case-incident__layers mt-3 space-y-3 text-sm">
-            <div>
-              <dt class="case-incident__dt">[{labels.layerTarget}]</dt>
-              <dd class="case-incident__dd">
-                {card.title}
-                {card.tag ? <span class="case-incident__meta"> · {card.tag}</span> : null}
-              </dd>
-            </div>
-            <div>
-              <dt class="case-incident__dt">[{labels.layerDiagnosis}]</dt>
-              <dd class="case-incident__dd">{card.problem}</dd>
-            </div>
-            <div>
-              <dt class="case-incident__dt">[{labels.layerOperation}]</dt>
-              <dd class="case-incident__dd">{card.action}</dd>
-            </div>
-            <div>
-              <dt class="case-incident__dt">[{labels.layerMetrics}]</dt>
-              <dd class="case-incident__dd case-incident__dd--metrics">{card.result}</dd>
-            </div>
-            <div>
-              <dt class="case-incident__dt">[{labels.layerStack}]</dt>
-              <dd class="case-incident__dd case-incident__dd--stack">{card.stack}</dd>
-            </div>
-          </dl>
+
           {card.challenges?.length ? (
-            <div class="mt-4 rounded border border-slate-700/80 bg-slate-950/65 p-3">
-              <p class="font-mono text-[11px] uppercase tracking-wide text-violet-200">{labels.challengeTitle}</p>
-              <ul class="mt-2 space-y-2 text-[12px] text-slate-300">
+            <div class="case-card__incident-log">
+              <p class="case-card__incident-log-head">{labels.challengeTitle}</p>
+              <ul class="case-card__incident-log-list">
                 {card.challenges.slice(0, 2).map((c) => (
                   <li>
-                    <p><span class="text-rose-200">{labels.challengeBroken}:</span> {c.broken}</p>
-                    <p class="mt-0.5"><span class="text-emerald-200">{labels.challengeFixed}:</span> {c.fixed}</p>
+                    <p>
+                      <span class="case-card__log-broken">{labels.challengeBroken}:</span> {c.broken}
+                    </p>
+                    <p>
+                      <span class="case-card__log-fixed">{labels.challengeFixed}:</span> {c.fixed}
+                    </p>
                   </li>
                 ))}
               </ul>
             </div>
           ) : null}
-          {card.href ? (
-            <a
-              href={card.href}
-              target="_blank"
-              rel="noreferrer noopener"
-              class="mt-4 inline-flex rounded border border-orange-400/45 bg-orange-500/10 px-3 py-1.5 text-sm font-semibold text-orange-100 transition hover:border-orange-300 hover:bg-orange-500/20"
-              data-case-cta
-              data-cta-base={labels.openCase}
-              data-cta-legacy={labels.ctaLegacy}
-              data-cta-profit={labels.ctaProfit}
-              data-cta-ai={labels.ctaAi}
-              data-cta-glyph-legacy={labels.ctaLegacyGlyph}
-              data-cta-glyph-profit={labels.ctaProfitGlyph}
-              data-cta-glyph-ai={labels.ctaAiGlyph}
-            >
-              <span class="case-cta__glyph" data-case-cta-glyph>{labels.ctaLegacyGlyph}</span>
-              <span data-case-cta-text>{labels.openCase}</span>
-            </a>
-          ) : (
-            <span class="mt-4 inline-flex rounded border border-slate-700 px-3 py-1.5 text-sm font-semibold text-slate-400">{labels.openDetails}</span>
-          )}
+
+          <footer class="case-card__footer">
+            {card.href ? (
+              <a
+                href={card.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                class="case-card__cta mission-btn--attention"
+                data-case-cta
+                data-cta-base={labels.openCase}
+                data-cta-legacy={labels.ctaLegacy}
+                data-cta-profit={labels.ctaProfit}
+                data-cta-ai={labels.ctaAi}
+                data-cta-glyph-legacy={labels.ctaLegacyGlyph}
+                data-cta-glyph-profit={labels.ctaProfitGlyph}
+                data-cta-glyph-ai={labels.ctaAiGlyph}
+              >
+                <span class="case-cta__glyph" data-case-cta-glyph>{labels.ctaLegacyGlyph}</span>
+                <span data-case-cta-text>{labels.openCase}</span>
+              </a>
+            ) : (
+              <span class="case-card__cta case-card__cta--muted">{labels.openDetails}</span>
+            )}
+          </footer>
+          <span class="case-card__corner" aria-hidden="true">✦</span>
         </article>
       ))}
     </div>
