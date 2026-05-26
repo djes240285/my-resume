@@ -1,7 +1,9 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import ResumeMain from '../../components/ResumeMain.astro';
+import MissionResume from '../../components/MissionResume.astro';
 import { SUPPORTED_LANGS, getCv, isLang } from '../../i18n/cv-data';
+import { SITE_SHOW_RESUME } from '../../config/site';
 
 export function getStaticPaths() {
   return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
@@ -14,8 +16,10 @@ if (!isLang(raw)) {
 
 const lang = raw;
 const t = getCv(lang);
+const pageTitle = SITE_SHOW_RESUME ? t.metaTitle : t.mission.metaTitle;
+const pageDescription = SITE_SHOW_RESUME ? t.metaDescription : t.mission.metaDescription;
 ---
 
-<SiteLayout lang={lang} title={t.metaTitle} description={t.metaDescription}>
-  <ResumeMain lang={lang} />
+<SiteLayout lang={lang} title={pageTitle} description={pageDescription}>
+  {SITE_SHOW_RESUME ? <ResumeMain lang={lang} /> : <MissionResume lang={lang} />}
 </SiteLayout>

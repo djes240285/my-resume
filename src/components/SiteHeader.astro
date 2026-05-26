@@ -1,6 +1,13 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
+import {
+  SITE_SHOW_RESUME,
+  siteHomeHref,
+  siteMissionHref,
+  isResumeRoute,
+  isMissionRoute,
+} from '../config/site';
 import LiveStatusInit from './LiveStatusInit.astro';
 
 interface Props {
@@ -12,49 +19,42 @@ const t = getCv(lang);
 const path = Astro.url.pathname;
 const rest = path.replace(/^\/(ru|en)/, '') || '/';
 const suffix = rest === '/' ? '/' : rest;
-const isMission = path.includes('/mission');
+const homeHref = siteHomeHref(lang);
+const missionHref = siteMissionHref(lang);
+const resumeActive = isResumeRoute(path, lang);
+const missionActive = isMissionRoute(path, lang);
+const portfolioActive = path.includes('/portfolio');
 ---
 
-<header
-  class:list={[
-    'terminal-header sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950',
-    isMission && 'terminal-header--mission',
-  ]}
->
+<header class="terminal-header terminal-header--mission sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950">
   <div class="terminal-header__track" aria-hidden="true" />
   <div
     class="terminal-header__inner mx-auto flex w-full max-w-[min(100%,94rem)] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6"
   >
     <div class="terminal-header__left flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
-      <a href={`/${lang}/`} class="terminal-logo hud-mini terminal-logo--inline">
+      <a href={homeHref} class="terminal-logo hud-mini terminal-logo--inline">
         <span class="terminal-logo__mark">EZ</span>
       </a>
-      {
-        isMission ? (
-          <div class="terminal-header-mission-id">
-            <p class="terminal-header-mission-id__brand">{t.mission.headerBrand}</p>
-            <p class="terminal-header-mission-id__title">{t.mission.headerTitle}</p>
-          </div>
-        ) : null
-      }
+      <div class="terminal-header-mission-id">
+        <p class="terminal-header-mission-id__brand">{t.mission.headerBrand}</p>
+        <p class="terminal-header-mission-id__title">{t.mission.headerTitle}</p>
+      </div>
       <nav class="terminal-nav flex flex-wrap items-center gap-1 sm:gap-2 text-sm font-medium text-slate-400">
+        {
+          SITE_SHOW_RESUME ? (
+            <a
+              href={homeHref}
+              class:list={['terminal-nav-link', resumeActive ? 'terminal-nav-link--active' : '']}
+            >
+              <span class="terminal-nav-link__bracket">[</span>
+              {t.navResume}
+              <span class="terminal-nav-link__bracket">]</span>
+            </a>
+          ) : null
+        }
         <a
-          href={`/${lang}/`}
-          class:list={[
-            'terminal-nav-link',
-            path === `/${lang}` || path === `/${lang}/` ? 'terminal-nav-link--active' : '',
-          ]}
-        >
-          <span class="terminal-nav-link__bracket">[</span>
-          {t.navResume}
-          <span class="terminal-nav-link__bracket">]</span>
-        </a>
-        <a
-          href={`/${lang}/mission`}
-          class:list={[
-            'terminal-nav-link',
-            path.includes('/mission') ? 'terminal-nav-link--active' : '',
-          ]}
+          href={missionHref}
+          class:list={['terminal-nav-link', missionActive ? 'terminal-nav-link--active' : '']}
         >
           <span class="terminal-nav-link__bracket">[</span>
           {t.navMission}
@@ -62,10 +62,7 @@ const isMission = path.includes('/mission');
         </a>
         <a
           href={`/${lang}/portfolio`}
-          class:list={[
-            'terminal-nav-link',
-            path.includes('/portfolio') ? 'terminal-nav-link--active' : '',
-          ]}
+          class:list={['terminal-nav-link', portfolioActive ? 'terminal-nav-link--active' : '']}
         >
           <span class="terminal-nav-link__bracket">[</span>
           {t.navPortfolio}
@@ -99,23 +96,17 @@ const isMission = path.includes('/mission');
           EN
         </a>
       </div>
-      {
-        isMission ? (
-          <>
-            <div class="terminal-header-status" role="status" aria-live="polite">
-              <span class="terminal-header-status__mark">{t.navStatusMark}</span>
-              <span class="terminal-header-status__dot" id="header-live-status-dot" aria-hidden="true" />
-              <span class="terminal-header-status__ready" id="header-live-status">—</span>
-            </div>
-            <LiveStatusInit
-              textId="header-live-status"
-              dotId="header-live-status-dot"
-              messages={t.heroLiveStatus}
-              dotClassPrefix="terminal-header-status__dot"
-            />
-          </>
-        ) : null
-      }
+      <div class="terminal-header-status" role="status" aria-live="polite">
+        <span class="terminal-header-status__mark">{t.navStatusMark}</span>
+        <span class="terminal-header-status__dot" id="header-live-status-dot" aria-hidden="true" />
+        <span class="terminal-header-status__ready" id="header-live-status">—</span>
+      </div>
+      <LiveStatusInit
+        textId="header-live-status"
+        dotId="header-live-status-dot"
+        messages={t.heroLiveStatus}
+        dotClassPrefix="terminal-header-status__dot"
+      />
     </div>
   </div>
 </header>
