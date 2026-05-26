@@ -4253,16 +4253,56 @@ html.audience-mode-pending [data-audience-approach-body] {
   min-width: 0;
 }
 
-.mc-hero-deck__left .mc-hero-primary__actions {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
+.mc-hero-deck__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   justify-content: center;
 }
 
+.mc-hero-deck__actions .mission-btn {
+  flex: 1 1 calc(50% - 0.25rem);
+  min-width: 7.5rem;
+  justify-content: center;
+}
+
+.mc-hero-deck__action-max {
+  flex: 1 1 100%;
+}
+
+@media (min-width: 480px) {
+  .mc-hero-deck__action-max {
+    flex: 1 1 calc(50% - 0.25rem);
+  }
+}
+
 @media (min-width: 900px) {
-  .mc-hero-deck__left .mc-hero-primary__actions {
+  .mc-hero-deck__actions {
     justify-content: flex-start;
+  }
+
+  .mc-hero-deck__actions .mission-btn {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .mc-hero-deck__action-max {
+    flex: 0 1 auto;
+  }
+}
+
+@media (max-width: 899px) {
+  .mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
+    width: min(100%, 22rem);
+    max-width: 92vw;
+  }
+
+  .mc-hero-deck__left .avatar-terminal-frame {
+    width: 100%;
   }
 }
 
@@ -4499,7 +4539,10 @@ html.audience-mode-pending [data-audience-approach-body] {
   margin-top: 0.1rem;
   font-size: 0.68rem;
   font-weight: 700;
+  line-height: 1.35;
   color: #4ade80;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .mc-passport__ecg-wrap {
@@ -4825,10 +4868,28 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .mc-case-log__name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.mc-case-log__name-primary {
   color: #f8fafc;
   font-weight: 700;
   font-size: 0.84rem;
   letter-spacing: -0.01em;
+}
+
+.mc-case-log__name-context {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #64748b;
+}
+
+.mc-page .mc-mindset.terminal-module--success-path {
+  padding: 1.25rem 1.35rem;
 }
 
 .mc-case-log__arrow {

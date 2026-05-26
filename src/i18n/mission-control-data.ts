@@ -4,6 +4,8 @@ export type CaseLogEntry = {
   id: string;
   slug: string;
   name: string;
+  /** Уточнение, если бренд ≠ весь контур системы */
+  context?: string;
   operation: string;
   stack: string;
   status: string;
@@ -12,6 +14,12 @@ export type CaseLogEntry = {
 export type PassportMetric = {
   label: string;
   value: string;
+};
+
+export type MissionMindsetStep = {
+  phase: string;
+  title: string;
+  detail: string;
 };
 
 export type MissionEngineerPassport = {
@@ -40,7 +48,8 @@ export type MissionControlContent = {
   engineerPassport: MissionEngineerPassport;
   mindset: {
     title: string;
-    lines: string[];
+    badge: string;
+    steps: MissionMindsetStep[];
   };
   caseLog: {
     title: string;
@@ -106,20 +115,41 @@ const ru: MissionControlContent = {
         value: 'Cursor-агенты, автоматизация процессов, LLM-интеграции',
       },
     ],
-    stabilityLabel: 'PRODUCTION_STABILITY_INDEX',
+    stabilityLabel: 'Стабильность продакшена',
     stabilityValue: '99.9%',
-    aiContourLabel: 'AI_CONTOUR_EFFICIENCY',
-    aiContourValue: 'высокая',
+    aiContourLabel: 'AI в рабочих процессах',
+    aiContourValue: 'ускоряет поставку',
     activityLabel: 'Активность в контурах (12 мес.)',
     vizAriaLabel: 'График стабильности и индикатор активности',
   },
   mindset: {
     title: 'Как я работаю',
-    lines: [
-      'Сначала разбираюся в задаче и контексте — не переписываю ради моды',
-      'Стабильность и предсказуемость релизов важнее хайпа',
-      'Честная оценка сроков и прозрачная коммуникация',
-      'Система должна спокойно переживать рост нагрузки',
+    badge: 'ПРИНЦИП',
+    steps: [
+      {
+        phase: '01 · Диагностика',
+        title: 'Сначала контекст, не переписывание',
+        detail:
+          'Разбираю бизнес-ограничения, узкие места и риски релиза — прежде чем предлагать стек или «большой рефакторинг».',
+      },
+      {
+        phase: '02 · Стабильность',
+        title: 'Предсказуемость важнее хайпа',
+        detail:
+          'Релизы, мониторинг и откатные сценарии проектирую так, чтобы команда не боялась выкатывать изменения.',
+      },
+      {
+        phase: '03 · Коммуникация',
+        title: 'Честные оценки и прозрачный процесс',
+        detail:
+          'Фиксирую объём, этапы и критерии готовности — без сюрпризов по срокам и скрытых доработок.',
+      },
+      {
+        phase: '04 · Рост',
+        title: 'Система переживает нагрузку',
+        detail:
+          'Закладываю запас по архитектуре и эксплуатации: кеш, очереди, контракты API, наблюдаемость.',
+      },
     ],
   },
   caseLog: {
@@ -138,25 +168,55 @@ const ru: MissionControlContent = {
         id: 'ID_01',
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
-        operation: 'Миграция и развитие Magento 1→2',
-        stack: 'Magento 1→2, PHP, Docker',
+        context: 'e-commerce · США',
+        operation: 'Magento 1→2, кастомные платежи, релизы под нагрузкой',
+        stack: 'Magento 1/2, PHP, MySQL, Docker',
         status: 'В проде · 5+ лет',
       },
       {
         id: 'ID_02',
-        slug: 'krymresurs',
-        name: 'Крымресурс',
-        operation: 'Интеграция документооборота',
-        stack: 'Laravel, API, документооборот',
-        status: 'В эксплуатации',
+        slug: 'dostavka-zpr',
+        name: 'dostavka-zpr.ru',
+        context: 'логистика · CDEK',
+        operation: 'Сервис доставки с нуля: расчёты, API, прикладная логика',
+        stack: 'Laravel, PHP, CDEK API',
+        status: 'В проде',
       },
       {
         id: 'ID_03',
-        slug: 'dostavka-zpr',
-        name: 'Доставка-ЗПР',
-        operation: 'Автоматизация логистики',
-        stack: 'Laravel, очереди, интеграции',
-        status: 'Работает штатно',
+        slug: 'krymresurs',
+        name: 'krymresurs.ru',
+        context: 'корпоративный контур · витрина',
+        operation: 'Документооборот, роли, генерация документов',
+        stack: 'Laravel, PHP, API, интеграции',
+        status: 'В эксплуатации',
+      },
+      {
+        id: 'ID_04',
+        slug: 'gratisiskolan',
+        name: 'gratisiskolan.se',
+        context: 'миграция · Швеция',
+        operation: 'Переход на Magento 2.4, адаптация кастомных модулей',
+        stack: 'Magento 2.4, PHP, custom modules',
+        status: 'Запущен',
+      },
+      {
+        id: 'ID_05',
+        slug: 'sechat',
+        name: 'sechat.ru',
+        context: 'коммуникационный продукт',
+        operation: 'Развитие продукта по задачам заказчика',
+        stack: 'Laravel, WebSockets, Redis',
+        status: 'В развитии',
+      },
+      {
+        id: 'ID_06',
+        slug: 'mozgovnet',
+        name: 'mozgovnet.com',
+        context: 'платежи · легаси',
+        operation: 'Платёжные интеграции и восстановление легаси',
+        stack: 'PHP, API, платежи',
+        status: 'Стабилизирован',
       },
     ],
   },
@@ -213,20 +273,41 @@ const en: MissionControlContent = {
         value: 'Cursor agents, workflow automation, LLM integrations',
       },
     ],
-    stabilityLabel: 'PRODUCTION_STABILITY_INDEX',
+    stabilityLabel: 'Production stability',
     stabilityValue: '99.9%',
-    aiContourLabel: 'AI_CONTOUR_EFFICIENCY',
-    aiContourValue: 'high',
+    aiContourLabel: 'AI in workflows',
+    aiContourValue: 'faster delivery',
     activityLabel: 'Contour activity (12 mo.)',
     vizAriaLabel: 'Stability chart and activity heatmap',
   },
   mindset: {
     title: 'How I work',
-    lines: [
-      'Understand the problem and context first — no rewrite for hype',
-      'Stable, predictable releases over trend-chasing',
-      'Honest estimates and clear communication',
-      'Systems should handle growth without drama',
+    badge: 'PRINCIPLE',
+    steps: [
+      {
+        phase: '01 · Diagnosis',
+        title: 'Context before rewriting',
+        detail:
+          'I map business constraints, bottlenecks, and release risks before proposing a stack or a large refactor.',
+      },
+      {
+        phase: '02 · Stability',
+        title: 'Predictability over hype',
+        detail:
+          'Releases, monitoring, and rollback paths are designed so the team is not afraid to ship.',
+      },
+      {
+        phase: '03 · Communication',
+        title: 'Honest estimates, clear process',
+        detail:
+          'Scope, milestones, and done criteria are explicit — no surprise deadlines or hidden rework.',
+      },
+      {
+        phase: '04 · Growth',
+        title: 'Systems survive load',
+        detail:
+          'Architecture and ops include cache, queues, API contracts, and observability with headroom.',
+      },
     ],
   },
   caseLog: {
@@ -245,25 +326,55 @@ const en: MissionControlContent = {
         id: 'ID_01',
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
-        operation: 'Magento 1→2 migration & evolution',
-        stack: 'Magento 1→2, PHP, Docker',
+        context: 'e-commerce · USA',
+        operation: 'Magento 1→2, custom payments, releases under load',
+        stack: 'Magento 1/2, PHP, MySQL, Docker',
         status: 'In prod · 5+ yrs',
       },
       {
         id: 'ID_02',
-        slug: 'krymresurs',
-        name: 'Krymresurs',
-        operation: 'Document workflow integration',
-        stack: 'Laravel, API, document flow',
-        status: 'In production',
+        slug: 'dostavka-zpr',
+        name: 'dostavka-zpr.ru',
+        context: 'logistics · CDEK',
+        operation: 'Greenfield delivery service: pricing, API, business logic',
+        stack: 'Laravel, PHP, CDEK API',
+        status: 'Live',
       },
       {
         id: 'ID_03',
-        slug: 'dostavka-zpr',
-        name: 'Dostavka-ZPR',
-        operation: 'Logistics automation',
-        stack: 'Laravel, queues, integrations',
-        status: 'Running smoothly',
+        slug: 'krymresurs',
+        name: 'krymresurs.ru',
+        context: 'enterprise · public site',
+        operation: 'Document workflows, roles, document generation',
+        stack: 'Laravel, PHP, API, integrations',
+        status: 'In production',
+      },
+      {
+        id: 'ID_04',
+        slug: 'gratisiskolan',
+        name: 'gratisiskolan.se',
+        context: 'migration · Sweden',
+        operation: 'Magento 2.4 migration, custom module adaptation',
+        stack: 'Magento 2.4, PHP, custom modules',
+        status: 'Launched',
+      },
+      {
+        id: 'ID_05',
+        slug: 'sechat',
+        name: 'sechat.ru',
+        context: 'communication product',
+        operation: 'Product evolution per client roadmap',
+        stack: 'Laravel, WebSockets, Redis',
+        status: 'In progress',
+      },
+      {
+        id: 'ID_06',
+        slug: 'mozgovnet',
+        name: 'mozgovnet.com',
+        context: 'payments · legacy',
+        operation: 'Payment integrations and legacy recovery',
+        stack: 'PHP, API, payments',
+        status: 'Stabilized',
       },
     ],
   },

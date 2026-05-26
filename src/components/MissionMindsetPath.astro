@@ -1,0 +1,60 @@
+---
+import type { MissionMindsetStep } from '../i18n/mission-control-data';
+
+interface Props {
+  title: string;
+  badge: string;
+  steps: MissionMindsetStep[];
+}
+
+const { title, badge, steps } = Astro.props;
+
+const SUCCESS_PATH_SPARKS: readonly string[] = [
+  '2,18 8,6 14,15 21,5 28,14 36,4 44,12 52,7 60,3',
+  '2,5 10,16 20,19 30,8 40,13 50,5 58,3 62,2',
+  '2,19 12,16 24,8 34,12 45,3 55,9 62,2',
+  '2,12 11,3 20,17 30,6 40,14 50,5 58,11 62,2',
+];
+const SUCCESS_PATH_SPARK_STROKES: readonly string[] = ['#38bdf8', '#2dd4bf', '#4ade80', '#a78bfa'];
+---
+
+<section class="mc-mindset mc-surface mc-module mc-tier-2 terminal-module--success-path" aria-labelledby="mc-mindset-title">
+  <header class="success-path-module__head">
+    <h2 id="mc-mindset-title" class="mc-section-title mc-section-title--prose success-path-module__title">{title}</h2>
+  </header>
+  <ol class="success-path mt-4">
+    {
+      steps.map((step, idx, arr) => (
+        <li class:list={['success-path__item', { 'success-path__item--last': idx === arr.length - 1 }]}>
+          <div class="success-path__marker" aria-hidden="true"></div>
+          <div class="success-path__row">
+            <div class="success-path__body">
+              <p class="success-path__phase">{step.phase}</p>
+              <p class="success-path__title">{step.title}</p>
+              <p class="success-path__detail">{step.detail}</p>
+            </div>
+            <div class="success-path__aside" aria-hidden="true">
+              <span class="success-path__status-chip">{badge}</span>
+              <svg
+                class:list={['success-path__spark', `success-path__spark--glow-${idx % 4}`]}
+                viewBox="0 0 64 22"
+                xmlns="http://www.w3.org/2000/svg"
+                overflow="visible"
+                aria-hidden="true"
+              >
+                <polyline
+                  fill="none"
+                  stroke={SUCCESS_PATH_SPARK_STROKES[idx % SUCCESS_PATH_SPARK_STROKES.length]}
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  points={SUCCESS_PATH_SPARKS[idx % SUCCESS_PATH_SPARKS.length]}
+                />
+              </svg>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</section>
