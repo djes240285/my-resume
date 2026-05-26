@@ -194,7 +194,7 @@ const ru: MissionControlContent = {
     colStatus: 'Статус',
     rowAction: 'Подробнее',
     drumAriaLabel:
-      'Список проектов: Shift+колёсико или перетаскивание внутри блока; без Shift страница прокручивается как обычно',
+      'Список проектов: колёсико над таблицей, перетаскивание строк или ползунок справа',
     entries: buildMissionCaseLogEntries('ru'),
   },
   bridge: {
@@ -312,8 +312,7 @@ const en: MissionControlContent = {
     colStack: 'Stack',
     colStatus: 'Status',
     rowAction: 'Details',
-    drumAriaLabel:
-      'Project list: Shift+wheel or drag inside the block; without Shift the page scrolls normally',
+    drumAriaLabel: 'Project list: wheel over the table, drag rows, or use the scrollbar on the right',
     entries: buildMissionCaseLogEntries('en'),
   },
   bridge: {

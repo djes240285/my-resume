@@ -21,18 +21,21 @@
       var track = root.querySelector('.mc-case-log__drum-track');
       var thumb = root.querySelector('[data-mc-case-thumb]');
       var scrollTrack = root.querySelector('.mc-case-log__scrollbar-track');
+      var scrollShell = root.querySelector('.mc-case-log__scroll-shell');
       if (!viewport || !track) return;
 
       var loopHeight = 0;
       var offset = 0;
       var dragging = false;
+      var thumbDragging = false;
       var dragStartY = 0;
       var dragStartOffset = 0;
       var dragMoved = false;
       var suppressClick = false;
       var pauseUntil = 0;
       var hoverPaused = false;
-      var rafId = 0;
+      var shellHoverAt = 0;
+      var SHELL_HOVER_GRACE_MS = 380;
       var AUTO_PX = 0.24;
       var PAUSE_AFTER_WHEEL_MS = 1800;
       var PAUSE_AFTER_DRAG_MS = 2600;
@@ -72,7 +75,7 @@
       }
 
       function isInteractive() {
-        return hoverPaused || dragging || performance.now() < pauseUntil;
+        return hoverPaused || dragging || thumbDragging || performance.now() < pauseUntil;
       }
 
       function syncScrollbar() {
@@ -96,16 +99,38 @@
         thumb.style.transform = 'translate3d(0,' + top + 'px,0)';
       }
 
+      function offsetFromPointer(clientY) {
+        if (!scrollTrack || !thumb) return offset;
+        var rect = scrollTrack.getBoundingClientRect();
+        var thumbH = thumb.offsetHeight;
+        var maxTop = Math.max(0, rect.height - thumbH);
+        var y = clientY - rect.top - thumbH / 2;
+        y = Math.max(0, Math.min(maxTop, y));
+        return maxTop > 0 ? (y / maxTop) * loopHeight : 0;
+      }
+
+      function shouldCaptureWheel() {
+        if (!scrollShell) return false;
+        if (!scrollShell.matches(':hover')) return false;
+        return performance.now() - shellHoverAt >= SHELL_HOVER_GRACE_MS;
+      }
+
       function autoStep() {
         if (!drumEnabled()) {
-          rafId = window.requestAnimationFrame(autoStep);
+          window.requestAnimationFrame(autoStep);
           return;
         }
         var now = performance.now();
-        if (!reduceMotion && !dragging && !hoverPaused && now >= pauseUntil && loopHeight > 1) {
+        if (!reduceMotion && !dragging && !thumbDragging && !hoverPaused && now >= pauseUntil && loopHeight > 1) {
           setOffset(offset + AUTO_PX);
         }
-        rafId = window.requestAnimationFrame(autoStep);
+        window.requestAnimationFrame(autoStep);
+      }
+
+      if (scrollShell) {
+        scrollShell.addEventListener('mouseenter', function () {
+          shellHoverAt = performance.now();
+        });
       }
 
       root.addEventListener('mouseenter', function () {
@@ -121,12 +146,12 @@
         syncScrollbar();
       });
 
-      viewport.addEventListener(
+      root.addEventListener(
         'wheel',
         function (e) {
           if (!drumEnabled() || loopHeight <= 1) return;
-          /* Без Shift колёсико прокручивает страницу — не ловим в ленте при глобальном скролле. */
-          if (!e.shiftKey) return;
+          if (!scrollShell || !scrollShell.contains(e.target)) return;
+          if (!shouldCaptureWheel()) return;
           e.preventDefault();
           setOffset(offset + e.deltaY);
           userPause(PAUSE_AFTER_WHEEL_MS);
@@ -137,7 +162,6 @@
       viewport.addEventListener('pointerdown', function (e) {
         if (!drumEnabled()) return;
         if (e.button !== 0) return;
-        /* Клик по строке — переход в портфолио; не перехватываем pointer (иначе <a> не срабатывает). */
         if (e.target.closest('[data-mc-case-row]')) return;
         dragging = true;
         dragMoved = false;
@@ -159,7 +183,7 @@
         setOffset(dragStartOffset - dy);
       });
 
-      function endDrag(e) {
+      function endViewportDrag(e) {
         if (!dragging) return;
         dragging = false;
         viewport.classList.remove('mc-case-log__drum-viewport--dragging');
@@ -179,8 +203,56 @@
         syncScrollbar();
       }
 
-      viewport.addEventListener('pointerup', endDrag);
-      viewport.addEventListener('pointercancel', endDrag);
+      viewport.addEventListener('pointerup', endViewportDrag);
+      viewport.addEventListener('pointercancel', endViewportDrag);
+
+      if (thumb && scrollTrack) {
+        thumb.addEventListener('pointerdown', function (e) {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          thumbDragging = true;
+          dragStartY = e.clientY;
+          dragStartOffset = offset;
+          thumb.setPointerCapture(e.pointerId);
+          thumb.classList.add('mc-case-log__scrollbar-thumb--dragging');
+          root.classList.add('is-interactive');
+          userPause(PAUSE_AFTER_DRAG_MS);
+        });
+
+        thumb.addEventListener('pointermove', function (e) {
+          if (!thumbDragging) return;
+          var dy = e.clientY - dragStartY;
+          var trackH = scrollTrack.clientHeight;
+          var thumbH = thumb.offsetHeight;
+          var maxTop = Math.max(0, trackH - thumbH);
+          var phaseDelta = maxTop > 0 ? dy / maxTop : 0;
+          setOffset(dragStartOffset + phaseDelta * loopHeight);
+        });
+
+        function endThumbDrag(e) {
+          if (!thumbDragging) return;
+          thumbDragging = false;
+          thumb.classList.remove('mc-case-log__scrollbar-thumb--dragging');
+          try {
+            thumb.releasePointerCapture(e.pointerId);
+          } catch (err) {
+            /* ignore */
+          }
+          if (!hoverPaused) root.classList.remove('is-interactive');
+          syncScrollbar();
+        }
+
+        thumb.addEventListener('pointerup', endThumbDrag);
+        thumb.addEventListener('pointercancel', endThumbDrag);
+
+        scrollTrack.addEventListener('pointerdown', function (e) {
+          if (e.button !== 0) return;
+          if (e.target.closest('[data-mc-case-thumb]')) return;
+          setOffset(offsetFromPointer(e.clientY));
+          userPause(PAUSE_AFTER_DRAG_MS);
+        });
+      }
 
       track.addEventListener(
         'click',

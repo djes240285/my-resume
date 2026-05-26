@@ -4392,6 +4392,60 @@ html.audience-mode-pending [data-audience-approach-body] {
   gap: 0.35rem;
 }
 
+/* CTA: плавный цикл вверх→вниз (ease-in-out), лёгкий золотистый ореол */
+@keyframes mc-cta-attention-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(198, 162, 72, 0.1),
+      0 0 12px rgba(72, 168, 118, 0.08),
+      inset 0 0 0 1px rgba(190, 158, 88, 0.08);
+    border-color: rgba(56, 128, 86, 0.9);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow:
+      0 0 17px rgba(220, 188, 108, 0.28),
+      0 0 28px rgba(88, 190, 132, 0.13),
+      inset 0 0 0 1px rgba(232, 208, 138, 0.2);
+    border-color: rgba(102, 158, 108, 0.96);
+    filter: brightness(1.03);
+  }
+}
+
+@keyframes mc-cta-attention-pulse-light {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(198, 162, 72, 0.12),
+      0 0 16px rgba(148, 163, 184, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    border-color: rgba(210, 178, 95, 0.42);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(228, 196, 118, 0.34),
+      0 0 30px rgba(170, 195, 155, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.52);
+    border-color: rgba(225, 195, 115, 0.62);
+    filter: brightness(1.035);
+  }
+}
+
+.mission-btn--attention {
+  animation: mc-cta-attention-pulse 5.2s ease-in-out infinite;
+}
+
+.mc-bridge .mission-btn--attention {
+  animation-name: mc-cta-attention-pulse-light;
+}
+
+.mission-btn--attention:hover,
+.mission-btn--attention:focus-visible {
+  animation: none;
+}
+
 .mc-hero-deck__actions .mission-btn__icon {
   width: 1rem;
   height: 1rem;
@@ -5099,7 +5153,7 @@ html.audience-mode-pending [data-audience-approach-body] {
   width: 10px;
   padding: 2px 0;
   user-select: none;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
 .mc-case-log__scrollbar-track {
@@ -5117,6 +5171,7 @@ html.audience-mode-pending [data-audience-approach-body] {
   );
   box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.45);
   image-rendering: pixelated;
+  cursor: pointer;
 }
 
 .mc-case-log__scrollbar-thumb {
@@ -5134,6 +5189,13 @@ html.audience-mode-pending [data-audience-approach-body] {
   image-rendering: pixelated;
   will-change: transform, opacity;
   transition: opacity 0.2s ease, box-shadow 0.2s ease;
+  cursor: grab;
+  touch-action: none;
+}
+
+.mc-case-log__scrollbar-thumb--dragging {
+  cursor: grabbing;
+  opacity: 1 !important;
 }
 
 .mc-case-log__table--drum.is-interactive .mc-case-log__scrollbar-thumb {
@@ -6057,6 +6119,10 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .mission-btn--attention {
+    animation: none !important;
+  }
+
   .terminal-header-status__dot {
     animation: none !important;
   }
