@@ -4,7 +4,6 @@ import { getCv } from '../i18n/cv-data';
 import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import { PORTFOLIO_PREVIEWS } from '../config/portfolio-previews';
 import { caseSlug } from '../lib/case-slug';
-import { SITE_SHOW_RESUME, siteMissionHref } from '../config/site';
 import CaseInfraSchema from './CaseInfraSchema.astro';
 
 interface Props {
@@ -113,7 +112,6 @@ const labels =
           'Если проект вырос, легаси тормозит развитие, а команда боится правок в продакшене — опишите архитектуру или текущие боли. Без созвонов и брифов: точечный технический разбор и варианты стабилизации.',
         diagnosticCta: 'Отправить симптомы на анализ',
         postMortemLabel: 'РАЗБОР КЕЙСА',
-        backToMission: '← Инженерный пульт',
         mailSubject: 'Симптомы системы — запрос разбора',
       }
     : {
@@ -212,7 +210,6 @@ const labels =
           'If your system outgrew its architecture, legacy blocks change, and the team fears production edits — send architecture notes or pain points. No calls or brief forms: focused triage and stabilization options.',
         diagnosticCta: 'Send symptoms for analysis',
         postMortemLabel: 'CASE POST-MORTEM',
-        backToMission: '← Mission control',
         mailSubject: 'System symptoms — triage request',
       };
 
@@ -1272,22 +1269,6 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
       {labels.diagnosticCta}
     </a>
   </section>
-
-  <p class="mt-10 text-center">
-    <a href={siteMissionHref(lang)} class="mr-4 text-sm text-slate-500 hover:text-cyan-300">
-      {labels.backToMission}
-    </a>
-    {
-      SITE_SHOW_RESUME ? (
-        <a
-          href={`/${lang}/`}
-          class="lift-2026 inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900 px-6 py-3 text-sm font-semibold text-slate-100 shadow transition hover:border-cyan-400 hover:text-cyan-300"
-        >
-          {p.ctaResume}
-        </a>
-      ) : null
-    }
-  </p>
 </main>
 
 <script>
