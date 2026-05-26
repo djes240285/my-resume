@@ -15,10 +15,17 @@ const suffix = rest === '/' ? '/' : rest;
 const isMission = path.includes('/mission');
 ---
 
-<header class="terminal-header sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950">
+<header
+  class:list={[
+    'terminal-header sticky top-0 z-50 border-b border-slate-800/80 bg-slate-950',
+    isMission && 'terminal-header--mission',
+  ]}
+>
   <div class="terminal-header__track" aria-hidden="true" />
-  <div class="mx-auto flex w-full max-w-[min(100%,94rem)] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6">
-    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
+  <div
+    class="terminal-header__inner mx-auto flex w-full max-w-[min(100%,94rem)] flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6"
+  >
+    <div class="terminal-header__left flex min-w-0 flex-1 flex-wrap items-center gap-3 sm:gap-4">
       <a href={`/${lang}/`} class="terminal-logo hud-mini terminal-logo--inline">
         <span class="terminal-logo__mark">EZ</span>
       </a>

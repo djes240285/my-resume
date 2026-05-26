@@ -22,6 +22,13 @@ export function techStackIconUrlMuted(slug: string): string {
     'postgresql',
     'mongodb',
     'nginx',
+    'git',
+    'gitlab',
+    'jira',
+    'figma',
+    'tailwindcss',
+    'cursor',
+    'claude',
   ];
   if (known.includes(slug)) {
     return `https://api.iconify.design/simple-icons:${slug}.svg?color=%2394a3b8`;

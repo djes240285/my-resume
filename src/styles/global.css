@@ -2991,6 +2991,104 @@ html.audience-mode-pending [data-audience-approach-body] {
   }
 }
 
+/* /mission — компактная шапка на мобилке */
+@media (max-width: 767px) {
+  .terminal-header--mission .terminal-header__inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "logo brand status"
+      "nav nav lang";
+    align-items: center;
+    gap: 0.35rem 0.45rem;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .terminal-header--mission .terminal-header__left,
+  .terminal-header--mission .terminal-header__right {
+    display: contents;
+  }
+
+  .terminal-header--mission .terminal-logo {
+    grid-area: logo;
+  }
+
+  .terminal-header--mission .terminal-header-mission-id {
+    grid-area: brand;
+    min-width: 0;
+  }
+
+  .terminal-header--mission .terminal-header-mission-id__brand {
+    font-size: 0.52rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .terminal-header--mission .terminal-header-mission-id__title {
+    display: none;
+  }
+
+  .terminal-header--mission .terminal-nav {
+    grid-area: nav;
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    min-width: 0;
+    padding-bottom: 0.05rem;
+  }
+
+  .terminal-header--mission .terminal-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .terminal-header--mission .terminal-nav-link {
+    padding: 0.22rem 0.32rem;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  .terminal-header--mission .terminal-nav-link__bracket {
+    font-size: 0.62rem;
+  }
+
+  .terminal-header--mission .terminal-header-status {
+    grid-area: status;
+    max-width: none;
+    padding: 0.2rem 0.4rem;
+    justify-self: end;
+  }
+
+  .terminal-header--mission .terminal-header-status__ready {
+    font-size: 0.5rem;
+    letter-spacing: 0.06em;
+  }
+
+  .terminal-header--mission .terminal-lang-switch {
+    grid-area: lang;
+    justify-self: end;
+    font-size: 0.65rem;
+  }
+
+  .terminal-header--mission .terminal-lang-pill {
+    padding: 0.15rem 0.4rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 899px) {
+  .terminal-header--mission .terminal-header__inner {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+
+  .terminal-header--mission .terminal-header-mission-id__title {
+    font-size: 0.82rem;
+  }
+}
+
 .mission-grid {
   display: grid;
   gap: 1rem;
@@ -4334,18 +4432,28 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 @media (max-width: 899px) {
+  .mc-hero-primary__card {
+    padding: 1rem 1rem 1.1rem;
+  }
+
+  .mc-hero-deck__left {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .mc-hero-primary__photo {
+    width: 100%;
+    justify-self: stretch;
+  }
+
   .mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
-    width: min(100%, 24rem);
-    max-width: 94vw;
+    width: 100%;
+    max-width: none;
   }
 
   .mc-hero-deck__left .avatar-terminal-frame {
     width: 100%;
   }
-}
-
-.mc-hero-deck__left .mc-avatar-terminal.avatar-terminal-group {
-  width: min(100%, 302px);
 }
 
 @media (min-width: 900px) {
@@ -4380,19 +4488,9 @@ html.audience-mode-pending [data-audience-approach-body] {
   pointer-events: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 900px) {
   .mc-hero-primary__photo {
     justify-self: start;
-  }
-}
-
-.mc-avatar-terminal.avatar-terminal-group {
-  width: min(100%, 280px);
-}
-
-@media (min-width: 768px) {
-  .mc-avatar-terminal.avatar-terminal-group {
-    width: 300px;
   }
 }
 
@@ -4552,6 +4650,28 @@ html.audience-mode-pending [data-audience-approach-body] {
   font-size: 0.875rem;
   line-height: 1.45;
   color: #b8c5d6;
+}
+
+.mc-passport__stack-icons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.35rem;
+}
+
+.mc-passport__stack-icon {
+  display: block;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  opacity: 0.72;
+  filter: grayscale(0.55) brightness(1.05);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.mc-passport__row:hover .mc-passport__stack-icon {
+  opacity: 0.95;
+  filter: grayscale(0.2) brightness(1.08);
 }
 
 .mc-passport__row--status dt {
@@ -5079,6 +5199,60 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-page .mc-mindset.terminal-module--success-path .success-path__item {
   padding-bottom: 1.45rem;
+}
+
+.mc-page .mc-mindset .success-path-module__head--mission {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+}
+
+.mc-page .mc-mindset .success-path-module__badge {
+  font-family: "Press Start 2P", "JetBrains Mono Variable", monospace;
+  font-size: 0.5rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: #4ade80;
+  text-shadow:
+    0 0 8px rgba(74, 222, 128, 0.85),
+    0 0 2px rgba(22, 163, 74, 0.9);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mc-page .mc-mindset .success-path__aside--tools {
+  padding-top: 0.2rem;
+}
+
+.mc-page .mc-mindset .success-path__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  max-width: 5.5rem;
+}
+
+.mc-page .mc-mindset .success-path__tool-icon {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  opacity: 0.72;
+  filter: grayscale(0.55) brightness(1.05);
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+.mc-page .mc-mindset .success-path__item:hover .success-path__tool-icon {
+  opacity: 0.95;
+  filter: grayscale(0.2) brightness(1.08);
+}
+
+@media (max-width: 520px) {
+  .mc-page .mc-mindset .success-path__tools {
+    justify-content: flex-start;
+    max-width: none;
+  }
 }
 
 .mc-case-log__arrow {

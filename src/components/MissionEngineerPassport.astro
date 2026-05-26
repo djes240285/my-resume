@@ -1,5 +1,6 @@
 ---
 import type { MissionEngineerPassport as PassportData } from '../i18n/mission-control-data';
+import { techStackIconUrlMuted } from '../config/tech-stack-icons-muted';
 
 interface Props {
   passport: PassportData;
@@ -53,7 +54,24 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
         passport.stackGroups.map((row) => (
           <div class="mc-passport__row">
             <dt>{row.label}</dt>
-            <dd>{row.value}</dd>
+            <dd>
+              {row.icons?.length ? (
+                <span class="mc-passport__stack-icons" aria-hidden="true">
+                  {row.icons.map((slug) => (
+                    <img
+                      class="mc-passport__stack-icon"
+                      src={techStackIconUrlMuted(slug)}
+                      alt=""
+                      width="15"
+                      height="15"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ))}
+                </span>
+              ) : null}
+              <span>{row.value}</span>
+            </dd>
           </div>
         ))
       }
