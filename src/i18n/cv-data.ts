@@ -159,9 +159,6 @@ export type CVContent = {
   navPortfolio: string;
   /** Альтернативная страница резюме (Mission Control / «пульт») */
   navMission: string;
-  /** Короткий статус в шапке сайта на /mission (как в koncept2) */
-  navStatusMark: string;
-  navStatusReady: string;
   mission: {
     metaTitle: string;
     metaDescription: string;
@@ -242,8 +239,6 @@ export const cv: Record<Lang, CVContent> = {
     navResume: 'Резюме',
     navPortfolio: 'Портфолио',
     navMission: 'Пульт',
-    navStatusMark: 'СТАТУС',
-    navStatusReady: 'НА СВЯЗИ',
     mission: {
       metaTitle: 'Евгений Жуков — инженерный пульт · восстановление систем',
       metaDescription:
@@ -957,8 +952,6 @@ export const cv: Record<Lang, CVContent> = {
     navResume: 'Resume',
     navPortfolio: 'Portfolio',
     navMission: 'Control',
-    navStatusMark: 'STATUS',
-    navStatusReady: 'AVAILABLE',
     mission: {
       metaTitle: 'Eugene Zhukov — engineering mission control',
       metaDescription:

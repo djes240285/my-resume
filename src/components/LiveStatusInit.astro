@@ -36,6 +36,11 @@ const { textId, dotId, messages, dotClassPrefix } = Astro.props;
       return 'available';
     }
 
+    function statusRoot(el) {
+      if (!el) return null;
+      return el.closest('.terminal-header-status') || el.closest('.hero-live-status-row');
+    }
+
     function paint() {
       var el = document.getElementById(textId);
       var dot = document.getElementById(dotId);
@@ -44,6 +49,10 @@ const { textId, dotId, messages, dotClassPrefix } = Astro.props;
       el.textContent = messages[k] || messages.available;
       if (dot) {
         dot.className = dotClassPrefix + ' ' + dotClassPrefix + '--' + k;
+      }
+      var root = statusRoot(el);
+      if (root) {
+        root.setAttribute('data-live-status', k);
       }
     }
 

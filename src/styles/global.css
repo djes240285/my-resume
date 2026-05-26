@@ -1586,10 +1586,23 @@ html.audience-mode-pending [data-audience-approach-body] {
   }
 
   .hero-live-status__dot--unavailable {
-    background: #ef4444;
+    background: #818cf8;
     box-shadow:
       0 0 0 1px rgba(0, 0, 0, 0.25),
-      0 0 10px rgba(239, 68, 68, 0.45);
+      0 0 10px rgba(99, 102, 241, 0.5);
+    animation: live-status-sleep-dot 2.6s ease-in-out infinite;
+  }
+
+  .hero-live-status-row[data-live-status='unavailable'] #hero-live-status {
+    color: #c7d2fe;
+  }
+
+  .hero-live-status-row[data-live-status='lunch'] #hero-live-status {
+    color: #fde68a;
+  }
+
+  .hero-live-status-row[data-live-status='available'] #hero-live-status {
+    color: #86efac;
   }
 
   .hero-hud-card__meter {
@@ -2856,10 +2869,139 @@ html.audience-mode-pending [data-audience-approach-body] {
   display: none !important;
 }
 
+.scroll-top-pixel--pacman .scroll-top-pixel__arrow {
+  opacity: 0;
+}
+
+.scroll-top-pixel--pacman .scroll-top-pixel__chrome {
+  border-color: #facc15;
+  color: #facc15;
+  box-shadow:
+    inset 0 0 0 2px #0f172a,
+    3px 3px 0 0 #0f172a,
+    0 0 14px rgba(250, 204, 21, 0.35);
+}
+
+/* Pac-Man при smooth-scroll наверх */
+.scroll-top-pacman-run {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scroll-top-pacman-run[hidden] {
+  display: none !important;
+}
+
+.scroll-top-pacman-run__pellets {
+  position: absolute;
+  inset: 0;
+}
+
+.scroll-top-pacman-run__pellet {
+  position: fixed;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: #fde68a;
+  border: 1px solid rgba(234, 179, 8, 0.55);
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.5);
+  image-rendering: pixelated;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+
+.scroll-top-pacman-run__pellet.is-eaten {
+  opacity: 0;
+  transform: scale(0.2);
+}
+
+.scroll-top-pacman-run__actor {
+  position: fixed;
+  z-index: 41;
+  width: 4.5rem;
+  height: 4.5rem;
+  transform: translate(-50%, -50%) scale(var(--pacman-scale, 1.2));
+  transform-origin: center center;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 12px rgba(251, 191, 36, 0.45));
+  pointer-events: none;
+}
+
+.scroll-top-pacman-run__sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* рот в SVG слева → 90° = вверх по направлению скролла */
+  transform: rotate(90deg);
+}
+
+.scroll-top-pacman-run__mouth--a {
+  animation: scroll-pacman-chomp-a 0.22s steps(1) infinite;
+}
+
+.scroll-top-pacman-run__mouth--b {
+  animation: scroll-pacman-chomp-b 0.22s steps(1) infinite;
+}
+
+@keyframes scroll-pacman-chomp-a {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes scroll-pacman-chomp-b {
+  0%,
+  49% {
+    opacity: 0;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.scroll-top-pacman-run__eye {
+  animation: scroll-pacman-blink 2.8s steps(1) infinite;
+}
+
+@keyframes scroll-pacman-blink {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94%,
+  98% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .scroll-top-pacman-run__actor {
+    width: 4rem;
+    height: 4rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .scroll-top-pixel:hover .scroll-top-pixel__chrome,
   .scroll-top-pixel:active .scroll-top-pixel__chrome {
     transform: none;
+  }
+
+  .scroll-top-pacman-run {
+    display: none !important;
   }
 }
 
@@ -2927,6 +3069,18 @@ html.audience-mode-pending [data-audience-approach-body] {
   }
 }
 
+@keyframes live-status-sleep-dot {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Статус в глобальной шапке на /mission (как STATUS · AVAILABLE в koncept2) */
 .terminal-header-status {
   display: inline-flex;
@@ -2934,18 +3088,15 @@ html.audience-mode-pending [data-audience-approach-body] {
   gap: 0.35rem;
   padding: 0.28rem 0.55rem;
   border-radius: 6px;
-  border: 1px solid rgba(34, 197, 94, 0.42);
+  border: 1px solid rgba(100, 116, 139, 0.38);
   background: rgba(2, 6, 23, 0.75);
   font-family: "JetBrains Mono Variable", ui-monospace, monospace;
   white-space: normal;
   max-width: min(46vw, 11.5rem);
-}
-
-.terminal-header-status__mark {
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: #cbd5e1;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .terminal-header-status__dot {
@@ -2971,29 +3122,54 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .terminal-header-status__dot--unavailable {
-  background: #64748b;
-  box-shadow: none;
-  animation: none;
+  background: #818cf8;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.55);
+  animation: live-status-sleep-dot 2.6s ease-in-out infinite;
 }
 
 .terminal-header-status__ready {
   font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: #4ade80;
+  color: #94a3b8;
   line-height: 1.25;
+  transition: color 0.25s ease;
+}
+
+.terminal-header-status[data-live-status='available'] {
+  border-color: rgba(34, 197, 94, 0.42);
+  background: rgba(2, 6, 23, 0.75);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.08);
+}
+
+.terminal-header-status[data-live-status='available'] .terminal-header-status__ready {
+  color: #4ade80;
+}
+
+.terminal-header-status[data-live-status='lunch'] {
+  border-color: rgba(251, 191, 36, 0.45);
+  background: rgba(30, 25, 8, 0.55);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.06);
+}
+
+.terminal-header-status[data-live-status='lunch'] .terminal-header-status__ready {
+  color: #fde68a;
+}
+
+.terminal-header-status[data-live-status='unavailable'] {
+  border-color: rgba(129, 140, 248, 0.48);
+  background: rgba(30, 27, 75, 0.62);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.12);
+}
+
+.terminal-header-status[data-live-status='unavailable'] .terminal-header-status__ready {
+  color: #c7d2fe;
 }
 
 @media (min-width: 480px) {
   .terminal-header-status {
     max-width: none;
     white-space: nowrap;
-  }
-}
-
-@media (max-width: 380px) {
-  .terminal-header-status__mark {
-    display: none;
   }
 }
 
@@ -6832,7 +7008,8 @@ html.audience-mode-pending [data-audience-approach-body] {
     animation: none !important;
   }
 
-  .terminal-header-status__dot {
+  .terminal-header-status__dot,
+  .hero-live-status__dot--unavailable {
     animation: none !important;
   }
 

@@ -1,13 +1,14 @@
 ---
 /**
  * Фиксированная кнопка «наверх»: пиксельная стрелка в духе HUD-сайта.
- * Звук «level up» — синтез через Web Audio (квадратная волна), без отдельного файла.
+ * По клику — Pac-Man съедает «пеллеты» по пути smooth-scroll (если нет reduced motion).
  */
 interface Props {
   label: string;
 }
 
 const { label } = Astro.props;
+const PELLET_COUNT = 14;
 ---
 
 <button
@@ -23,7 +24,6 @@ const { label } = Astro.props;
       viewBox="0 0 5 4"
       width="20"
       height="16"
-      aria-hidden="true"
       shape-rendering="crispEdges"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -45,13 +45,96 @@ const { label } = Astro.props;
   </span>
 </button>
 
+<div class="scroll-top-pacman-run" data-scroll-pacman-run hidden aria-hidden="true">
+  <div class="scroll-top-pacman-run__pellets" data-scroll-pacman-pellets>
+    {
+      Array.from({ length: PELLET_COUNT }, (_, i) => (
+        <span class="scroll-top-pacman-run__pellet" data-pellet-index={i} />
+      ))
+    }
+  </div>
+  <div class="scroll-top-pacman-run__actor" data-scroll-pacman-actor>
+    <svg
+      class="scroll-top-pacman-run__sprite"
+      viewBox="0 0 24 24"
+      width="72"
+      height="72"
+      shape-rendering="crispEdges"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <!-- Рот слева; rotate(90deg) в CSS — смотрит вверх по ходу скролла -->
+      <g class="scroll-top-pacman-run__figure">
+        <g class="scroll-top-pacman-run__body">
+          <rect x="7" y="2" width="10" height="1" fill="#fbbf24" />
+          <rect x="6" y="3" width="12" height="1" fill="#fbbf24" />
+          <rect x="5" y="4" width="14" height="1" fill="#fbbf24" />
+          <rect x="4" y="5" width="16" height="1" fill="#fbbf24" />
+          <rect x="3" y="6" width="17" height="1" fill="#fbbf24" />
+          <rect x="2" y="7" width="18" height="1" fill="#fbbf24" />
+          <rect x="2" y="8" width="19" height="1" fill="#fbbf24" />
+          <rect x="2" y="9" width="19" height="1" fill="#fbbf24" />
+          <rect x="2" y="10" width="19" height="1" fill="#fbbf24" />
+          <rect x="2" y="11" width="19" height="1" fill="#fbbf24" />
+          <rect x="2" y="12" width="18" height="1" fill="#fbbf24" />
+          <rect x="3" y="13" width="17" height="1" fill="#fbbf24" />
+          <rect x="3" y="14" width="16" height="1" fill="#fbbf24" />
+          <rect x="4" y="15" width="15" height="1" fill="#fbbf24" />
+          <rect x="5" y="16" width="13" height="1" fill="#fbbf24" />
+          <rect x="6" y="17" width="11" height="1" fill="#fbbf24" />
+          <rect x="7" y="18" width="9" height="1" fill="#fbbf24" />
+          <rect x="8" y="19" width="7" height="1" fill="#fbbf24" />
+          <rect x="9" y="20" width="5" height="1" fill="#fbbf24" />
+          <rect x="8" y="19" width="1" height="1" fill="#eab308" />
+          <rect x="14" y="19" width="1" height="1" fill="#eab308" />
+          <rect x="6" y="17" width="1" height="1" fill="#eab308" />
+          <g class="scroll-top-pacman-run__mouth scroll-top-pacman-run__mouth--a">
+            <rect x="0" y="7" width="10" height="2" fill="#020617" />
+            <rect x="0" y="9" width="11" height="2" fill="#020617" />
+            <rect x="0" y="11" width="11" height="2" fill="#020617" />
+            <rect x="0" y="13" width="10" height="2" fill="#020617" />
+            <rect x="1" y="15" width="8" height="1" fill="#020617" />
+          </g>
+          <g class="scroll-top-pacman-run__mouth scroll-top-pacman-run__mouth--b">
+            <rect x="0" y="9" width="8" height="1" fill="#020617" />
+            <rect x="0" y="10" width="9" height="2" fill="#020617" />
+            <rect x="0" y="12" width="9" height="2" fill="#020617" />
+            <rect x="0" y="14" width="8" height="1" fill="#020617" />
+          </g>
+        </g>
+        <rect class="scroll-top-pacman-run__eye" x="15" y="7" width="3" height="3" fill="#fef9c3" />
+        <rect class="scroll-top-pacman-run__pupil" x="16" y="8" width="1" height="2" fill="#020617" />
+      </g>
+    </svg>
+  </div>
+</div>
+
 <script is:inline>
+  // @ts-nocheck
   (function () {
     var btn = document.querySelector('[data-scroll-top]');
-    if (!btn) return;
+    var runLayer = document.querySelector('[data-scroll-pacman-run]');
+    var actor = document.querySelector('[data-scroll-pacman-actor]');
+    var pelletsRoot = document.querySelector('[data-scroll-pacman-pellets]');
+    if (!btn || !runLayer || !actor || !pelletsRoot) return;
+
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var threshold = 380;
     var sharedAudioCtx = null;
+    var pacmanActive = false;
+    var pacmanRaf = 0;
+    var pacmanEndTimer = 0;
+    var runMetrics = null;
+    var runScrollStart = 0;
+
+    function actorSize() {
+      var mobile =
+        typeof window.matchMedia !== 'undefined' &&
+        window.matchMedia('(max-width: 767px)').matches;
+      return {
+        px: mobile ? 64 : 72,
+        maxScale: mobile ? 2.05 : 2.5,
+      };
+    }
 
     function playLevelUpChime() {
       if (reduce) return;
@@ -98,6 +181,7 @@ const { label } = Astro.props;
     }
 
     function sync() {
+      if (pacmanActive) return;
       var y = window.scrollY || document.documentElement.scrollTop || 0;
       if (y > threshold) {
         btn.removeAttribute('hidden');
@@ -106,12 +190,165 @@ const { label } = Astro.props;
       }
     }
 
+    function headerBottomPx() {
+      var header = document.querySelector('.terminal-header');
+      return header ? header.getBoundingClientRect().bottom : 56;
+    }
+
+    function computeRunMetrics() {
+      btn.removeAttribute('hidden');
+      var btnRect = btn.getBoundingClientRect();
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+      var size = actorSize();
+      var maxR = (size.px * size.maxScale) / 2;
+      var padX = Math.max(14, 10);
+      var padY = 12;
+      var hb = headerBottomPx();
+
+      var laneX = btnRect.left + btnRect.width * 0.5;
+      var minX = padX + maxR;
+      var maxX = vw - padX - maxR;
+      if (minX < maxX) {
+        laneX = Math.min(maxX, Math.max(minX, laneX));
+      } else {
+        laneX = vw * 0.5;
+      }
+
+      var startY = btnRect.top + btnRect.height * 0.5;
+      var endY = hb + maxR + padY;
+      var minTravel = Math.min(140, vh * 0.22);
+      if (endY > startY - minTravel) {
+        endY = startY - minTravel;
+      }
+
+      var pelletTop = hb + maxR * 0.4 + padY;
+      var pelletBottom = vh - Math.max(88, btnRect.height + 24);
+
+      return {
+        laneX: laneX,
+        startY: startY,
+        endY: endY,
+        pelletTop: pelletTop,
+        pelletBottom: pelletBottom,
+      };
+    }
+
+    function clampActorAt(x, y, scale) {
+      var r = (actorSize().px * scale) / 2;
+      var padX = Math.max(14, 10);
+      var padY = 10;
+      var hb = headerBottomPx();
+      var minY = hb + r + padY;
+      var maxY = window.innerHeight - r - padX;
+      var minX = padX + r;
+      var maxX = window.innerWidth - padX - r;
+      return {
+        x: Math.min(maxX, Math.max(minX, x)),
+        y: Math.min(maxY, Math.max(minY, y)),
+      };
+    }
+
+    function setPellets(progress) {
+      var pellets = pelletsRoot.querySelectorAll('[data-pellet-index]');
+      var eaten = Math.floor(progress * pellets.length);
+      for (var i = 0; i < pellets.length; i++) {
+        pellets[i].classList.toggle('is-eaten', i < eaten);
+      }
+    }
+
+    function layoutPellets(metrics) {
+      var pellets = pelletsRoot.querySelectorAll('[data-pellet-index]');
+      var span = Math.max(100, metrics.pelletBottom - metrics.pelletTop);
+      for (var i = 0; i < pellets.length; i++) {
+        var t = pellets.length === 1 ? 0.5 : i / (pellets.length - 1);
+        var y = metrics.pelletBottom - span * t;
+        pellets[i].style.left = metrics.laneX + 'px';
+        pellets[i].style.top = y + 'px';
+      }
+    }
+
+    function updatePacman(progress, metrics) {
+      var size = actorSize();
+      var scale = 1.1 + Math.sin(progress * Math.PI) * (size.maxScale - 1.1);
+      var y = metrics.startY - (metrics.startY - metrics.endY) * progress;
+      var pos = clampActorAt(metrics.laneX, y, scale);
+      actor.style.left = pos.x + 'px';
+      actor.style.top = pos.y + 'px';
+      actor.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+      runLayer.style.setProperty('--pacman-run-p', String(progress));
+      setPellets(progress);
+    }
+
+    function stopPacmanRun() {
+      pacmanActive = false;
+      if (pacmanRaf) {
+        cancelAnimationFrame(pacmanRaf);
+        pacmanRaf = 0;
+      }
+      if (pacmanEndTimer) {
+        clearTimeout(pacmanEndTimer);
+        pacmanEndTimer = 0;
+      }
+      runLayer.setAttribute('hidden', '');
+      btn.classList.remove('scroll-top-pixel--pacman');
+      actor.style.removeProperty('left');
+      actor.style.removeProperty('top');
+      actor.style.removeProperty('transform');
+      runLayer.style.removeProperty('--pacman-run-p');
+      runMetrics = null;
+      runScrollStart = 0;
+      var pellets = pelletsRoot.querySelectorAll('[data-pellet-index]');
+      for (var i = 0; i < pellets.length; i++) {
+        pellets[i].classList.remove('is-eaten');
+      }
+      sync();
+    }
+
+    function startPacmanRun(scrollStartY) {
+      if (reduce || scrollStartY < 80) return false;
+      runScrollStart = scrollStartY;
+      runMetrics = computeRunMetrics();
+      pacmanActive = true;
+      layoutPellets(runMetrics);
+      runLayer.removeAttribute('hidden');
+      btn.classList.add('scroll-top-pixel--pacman');
+      updatePacman(0, runMetrics);
+
+      function tick() {
+        if (!pacmanActive || !runMetrics) return;
+        var y = window.scrollY || document.documentElement.scrollTop || 0;
+        var progress = Math.min(1, Math.max(0, 1 - y / runScrollStart));
+        updatePacman(progress, runMetrics);
+        if (y > 8) {
+          pacmanRaf = requestAnimationFrame(tick);
+        } else {
+          updatePacman(1, runMetrics);
+          pacmanEndTimer = window.setTimeout(stopPacmanRun, 280);
+        }
+      }
+
+      pacmanRaf = requestAnimationFrame(tick);
+      pacmanEndTimer = window.setTimeout(stopPacmanRun, 4500);
+      return true;
+    }
+
     window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', function () {
+      if (!pacmanActive) return;
+      runMetrics = computeRunMetrics();
+      layoutPellets(runMetrics);
+    });
     sync();
 
     btn.addEventListener('click', function () {
       playLevelUpChime();
+      var startY = window.scrollY || document.documentElement.scrollTop || 0;
+      var usedPacman = !reduce && startPacmanRun(startY);
       window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      if (!usedPacman && reduce) {
+        /* already auto */
+      }
       try {
         if (btn.focus) btn.focus({ preventScroll: true });
       } catch (e) {
