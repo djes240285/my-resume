@@ -16,6 +16,17 @@
       return desktopMq ? desktopMq.matches : true;
     }
 
+    function resetMobileLayout(viewport, track, root) {
+      track.style.transform = 'none';
+      track.style.willChange = 'auto';
+      track.style.pointerEvents = '';
+      viewport.style.height = 'auto';
+      viewport.style.maxHeight = 'none';
+      viewport.removeAttribute('tabindex');
+      viewport.classList.remove('mc-case-log__drum-viewport--dragging');
+      root.classList.remove('is-interactive');
+    }
+
     roots.forEach(function (root) {
       var viewport = root.querySelector('.mc-case-log__drum-viewport');
       var track = root.querySelector('.mc-case-log__drum-track');
@@ -41,7 +52,20 @@
       var PAUSE_AFTER_DRAG_MS = 2600;
       var PAUSE_AFTER_LEAVE_MS = 700;
 
+      function syncDrumMode() {
+        if (!drumEnabled()) {
+          resetMobileLayout(viewport, track, root);
+          offset = 0;
+          loopHeight = 0;
+          return;
+        }
+        viewport.setAttribute('tabindex', '0');
+        track.style.willChange = 'transform';
+        measure();
+      }
+
       function measure() {
+        if (!drumEnabled()) return;
         var total = track.offsetHeight;
         loopHeight = total > 2 ? total / 2 : 0;
 
@@ -286,10 +310,11 @@
         userPause(PAUSE_AFTER_WHEEL_MS);
       });
 
-      track.style.willChange = 'transform';
-
-      measure();
-      window.addEventListener('resize', measure);
+      syncDrumMode();
+      if (desktopMq) {
+        desktopMq.addEventListener('change', syncDrumMode);
+      }
+      window.addEventListener('resize', syncDrumMode);
       if (typeof ResizeObserver !== 'undefined') {
         var ro = new ResizeObserver(function () {
           measure();

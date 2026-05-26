@@ -5634,6 +5634,15 @@ html.audience-mode-pending [data-audience-approach-body] {
   .mc-case-log__table--drum .mc-case-log__drum-track {
     transform: none !important;
     will-change: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .mc-case-log__table--drum .mc-case-log__row {
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 10px;
+    background: rgba(2, 6, 23, 0.42);
   }
 
   .mc-case-log__row--clone {
