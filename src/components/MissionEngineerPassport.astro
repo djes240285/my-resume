@@ -1,0 +1,102 @@
+---
+import type { MissionEngineerPassport as PassportData } from '../i18n/mission-control-data';
+
+interface Props {
+  passport: PassportData;
+}
+
+const { passport } = Astro.props;
+
+/** Детерминированная «активность» для микро-heatmap (12×4) */
+const activityCells = [
+  0.25, 0.45, 0.7, 0.55, 0.85, 0.65, 0.9, 0.5, 0.75, 0.6, 0.95, 0.4,
+  0.35, 0.6, 0.5, 0.8, 0.45, 0.7, 0.55, 0.85, 0.65, 0.75, 0.5, 0.9,
+  0.5, 0.7, 0.85, 0.6, 0.95, 0.75, 0.55, 0.8, 0.65, 0.9, 0.7, 0.45,
+  0.4, 0.55, 0.65, 0.75, 0.5, 0.85, 0.6, 0.7, 0.8, 0.55, 0.65, 0.5,
+];
+const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,11 L42,11 L44,7 L47,15 L50,11 L64,11';
+---
+
+<div class="mc-passport">
+  <header class="mc-passport__head">
+    <p class="mc-passport__name">{passport.name}</p>
+    <p class="mc-passport__role">{passport.role}</p>
+  </header>
+
+  <section class="mc-passport__block" aria-labelledby="mc-passport-metrics">
+    <h3 id="mc-passport-metrics" class="mc-passport__kicker">{passport.metricsTitle}</h3>
+    <dl class="mc-passport__dl">
+      {
+        passport.metrics.map((row) => (
+          <div class="mc-passport__row">
+            <dt>{row.label}</dt>
+            <dd>{row.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="mc-passport__block" aria-labelledby="mc-passport-stack">
+    <h3 id="mc-passport-stack" class="mc-passport__kicker">{passport.stackTitle}</h3>
+    <dl class="mc-passport__dl">
+      {
+        passport.stackGroups.map((row) => (
+          <div class="mc-passport__row">
+            <dt>{row.label}</dt>
+            <dd>{row.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="mc-passport__viz" aria-label={passport.vizAriaLabel}>
+    <div class="mc-passport__viz-row">
+      <div class="mc-passport__metric-pill">
+        <span class="mc-passport__metric-pill-k">{passport.stabilityLabel}</span>
+        <span class="mc-passport__metric-pill-v">{passport.stabilityValue}</span>
+      </div>
+      <div class="mc-passport__metric-pill">
+        <span class="mc-passport__metric-pill-k">{passport.aiContourLabel}</span>
+        <span class="mc-passport__metric-pill-v">{passport.aiContourValue}</span>
+      </div>
+    </div>
+
+    <div class="mc-passport__ecg-wrap">
+      <svg class="mc-passport__ecg" viewBox="0 0 64 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path
+          class="mission-ecg__spike"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d={ecgPath}
+        />
+      </svg>
+    </div>
+
+    <div class="mc-passport__activity">
+      <p class="mc-passport__activity-label">{passport.activityLabel}</p>
+      <svg class="mc-passport__activity-grid" viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        {
+          activityCells.map((opacity, i) => {
+            const col = i % 12;
+            const row = Math.floor(i / 12);
+            return (
+              <rect
+                x={col * 10}
+                y={row * 8}
+                width="8"
+                height="6"
+                rx="1"
+                fill={`rgba(74, 222, 128, ${opacity})`}
+              />
+            );
+          })
+        }
+      </svg>
+    </div>
+  </section>
+</div>

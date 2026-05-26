@@ -1,56 +1,55 @@
 import type { Lang } from './cv-data';
 
-export type MissionFailurePair = {
-  failure: string;
-  resolution: string;
-};
-
 export type CaseLogEntry = {
   id: string;
   slug: string;
   name: string;
   operation: string;
+  stack: string;
   status: string;
+};
+
+export type PassportMetric = {
+  label: string;
+  value: string;
+};
+
+export type MissionEngineerPassport = {
+  name: string;
+  role: string;
+  metricsTitle: string;
+  metrics: PassportMetric[];
+  stackTitle: string;
+  stackGroups: PassportMetric[];
+  stabilityLabel: string;
+  stabilityValue: string;
+  aiContourLabel: string;
+  aiContourValue: string;
+  activityLabel: string;
+  vizAriaLabel: string;
 };
 
 export type MissionControlContent = {
   metaTitle: string;
   metaDescription: string;
   hero: {
-    headlineLine1: string;
-    headlineLine2: string;
+    headline: string;
     lead: string;
-    subheadLines: string[];
-    identityName: string;
-    identityRole: string;
+    avatarAlt: string;
   };
-  liveStatus: {
-    focusLabel: string;
-    focusValue: string;
-  };
-  operationalMetrics: {
-    title: string;
-    comment: string;
-    lines: { key: string; value: string }[];
-  };
+  engineerPassport: MissionEngineerPassport;
   mindset: {
     title: string;
     lines: string[];
   };
-  failures: {
-    title: string;
-    warningTag: string;
-    preface: string;
-    colFailure: string;
-    colResolution: string;
-    rows: MissionFailurePair[];
-  };
   caseLog: {
     title: string;
+    intro: string;
     lead: string;
     colId: string;
     colTarget: string;
     colOperation: string;
+    colStack: string;
     colStatus: string;
     rowAction: string;
     entries: CaseLogEntry[];
@@ -68,238 +67,220 @@ export type MissionControlContent = {
     email: string;
     telegram: string;
     max: string;
-    portfolio: string;
-    resume: string;
   };
 };
 
 const ru: MissionControlContent = {
-  metaTitle: 'Евгений Жуков — инженерный пульт · восстановление систем',
+  metaTitle: 'Евгений Жуков — веб-системы: разработка и поддержка',
   metaDescription:
-    'Стабилизация систем, от которых зависит бизнес: легаси, миграции, интеграции. Более 15 лет в продакшене.',
+    'Проектирование, развитие и поддержка веб-систем: фичи, бэкенд, интерфейсы. Предсказуемый продакшен, 15+ лет опыта.',
   hero: {
-    headlineLine1: 'Стабилизирую системы,',
-    headlineLine2: 'которые бизнес боится трогать.',
+    headline: 'Проектирую, развиваю и поддерживаю веб-системы.',
     lead:
-      'Специализируюсь на стабилизации непрерывных бизнес-процессов: легаси, сложные интеграции и архитектура с нулевым допуском к простою.',
-    subheadLines: [
-      'Легаси и нестабильные релизы',
-      'Хаос интеграций и «ручные» стыки',
-      'Миграции без права на простой',
-      'Регрессии без владельца',
-      'Масштаб, который ломает то, что «и так работало»',
+      'Помогаю бизнесу реализовывать сложные фичи, оптимизировать бэкенд и создавать точные интерфейсы, сохраняя предсказуемость и стабильность продакшена.',
+    avatarAlt: 'Евгений Жуков',
+  },
+  engineerPassport: {
+    name: 'Евгений Жуков',
+    role: 'Инженер · Фулстек-архитектор',
+    metricsTitle: 'Метрики разработчика',
+    metrics: [
+      { label: 'STATUS', value: 'ACTIVE · свободен для проектов' },
+      { label: 'ОПЫТ', value: '15+ лет в коммерческом инжиниринге' },
+      { label: 'ПРОФИЛЬ', value: 'Fullstack Developer / Core Architect' },
+      { label: 'СПЕЦИАЛИЗАЦИЯ', value: 'Разработка и развитие core-инфраструктуры' },
+      { label: 'КОНТУРЫ', value: 'Highload, E-commerce, AI-интеграции' },
     ],
-    identityName: 'Евгений Жуков',
-    identityRole: 'Инженер восстановления систем · фулстек · архитектор',
-  },
-  liveStatus: {
-    focusLabel: 'Текущий фокус',
-    focusValue: 'ИИ-ускоренная инфраструктура и восстановление легаси',
-  },
-  operationalMetrics: {
-    title: '[OPERATIONAL_METRICS]',
-    comment: '// ТЕКУЩИЕ ПАРАМЕТРЫ ПРИЕМА:',
-    lines: [
+    stackTitle: 'Основной контур стека',
+    stackGroups: [
       {
-        key: '[ДОСТУПНОСТЬ]',
-        value: '1 масштабный проект или архитектурный консалтинг',
+        label: 'Backend',
+        value: 'PHP (Laravel, Magento 1/2), Node.js, REST API, SQL',
       },
       {
-        key: '[МАСШТАБ СИСТЕМ]',
-        value: 'Высокая нагрузка, базы >100GB, e-com с оборотом Enterprise',
+        label: 'Frontend',
+        value: 'Vue.js, React, Blade, Tailwind CSS, Figma (Pixel Perfect)',
       },
       {
-        key: '[БЕЗОПАСНОСТЬ]',
-        value: 'Работа в контуре NDA / готовность к сложным легаси-миграциям',
+        label: 'AI-Driven',
+        value: 'Cursor-агенты, автоматизация процессов, LLM-интеграции',
       },
     ],
+    stabilityLabel: 'PRODUCTION_STABILITY_INDEX',
+    stabilityValue: '99.9%',
+    aiContourLabel: 'AI_CONTOUR_EFFICIENCY',
+    aiContourValue: 'высокая',
+    activityLabel: 'Активность в контурах (12 мес.)',
+    vizAriaLabel: 'График стабильности и индикатор активности',
   },
   mindset: {
-    title: 'ИНЖЕНЕРНЫЙ ПОДХОД',
+    title: 'Как я работаю',
     lines: [
-      'Сначала диагностика — не переписывание',
-      'Стабильность важнее трендов',
-      'Предсказуемость вместо хаоса',
-      'Система должна пережить рост',
-    ],
-  },
-  failures: {
-    title: 'КРИТИЧЕСКИЕ СЦЕНАРИИ И УСТРАНЕНИЕ СБОЕВ',
-    warningTag: '[WARNING: CRITICAL_ZONE_ONLY]',
-    preface:
-      'Когда релиз нельзя откатить, а бизнес уже зависит от системы, важны не модные технологии, а инженерная устойчивость: диагностика, предсказуемые релизы и контур, который выдержит рост.',
-    colFailure: 'Сбой',
-    colResolution: 'Решение',
-    rows: [
-      { failure: 'Коллапс легаси', resolution: 'Восстановление и модернизация' },
-      { failure: 'Медленная архитектура', resolution: 'Профилирование и ускорение' },
-      { failure: 'Хаос интеграций', resolution: 'Стабильные интерфейсы' },
-      { failure: 'Срыв масштабирования', resolution: 'Редизайн инфраструктуры' },
+      'Сначала разбираюся в задаче и контексте — не переписываю ради моды',
+      'Стабильность и предсказуемость релизов важнее хайпа',
+      'Честная оценка сроков и прозрачная коммуникация',
+      'Система должна спокойно переживать рост нагрузки',
     ],
   },
   caseLog: {
-    title: 'ДЕРЕВО ИНЦИДЕНТОВ (CASE_LOG)',
-    lead: 'Индекс задокументированных операций — клик по строке открывает post-mortem в полном логе.',
+    title: 'Примеры из практики',
+    intro:
+      'Ниже — задокументированные операции. Каждый кейс в портфолио содержит разбор, схемы и результаты оптимизации.',
+    lead: 'Клик по строке откроет post-mortem в основном портфолио.',
     colId: 'ID',
-    colTarget: 'Объект',
-    colOperation: 'Операция',
+    colTarget: 'Проект',
+    colOperation: 'Что сделано',
+    colStack: 'Стек',
     colStatus: 'Статус',
-    rowAction: '[VIEW_LOG_]',
+    rowAction: 'Подробнее',
     entries: [
       {
         id: 'ID_01',
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
-        operation: 'Реанимация ядра Magento 1→2',
-        status: 'В ПРОДЕ · 5+ ЛЕТ',
+        operation: 'Миграция и развитие Magento 1→2',
+        stack: 'Magento 1→2, PHP, Docker',
+        status: 'В проде · 5+ лет',
       },
       {
         id: 'ID_02',
         slug: 'krymresurs',
         name: 'Крымресурс',
         operation: 'Интеграция документооборота',
-        status: 'В ЭКСПЛУАТАЦИИ',
+        stack: 'Laravel, API, документооборот',
+        status: 'В эксплуатации',
       },
       {
         id: 'ID_03',
         slug: 'dostavka-zpr',
         name: 'Доставка-ЗПР',
         operation: 'Автоматизация логистики',
-        status: 'ШТАТНО · В КОНТУРЕ',
+        stack: 'Laravel, очереди, интеграции',
+        status: 'Работает штатно',
       },
     ],
   },
   bridge: {
-    title: 'ИНИЦИАЛИЗАЦИЯ ВЗАИМОДЕЙСТВИЯ (ЗАПРОС НА АУДИТ)',
+    title: 'Давайте обсудим ваш проект',
     body:
-      'Если ваш контур перегружен, легаси тормозит бизнес, а команда боится релизов — опишите симптомы. Проведу экспресс-диагностику архитектуры без вмешательства в продакшен.',
-    cta: 'ОТПРАВИТЬ СИМПТОМЫ СИСТЕМЫ',
-    mailtoSubject: 'Симптомы системы — запрос на аудит',
+      'Нужно реализовать новую функциональность, обновить легаси-платформу или автоматизировать рабочие процессы? Расскажите задачу — я предложу оптимальный технический стек и план реализации.',
+    cta: 'Начать обсуждение',
+    mailtoSubject: 'Обсуждение проекта',
   },
   ai: {
-    line: 'ИИ ускоряет анализ и поставку; архитектура и ответственность за прод остаются за инженером.',
+    line: 'ИИ помогает ускорять рутину; архитектуру и ответственность за прод веду как инженер.',
   },
   cta: {
     email: 'Написать',
     telegram: 'Telegram',
     max: 'MAX',
-    portfolio: 'Портфолио',
-    resume: 'Резюме',
   },
 };
 
 const en: MissionControlContent = {
-  metaTitle: 'Eugene Zhukov — engineering mission control',
+  metaTitle: 'Eugene Zhukov — web systems: build & support',
   metaDescription:
-    'Stabilizing systems businesses depend on: legacy, migrations, integrations. 15+ years in production.',
+    'Design, evolve, and support web systems: features, backend, interfaces. Predictable production, 15+ years of experience.',
   hero: {
-    headlineLine1: 'I stabilize systems',
-    headlineLine2: 'businesses are afraid to touch.',
+    headline: 'I design, build, and support web systems.',
     lead:
-      'I specialize in stabilizing always-on business processes: legacy, complex integrations, and architectures with zero tolerance for downtime.',
-    subheadLines: [
-      'Legacy and brittle releases',
-      'Integration chaos and manual glue',
-      'Migrations with no downtime window',
-      'Regressions with no owner',
-      'Scale that breaks what “already worked”',
+      'I help businesses ship complex features, optimize backends, and craft precise interfaces while keeping production predictable and stable.',
+    avatarAlt: 'Eugene Zhukov',
+  },
+  engineerPassport: {
+    name: 'Eugene Zhukov',
+    role: 'Engineer · Full-stack architect',
+    metricsTitle: 'Developer metrics',
+    metrics: [
+      { label: 'STATUS', value: 'ACTIVE · open for projects' },
+      { label: 'EXPERIENCE', value: '15+ years in commercial engineering' },
+      { label: 'PROFILE', value: 'Fullstack Developer / Core Architect' },
+      { label: 'FOCUS', value: 'Core infrastructure build & evolution' },
+      { label: 'DOMAINS', value: 'Highload, E-commerce, AI integrations' },
     ],
-    identityName: 'Eugene Zhukov',
-    identityRole: 'Systems recovery engineer · full-stack · architect',
-  },
-  liveStatus: {
-    focusLabel: 'Current focus',
-    focusValue: 'AI-augmented infrastructure and legacy recovery',
-  },
-  operationalMetrics: {
-    title: '[OPERATIONAL_METRICS]',
-    comment: '// CURRENT INTAKE PARAMETERS:',
-    lines: [
+    stackTitle: 'Primary stack contour',
+    stackGroups: [
       {
-        key: '[AVAILABILITY]',
-        value: 'One major project or architecture consulting engagement',
+        label: 'Backend',
+        value: 'PHP (Laravel, Magento 1/2), Node.js, REST API, SQL',
       },
       {
-        key: '[SYSTEM SCALE]',
-        value: 'High load, DBs >100GB, enterprise-grade e-commerce',
+        label: 'Frontend',
+        value: 'Vue.js, React, Blade, Tailwind CSS, Figma (pixel-perfect)',
       },
       {
-        key: '[SECURITY]',
-        value: 'NDA-bound work / complex legacy migrations accepted',
+        label: 'AI-Driven',
+        value: 'Cursor agents, workflow automation, LLM integrations',
       },
     ],
+    stabilityLabel: 'PRODUCTION_STABILITY_INDEX',
+    stabilityValue: '99.9%',
+    aiContourLabel: 'AI_CONTOUR_EFFICIENCY',
+    aiContourValue: 'high',
+    activityLabel: 'Contour activity (12 mo.)',
+    vizAriaLabel: 'Stability chart and activity heatmap',
   },
   mindset: {
-    title: 'ENGINEERING MINDSET',
+    title: 'How I work',
     lines: [
-      'Diagnose before rewriting',
-      'Stability over trends',
-      'Predictability over chaos',
-      'Systems must survive growth',
-    ],
-  },
-  failures: {
-    title: 'CRITICAL SCENARIOS & FAILURE REMEDIATION',
-    warningTag: '[WARNING: CRITICAL_ZONE_ONLY]',
-    preface:
-      'When a release cannot be rolled back and the business already depends on the system, trendy stacks matter less than engineering resilience: diagnosis, predictable releases, and a system that survives growth.',
-    colFailure: 'Failure',
-    colResolution: 'Resolution',
-    rows: [
-      { failure: 'Legacy collapse', resolution: 'Recovery & modernization' },
-      { failure: 'Slow architecture', resolution: 'Profiling & acceleration' },
-      { failure: 'Integration chaos', resolution: 'Stable interfaces' },
-      { failure: 'Scaling failures', resolution: 'Infrastructure redesign' },
+      'Understand the problem and context first — no rewrite for hype',
+      'Stable, predictable releases over trend-chasing',
+      'Honest estimates and clear communication',
+      'Systems should handle growth without drama',
     ],
   },
   caseLog: {
-    title: 'INCIDENT TREE (CASE_LOG)',
-    lead: 'Documented operations index — click a row to open the post-mortem in the full log.',
+    title: 'Selected projects',
+    intro:
+      'Documented operations below. Each case in the portfolio includes analysis, diagrams, and optimization outcomes.',
+    lead: 'Click a row to open the post-mortem in the main portfolio.',
     colId: 'ID',
-    colTarget: 'Target',
-    colOperation: 'Operation',
+    colTarget: 'Project',
+    colOperation: 'Scope',
+    colStack: 'Stack',
     colStatus: 'Status',
-    rowAction: '[VIEW_LOG_]',
+    rowAction: 'Details',
     entries: [
       {
         id: 'ID_01',
         slug: 'windowcleaner',
         name: 'windowcleaner.com',
-        operation: 'Magento core recovery 1→2',
-        status: 'IN PROD · 5+ YRS',
+        operation: 'Magento 1→2 migration & evolution',
+        stack: 'Magento 1→2, PHP, Docker',
+        status: 'In prod · 5+ yrs',
       },
       {
         id: 'ID_02',
         slug: 'krymresurs',
         name: 'Krymresurs',
         operation: 'Document workflow integration',
-        status: 'IN PRODUCTION',
+        stack: 'Laravel, API, document flow',
+        status: 'In production',
       },
       {
         id: 'ID_03',
         slug: 'dostavka-zpr',
         name: 'Dostavka-ZPR',
         operation: 'Logistics automation',
-        status: 'OPERATIONAL',
+        stack: 'Laravel, queues, integrations',
+        status: 'Running smoothly',
       },
     ],
   },
   bridge: {
-    title: 'ENGAGEMENT INIT (AUDIT REQUEST)',
+    title: "Let's discuss your project",
     body:
-      'If your system is overloaded, legacy is blocking the business, and the team fears releases — describe the symptoms. I will run a rapid architecture triage without touching production.',
-    cta: 'SUBMIT SYSTEM SYMPTOMS',
-    mailtoSubject: 'System symptoms — audit request',
+      'Need a new feature, a legacy platform refresh, or workflow automation? Tell me about the goal — I will suggest a practical stack and implementation plan.',
+    cta: 'Start a conversation',
+    mailtoSubject: 'Project discussion',
   },
   ai: {
-    line: 'AI speeds analysis and delivery; architecture and production accountability stay with the engineer.',
+    line: 'AI speeds up routine work; architecture and production accountability stay with the engineer.',
   },
   cta: {
     email: 'Email me',
     telegram: 'Telegram',
     max: 'MAX',
-    portfolio: 'Portfolio',
-    resume: 'Resume',
   },
 };
 

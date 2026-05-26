@@ -3,6 +3,7 @@ import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 import { getMissionControl } from '../i18n/mission-control-data';
 import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
+import MissionEngineerPassport from './MissionEngineerPassport.astro';
 
 interface Props {
   lang: Lang;
@@ -14,114 +15,68 @@ const m = getMissionControl(lang);
 const portfolioHref = `/${lang}/portfolio`;
 const resumeHref = `/${lang}/`;
 const TELEGRAM_URL = 'https://t.me/DJES240285';
-const auditMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponent(m.bridge.mailtoSubject)}`;
+const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponent(m.bridge.mailtoSubject)}`;
 ---
 
 <main class="mc-page">
   <header class="mc-hero-primary" aria-labelledby="mc-hero-title">
     <div class="mc-surface mc-module mc-hero-primary__card">
       <div class="mc-hero-primary__pitch">
-        <h1 id="mc-hero-title" class="mc-hero-primary__title">
-          <span class="mc-hero-primary__line">{m.hero.headlineLine1}</span>
-          <span class="mc-hero-primary__line mc-hero-primary__line--accent">{m.hero.headlineLine2}</span>
+        <h1 id="mc-hero-title" class="mc-hero-primary__title mc-hero-primary__title--single">
+          {m.hero.headline}
         </h1>
 
         <p class="mc-hero-primary__lead">{m.hero.lead}</p>
-
-        <ul class="mc-hero-primary__subheads">
-          {m.hero.subheadLines.map((line) => <li>{line}</li>)}
-        </ul>
       </div>
 
-      <div class="mc-hero-primary__profile">
-        <div class="mc-hero-primary__photo">
-          <MissionAvatarTerminal lang={lang} alt={m.hero.identityName} />
-        </div>
-        <div class="mc-hero-primary__identity">
-          <p class="mc-hero-primary__name">{m.hero.identityName}</p>
-          <p class="mc-hero-primary__role">{m.hero.identityRole}</p>
-          <p class="mc-hero-primary__focus">
-            <span class="mc-hero-primary__focus-k">{m.liveStatus.focusLabel}</span>
-            {m.liveStatus.focusValue}
-          </p>
-
-          <div class="mc-ops-metrics" aria-labelledby="mc-ops-metrics-title">
-            <p id="mc-ops-metrics-title" class="mc-ops-metrics__title">{m.operationalMetrics.title}</p>
-            <p class="mc-ops-metrics__comment">{m.operationalMetrics.comment}</p>
-            <dl class="mc-ops-metrics__list">
-              {
-                m.operationalMetrics.lines.map((line) => (
-                  <div class="mc-ops-metrics__row">
-                    <dt>{line.key}</dt>
-                    <dd>{line.value}</dd>
-                  </div>
-                ))
-              }
-            </dl>
+      <div class="mc-hero-deck">
+        <div class="mc-hero-deck__left">
+          <div class="mc-hero-primary__photo">
+            <MissionAvatarTerminal lang={lang} alt={m.hero.avatarAlt} />
+          </div>
+          <div class="mc-hero-primary__actions">
+            <a class="mission-btn mission-btn--primary mission-btn--icon mission-btn--glow" href={`mailto:${t.contact.emails[0]}`}>
+              <img class="mission-btn__icon" src="/logo-mail.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
+              <span>{m.cta.email}</span>
+            </a>
+            <a
+              class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img class="mission-btn__icon" src="/logo-telegram.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
+              <span>{m.cta.telegram}</span>
+            </a>
+            <a
+              class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
+              href={t.contact.maxHref}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img class="mission-btn__icon mission-btn__icon--max" src="/logo-max.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
+              <span>{m.cta.max}</span>
+            </a>
           </div>
         </div>
-      </div>
 
-      <div class="mc-hero-primary__actions">
-        <a class="mission-btn mission-btn--primary mission-btn--icon mission-btn--glow" href={`mailto:${t.contact.emails[0]}`}>
-          <img class="mission-btn__icon" src="/logo-mail.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-          <span>{m.cta.email}</span>
-        </a>
-        <a
-          class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-          href={TELEGRAM_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img class="mission-btn__icon" src="/logo-telegram.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-          <span>{m.cta.telegram}</span>
-        </a>
-        <a
-          class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-          href={t.contact.maxHref}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img class="mission-btn__icon mission-btn__icon--max" src="/logo-max.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-          <span>{m.cta.max}</span>
-        </a>
+        <div class="mc-hero-deck__right">
+          <MissionEngineerPassport passport={m.engineerPassport} />
+        </div>
       </div>
     </div>
   </header>
 
   <section class="mc-mindset mc-surface mc-module mc-tier-2" aria-labelledby="mc-mindset-title">
-    <h2 id="mc-mindset-title" class="mc-section-title">{m.mindset.title}</h2>
+    <h2 id="mc-mindset-title" class="mc-section-title mc-section-title--prose">{m.mindset.title}</h2>
     <ul class="mc-mindset__list">
       {m.mindset.lines.map((line) => <li>{line}</li>)}
     </ul>
   </section>
 
-  <section class="mc-failures mc-surface mc-module mc-tier-2" aria-labelledby="mc-failures">
-    <h2 id="mc-failures" class="mc-section-title">{m.failures.title}</h2>
-    <p class="mc-failures__warning" role="note">
-      <span class="mc-failures__warning-tag">{m.failures.warningTag}</span>
-    </p>
-    <p class="mc-failures__preface">{m.failures.preface}</p>
-    <div class="mc-failures__table" role="table">
-      <div class="mc-failures__head" role="row">
-        <span role="columnheader">{m.failures.colFailure}</span>
-        <span class="mc-failures__head-gap" aria-hidden="true"></span>
-        <span role="columnheader">{m.failures.colResolution}</span>
-      </div>
-      {
-        m.failures.rows.map((row) => (
-          <div class="mc-failures__row" role="row">
-            <span class="mc-failures__failure" role="cell">{row.failure}</span>
-            <span class="mc-failures__arrow" aria-hidden="true">→</span>
-            <span class="mc-failures__resolution" role="cell">{row.resolution}</span>
-          </div>
-        ))
-      }
-    </div>
-  </section>
-
   <section class="mc-case-log mc-surface mc-module mc-tier-2" aria-labelledby="mc-case-log-title">
-    <h2 id="mc-case-log-title" class="mc-section-title">{m.caseLog.title}</h2>
+    <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{m.caseLog.title}</h2>
+    <p class="mc-case-log__intro">{m.caseLog.intro}</p>
     <p class="mc-case-log__lead">{m.caseLog.lead}</p>
     <div class="mc-case-log__table" role="table">
       <div class="mc-case-log__head" role="row">
@@ -129,6 +84,7 @@ const auditMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponen
         <span role="columnheader">{m.caseLog.colTarget}</span>
         <span class="mc-case-log__arrow-head" aria-hidden="true">→</span>
         <span role="columnheader">{m.caseLog.colOperation}</span>
+        <span role="columnheader">{m.caseLog.colStack}</span>
         <span role="columnheader">{m.caseLog.colStatus}</span>
       </div>
       {
@@ -143,6 +99,7 @@ const auditMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponen
             <span class="mc-case-log__name" role="cell">{entry.name}</span>
             <span class="mc-case-log__arrow" aria-hidden="true">→</span>
             <span class="mc-case-log__op" role="cell">{entry.operation}</span>
+            <span class="mc-case-log__stack" role="cell">{entry.stack}</span>
             <span class="mc-case-log__status" role="cell">
               <span class="mc-case-log__status-label">{entry.status}</span>
               <span class="mc-case-log__status-action">{m.caseLog.rowAction}</span>
@@ -154,10 +111,10 @@ const auditMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponen
   </section>
 
   <section class="mc-bridge mc-tier-1 mc-surface mc-module" aria-labelledby="mc-bridge-title">
-    <h2 id="mc-bridge-title" class="mc-bridge__title">{m.bridge.title}</h2>
+    <h2 id="mc-bridge-title" class="mc-bridge__title mc-section-title--prose">{m.bridge.title}</h2>
     <p class="mc-bridge__body">{m.bridge.body}</p>
     <div class="mc-bridge__actions">
-      <a class="mission-btn mission-btn--primary mission-btn--glow mc-bridge__btn" href={auditMailHref}>
+      <a class="mission-btn mission-btn--primary mission-btn--glow mc-bridge__btn" href={bridgeMailHref}>
         {m.bridge.cta}
       </a>
       <a class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
