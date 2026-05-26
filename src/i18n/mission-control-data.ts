@@ -233,7 +233,7 @@ const ru: MissionControlContent = {
   bridge: {
     title: 'Давайте обсудим ваш проект',
     body:
-      'Нужно реализовать новую функциональность, обновить легаси-платформу или автоматизировать рабочие процессы? Расскажите задачу — я предложу оптимальный технический стек и план реализации.',
+      'Можно прийти с любым запросом: от идеи и аудита до точечной доработки, срочного инцидента или масштабирования. Опишите задачу в свободной форме, даже если ТЗ еще не готово, — разложу по шагам, предложу реалистичный стек и безопасный план запуска.',
     cta: 'Начать обсуждение',
     mailtoSubject: 'Обсуждение проекта',
   },
@@ -371,7 +371,7 @@ const en: MissionControlContent = {
   bridge: {
     title: "Let's discuss your project",
     body:
-      'Need a new feature, a legacy platform refresh, or workflow automation? Tell me about the goal — I will suggest a practical stack and implementation plan.',
+      'Bring any request: from an early idea or audit to a focused fix, urgent incident, or scaling roadmap. Share your goal in plain words even without a formal spec, and I will break it down into steps with a practical stack and a safe delivery plan.',
     cta: 'Start a conversation',
     mailtoSubject: 'Project discussion',
   },
