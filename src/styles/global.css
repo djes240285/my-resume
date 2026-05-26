@@ -5159,6 +5159,217 @@ html.audience-mode-pending [data-audience-approach-body] {
   text-wrap: pretty;
 }
 
+/* Системная шапка «окна» (портфолио + пульт) */
+.sys-window-chrome,
+.case-incident-log__chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.sys-window-chrome__lights,
+.case-incident-log__lights {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.28rem;
+}
+
+.sys-window-chrome__light,
+.case-incident-log__lights i {
+  display: block;
+  width: 0.42rem;
+  height: 0.42rem;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: rgba(100, 116, 139, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.sys-window-chrome__light--close,
+.case-incident-log__lights i:nth-child(1) {
+  background: rgba(248, 113, 113, 0.55);
+  box-shadow: 0 0 6px rgba(248, 113, 113, 0.35);
+}
+
+.sys-window-chrome__light--min,
+.case-incident-log__lights i:nth-child(2) {
+  background: rgba(251, 191, 36, 0.45);
+}
+
+.sys-window-chrome__light--open,
+.case-incident-log__lights i:nth-child(3) {
+  background: rgba(74, 222, 128, 0.45);
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.25);
+}
+
+.sys-window-chrome__title,
+.case-incident-log__head {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sys-window-chrome__meta {
+  flex-shrink: 0;
+  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.sys-window-chrome__light {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+}
+
+.sys-window-chrome__light:hover {
+  filter: brightness(1.15);
+  transform: scale(1.08);
+}
+
+.sys-window-chrome__light:focus-visible {
+  outline: 2px solid rgba(56, 189, 248, 0.65);
+  outline-offset: 2px;
+}
+
+.sys-window-chrome__light:active {
+  transform: scale(0.94);
+}
+
+/* Мобилка: сворачиваемый CASE_LOG */
+.mc-case-log__fold {
+  margin-top: 0.35rem;
+}
+
+.mc-case-log__fold-summary {
+  display: none;
+}
+
+.mc-case-log__fold-peek {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .mc-case-log__fold {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(17, 24, 39, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 10px 28px rgba(2, 6, 23, 0.32);
+  }
+
+  .mc-case-log__fold-summary {
+    display: flex;
+    list-style: none;
+    cursor: pointer;
+    padding: 0.45rem 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.35));
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mc-case-log__fold-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mc-case-log__fold-summary::marker {
+    content: '';
+  }
+
+  .mc-case-log__fold-summary:focus-visible {
+    outline: 2px solid rgba(56, 189, 248, 0.55);
+    outline-offset: -2px;
+  }
+
+  .mc-case-log__fold:not([open]) .mc-case-log__fold-body {
+    display: none;
+  }
+
+  .mc-case-log__fold:not([open]) .mc-case-log__fold-peek {
+    display: block;
+    margin: 0;
+    padding: 0.55rem 0.7rem 0.65rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: #94a3b8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mc-case-log__fold[open] .mc-case-log__fold-peek {
+    display: none;
+  }
+
+  .mc-case-log__fold[data-fold-mode='preview'] .mc-case-log__row:not(.mc-case-log__row--clone):nth-child(n + 4) {
+    display: none;
+  }
+
+  .mc-case-log__fold[data-fold-mode='preview'] .mc-case-log__table,
+  .mc-case-log__fold[data-fold-mode='full'] .mc-case-log__table {
+    border: none;
+    border-radius: 0;
+  }
+
+  .mc-case-log__fold[data-fold-mode='collapsed'] .sys-window-chrome__light--close,
+  .mc-case-log__fold[data-fold-mode='preview'] .sys-window-chrome__light--min,
+  .mc-case-log__fold[data-fold-mode='full'] .sys-window-chrome__light--open {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+      0 0 10px currentColor;
+    filter: brightness(1.2);
+  }
+
+  .mc-case-log__fold[data-fold-mode='collapsed'] .sys-window-chrome__light--close {
+    color: rgba(248, 113, 113, 0.9);
+  }
+
+  .mc-case-log__fold[data-fold-mode='preview'] .sys-window-chrome__light--min {
+    color: rgba(251, 191, 36, 0.95);
+  }
+
+  .mc-case-log__fold[data-fold-mode='full'] .sys-window-chrome__light--open {
+    color: rgba(74, 222, 128, 0.95);
+  }
+
+  .mc-case-log__fold-body {
+    padding: 0.55rem 0.5rem 0.65rem;
+  }
+}
+
+@media (min-width: 901px) {
+  .mc-case-log__fold {
+    border: none;
+    background: none;
+    box-shadow: none;
+  }
+
+  .mc-case-log__fold-body {
+    display: block;
+    padding: 0;
+  }
+}
+
 .mc-case-log__lead {
   margin: 0 0 0.85rem;
   font-size: 0.8125rem;
@@ -5984,49 +6195,9 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 .case-incident-log__chrome {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   padding: 0.4rem 0.65rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: linear-gradient(180deg, rgba(30, 41, 59, 0.55), rgba(15, 23, 42, 0.35));
-}
-
-.case-incident-log__lights {
-  display: inline-flex;
-  gap: 0.28rem;
-}
-
-.case-incident-log__lights i {
-  display: block;
-  width: 0.42rem;
-  height: 0.42rem;
-  border-radius: 2px;
-  background: rgba(100, 116, 139, 0.5);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
-}
-
-.case-incident-log__lights i:nth-child(1) {
-  background: rgba(248, 113, 113, 0.55);
-  box-shadow: 0 0 6px rgba(248, 113, 113, 0.35);
-}
-
-.case-incident-log__lights i:nth-child(2) {
-  background: rgba(251, 191, 36, 0.45);
-}
-
-.case-incident-log__lights i:nth-child(3) {
-  background: rgba(74, 222, 128, 0.45);
-  box-shadow: 0 0 6px rgba(74, 222, 128, 0.25);
-}
-
-.case-incident-log__head {
-  font-family: "JetBrains Mono Variable", ui-monospace, monospace;
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #94a3b8;
 }
 
 .case-incident-log__list {

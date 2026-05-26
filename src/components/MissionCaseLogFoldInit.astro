@@ -1,0 +1,82 @@
+<script>
+  // @ts-nocheck
+  document.addEventListener('DOMContentLoaded', function () {
+    var roots = document.querySelectorAll('details[data-mc-case-fold]');
+    if (!roots.length) return;
+
+    var mobileMq =
+      typeof window.matchMedia !== 'undefined'
+        ? window.matchMedia('(max-width: 900px)')
+        : null;
+
+    function isMobile() {
+      return mobileMq ? mobileMq.matches : false;
+    }
+
+    roots.forEach(function (rootEl) {
+      var root = /** @type {HTMLDetailsElement} */ (rootEl);
+      var summary = root.querySelector('.mc-case-log__fold-summary');
+      var closeBtn = root.querySelector('[data-mc-case-fold-close]');
+      var previewBtn = root.querySelector('[data-mc-case-fold-preview]');
+      var openBtn = root.querySelector('[data-mc-case-fold-open]');
+      if (!summary) return;
+
+      /** @param {'collapsed' | 'preview' | 'full'} mode */
+      function setMode(mode) {
+        root.dataset.foldMode = mode;
+        if (mode === 'collapsed') {
+          root.removeAttribute('open');
+        } else {
+          root.setAttribute('open', '');
+        }
+      }
+
+      function syncDesktop() {
+        if (!isMobile()) {
+          root.dataset.foldMode = 'full';
+          root.setAttribute('open', '');
+          return true;
+        }
+        return false;
+      }
+
+      if (!syncDesktop()) {
+        setMode(root.dataset.foldMode || 'collapsed');
+      }
+
+      if (mobileMq) {
+        mobileMq.addEventListener('change', function () {
+          if (syncDesktop()) return;
+          setMode(root.dataset.foldMode || 'collapsed');
+        });
+      }
+
+      /**
+       * @param {Element | null} btn
+       * @param {'collapsed' | 'preview' | 'full'} mode
+       */
+      function onLight(btn, mode) {
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!isMobile()) return;
+          setMode(mode);
+        });
+      }
+
+      onLight(closeBtn, 'collapsed');
+      onLight(previewBtn, 'preview');
+      onLight(openBtn, 'full');
+
+      summary.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target instanceof Element && target.closest('button')) return;
+        if (!isMobile()) return;
+        e.preventDefault();
+        var mode = root.dataset.foldMode || 'collapsed';
+        setMode(mode === 'collapsed' ? 'full' : 'collapsed');
+      });
+    });
+  });
+</script>

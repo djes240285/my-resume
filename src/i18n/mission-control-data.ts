@@ -85,6 +85,12 @@ export type MissionControlContent = {
     colStatus: string;
     rowAction: string;
     drumAriaLabel: string;
+    /** Мобилка: заголовок «окна» списка кейсов */
+    windowTitle: string;
+    foldLightsAria: string;
+    foldClose: string;
+    foldPreviewMode: string;
+    foldOpen: string;
     entries: CaseLogEntry[];
   };
   bridge: {
@@ -217,6 +223,11 @@ const ru: MissionControlContent = {
     rowAction: 'Подробнее',
     drumAriaLabel:
       'Список проектов: колёсико над таблицей, перетаскивание строк или ползунок справа',
+    windowTitle: 'ПРАКТИКА.LOG',
+    foldLightsAria: 'Управление списком проектов',
+    foldClose: 'Свернуть список',
+    foldPreviewMode: 'Показать превью (3 проекта)',
+    foldOpen: 'Развернуть весь список',
     entries: buildMissionCaseLogEntries('ru'),
   },
   bridge: {
@@ -350,6 +361,11 @@ const en: MissionControlContent = {
     colStatus: 'Status',
     rowAction: 'Details',
     drumAriaLabel: 'Project list: wheel over the table, drag rows, or use the scrollbar on the right',
+    windowTitle: 'PRACTICE.LOG',
+    foldLightsAria: 'Project list controls',
+    foldClose: 'Collapse list',
+    foldPreviewMode: 'Show preview (3 projects)',
+    foldOpen: 'Expand full list',
     entries: buildMissionCaseLogEntries('en'),
   },
   bridge: {
