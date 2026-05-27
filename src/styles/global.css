@@ -6569,14 +6569,14 @@ html.audience-mode-pending [data-audience-approach-body] {
 @media (min-width: 768px) {
   .case-card__grid {
     grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
-    align-items: start;
+    align-items: stretch;
   }
 }
 
 .case-card__main {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.85rem;
   min-width: 0;
 }
 
@@ -6625,7 +6625,15 @@ html.audience-mode-pending [data-audience-approach-body] {
 .case-card__viz .case-media {
   margin: 0;
   height: 100%;
-  min-height: 10rem;
+  min-height: 100%;
+}
+
+.case-card__viz {
+  display: flex;
+}
+
+.case-card__viz > * {
+  flex: 1 1 auto;
 }
 
 .case-card__schema {
@@ -6816,20 +6824,6 @@ html.audience-mode-pending [data-audience-approach-body] {
   background: rgba(15, 23, 42, 0.6);
   color: #94a3b8;
   cursor: default;
-}
-
-.case-card__cta--expand {
-  font: inherit;
-  cursor: pointer;
-  appearance: none;
-}
-
-.case-card--collapsible:not(.case-card--expanded) .case-card__expandable {
-  display: none;
-}
-
-.case-card--collapsible:not(.case-card--expanded) .case-card__grid {
-  grid-template-columns: minmax(0, 1fr);
 }
 
 .case-card__corner {
