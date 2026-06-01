@@ -5687,6 +5687,16 @@ html.audience-mode-pending [data-audience-approach-body] {
   max-height: 4.5rem;
 }
 
+[data-lang='en'] .mc-contrib__scroll--compact .mc-contrib__svg--fit {
+  min-width: 10.5rem;
+  max-height: 5rem;
+}
+
+.mc-contrib__dow--en {
+  font-size: 7px;
+  letter-spacing: 0.02em;
+}
+
 .mc-contrib__scroll--month {
   width: 100%;
   overflow-x: auto;
@@ -5798,6 +5808,11 @@ html.audience-mode-pending [data-audience-approach-body] {
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: lowercase;
+}
+
+.mc-contrib__month--dense {
+  font-size: 8px;
+  letter-spacing: 0;
 }
 
 .mc-contrib__cell {

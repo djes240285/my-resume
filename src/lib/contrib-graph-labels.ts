@@ -2,6 +2,36 @@ import type { Lang } from '../i18n/cv-data';
 import type { ContributionRange } from './contour-activity-types';
 import { isMonthCalendarLayout, showMonthLabelsOnGrid } from './contrib-graph-layout';
 
+/** EN: 2 буквы под узкие колонки; RU: пн, вт из Intl */
+const EN_DOW_2 = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
+
+export function parseContribDate(date: string): Date {
+  const [y, m, d] = date.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+export function compactWeekdayLabel(lang: Lang, date: string): string {
+  const dt = parseContribDate(date);
+  if (lang === 'en') return EN_DOW_2[dt.getDay()];
+  const fmt = new Intl.DateTimeFormat('ru-RU', { weekday: 'short' });
+  return fmt.format(dt).replace(/\./g, '');
+}
+
+/** Разреживаем подписи месяцев, чтобы не наезжали (всё время / 2 года) */
+function thinMonthLabels(
+  labels: { weekIndex: number; label: string }[],
+  minWeekGap: number,
+): { weekIndex: number; label: string }[] {
+  if (labels.length <= 1) return labels;
+  const out: { weekIndex: number; label: string }[] = [labels[0]];
+  for (let i = 1; i < labels.length; i++) {
+    if (labels[i].weekIndex - out[out.length - 1].weekIndex >= minWeekGap) {
+      out.push(labels[i]);
+    }
+  }
+  return out;
+}
+
 export function localizedMonthLabelsForRange(
   lang: Lang,
   range: ContributionRange,
@@ -14,20 +44,24 @@ export function localizedMonthLabelsForRange(
   const [y, m, d] = range.gridStart.split('-').map(Number);
   const base = new Date(y, m - 1, d);
   const fmt = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { month: 'short' });
+  const dense = range.weeks > 80;
 
   let lastYear = -1;
-  return raw.map(({ weekIndex }) => {
+  const built = raw.map(({ weekIndex }) => {
     const dt = new Date(base);
     dt.setDate(base.getDate() + weekIndex * 7);
     let label = fmt.format(dt);
     if (lang === 'ru') label = label.replace(/\./g, '');
     const year = dt.getFullYear();
-    if (year !== lastYear) {
-      label = lang === 'ru' ? `${label} ${year}` : `${label} '${String(year).slice(-2)}`;
+    if (lang === 'ru' && !dense && year !== lastYear) {
+      label = `${label} ${year}`;
       lastYear = year;
     }
     return { weekIndex, label };
   });
+
+  const minGap = dense ? 6 : range.weeks > 52 ? 5 : 3;
+  return thinMonthLabels(built, minGap);
 }
 
 export function formatContribPeriod(lang: Lang, start: string, end: string): string {
@@ -48,16 +82,11 @@ export function formatContribPeriod(lang: Lang, start: string, end: string): str
 
 /** Подписи строк сетки (день недели от gridStart) */
 export function gridRowDowLabels(lang: Lang, gridStart: string): string[] {
-  const [y, m, d] = gridStart.split('-').map(Number);
-  const base = new Date(y, m - 1, d);
-  const loc = lang === 'ru' ? 'ru-RU' : 'en-US';
-  const fmt = new Intl.DateTimeFormat(loc, { weekday: 'short' });
+  const base = parseContribDate(gridStart);
   return Array.from({ length: 7 }, (_, dow) => {
     const dt = new Date(base);
     dt.setDate(base.getDate() + dow);
-    let label = fmt.format(dt);
-    if (lang === 'ru') label = label.replace(/\./g, '');
-    return label;
+    return compactWeekdayLabel(lang, `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`);
   });
 }
 
@@ -98,16 +127,9 @@ export function monthBandLabels(
   return localizedMonthLabelsForRange(lang, range);
 }
 
-/** Подписи дней под полосой недели (пн … вс / Mon … Sun) */
+/** Подписи дней под полосой недели (пн … вс / Mo … Su) */
 export function weekdayStripLabels(lang: Lang, dates: string[]): string[] {
-  const loc = lang === 'ru' ? 'ru-RU' : 'en-US';
-  const fmt = new Intl.DateTimeFormat(loc, { weekday: 'short' });
-  return dates.map((date) => {
-    const [y, m, d] = date.split('-').map(Number);
-    let label = fmt.format(new Date(y, m - 1, d));
-    if (lang === 'ru') label = label.replace(/\./g, '');
-    return label;
-  });
+  return dates.map((date) => compactWeekdayLabel(lang, date));
 }
 
 export function formatContribTooltip(lang: Lang, date: string, count: number): string {

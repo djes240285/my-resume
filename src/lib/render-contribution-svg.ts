@@ -49,8 +49,12 @@ export function renderContributionSvg(lang: Lang, range: ContributionRange): str
 
   let svg = `<svg class="mc-contrib__svg${fitClass}${monthClass}${wideClass}" viewBox="0 0 ${vbW} ${vbH}" width="${widthAttr}" height="${heightAttr}" xmlns="http://www.w3.org/2000/svg" overflow="visible" preserveAspectRatio="${preserve}">`;
 
+  const monthLabelClass =
+    range.weeks > 80 ? 'mc-contrib__month mc-contrib__month--dense' : 'mc-contrib__month';
+
   for (const m of monthBand) {
-    svg += `<text x="${gridLeft + m.weekIndex * colWidth}" y="${monthTitleY}" class="mc-contrib__month" fill="currentColor" dominant-baseline="hanging">${escapeXml(m.label)}</text>`;
+    const mx = gridLeft + m.weekIndex * colWidth + cell / 2;
+    svg += `<text x="${mx}" y="${monthTitleY}" class="${monthLabelClass}" fill="currentColor" text-anchor="middle" dominant-baseline="hanging">${escapeXml(m.label)}</text>`;
   }
 
   for (const w of weekCols) {
@@ -80,9 +84,11 @@ export function renderContributionSvg(lang: Lang, range: ContributionRange): str
       range.days.map((d) => d.date),
     );
     const labelY = gridTop + cell + dowBand - 4;
+    const dowClass =
+      lang === 'en' ? 'mc-contrib__dow mc-contrib__dow--row mc-contrib__dow--en' : 'mc-contrib__dow mc-contrib__dow--row';
     labels.forEach((label, i) => {
       const cx = i * colWidth + cell / 2;
-      svg += `<text x="${cx}" y="${labelY}" class="mc-contrib__dow mc-contrib__dow--row" fill="currentColor" text-anchor="middle" dominant-baseline="hanging">${escapeXml(label)}</text>`;
+      svg += `<text x="${cx}" y="${labelY}" class="${dowClass}" fill="currentColor" text-anchor="middle" dominant-baseline="hanging">${escapeXml(label)}</text>`;
     });
   }
 
