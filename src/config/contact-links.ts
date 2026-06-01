@@ -9,11 +9,6 @@ export type ContactMenuLabels = {
   max: string;
 };
 
-/** MAX — только для RU-аудитории (мессенджер не релевантен на EN). */
-export function showMaxContact(lang: Lang): boolean {
-  return lang === 'ru';
-}
-
 export function getContactMenuLabels(
   lang: Lang,
   variant: ContactPinVariant = 'lisa',

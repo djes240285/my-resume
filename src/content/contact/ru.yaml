@@ -10,3 +10,27 @@ maxInvite: +7 978 160 49 74
 maxTel: "+79781604974"
 mailSubjectPin: Связь с сайта
 mailSubjectPortfolio: Симптомы системы — запрос разбора
+buttons:
+  - kind: email
+    label: Написать
+    style: primary
+    showOnHero: true
+    showInPin: true
+    showInBridge: false
+  - kind: telegram
+    label: Telegram
+    style: ghost
+    showOnHero: true
+    showInPin: true
+    showInBridge: true
+  - kind: max
+    label: MAX
+    style: ghost
+    showOnHero: true
+    showInPin: true
+    showInBridge: false
+channelOrder:
+  - email
+  - telegram
+  - max
+  - linkedin

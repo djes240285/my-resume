@@ -10,3 +10,20 @@ maxInvite: +7 978 160 49 74
 maxTel: "+79781604974"
 mailSubjectPin: Message from site
 mailSubjectPortfolio: System symptoms — triage request
+buttons:
+  - kind: email
+    label: Email me
+    style: primary
+    showOnHero: true
+    showInPin: true
+    showInBridge: false
+  - kind: telegram
+    label: Telegram
+    style: ghost
+    showOnHero: true
+    showInPin: true
+    showInBridge: true
+channelOrder:
+  - email
+  - telegram
+  - linkedin

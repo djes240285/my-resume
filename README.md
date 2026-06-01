@@ -18,7 +18,7 @@
 
 Тексты пульта и контактов — в `src/content/` (YAML). Остальное пока в `src/i18n/cv-data.ts`.
 
-**Keystatic:** URL кнопок — раздел **Contacts · RU/EN** (`/keystatic/singleton/contactRu`). В Mission Control только подписи кнопок и тексты; ссылки подставляются из Contacts автоматически.
+**Keystatic → Contacts · RU/EN:** список **Contact buttons** (перетаскивание = порядок на пульте и в пине), поля URL/Telegram/MAX ниже, **Resume contact tree order** — порядок блоков в терминале резюме.
 
 **Редактирование:** YAML в редакторе или Keystatic → `git push` → Netlify.
 

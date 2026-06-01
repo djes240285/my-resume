@@ -1,0 +1,218 @@
+---
+import type { CVContent } from '../../i18n/cv-data';
+import type { ContactChannelKind } from '../../lib/resolve-contact-buttons';
+import ContactCopyIcon from '../ContactCopyIcon.astro';
+
+interface Props {
+  contact: CVContent['contact'];
+  channels: ContactChannelKind[];
+  L: CVContent['terminalLabels'];
+}
+
+const { contact, channels, L } = Astro.props;
+
+let rowIndex = 0;
+const nextRowId = () => `contact-tree-row-${rowIndex++}`;
+const telegramUrl = contact.telegramHref;
+const telegramHandle = contact.telegramHandle;
+---
+
+{
+  channels.map((channel) => {
+    if (channel === 'email') {
+      return (
+        <div class="contact-file-tree__section">
+          <div class="contact-concept-head contact-file-tree__section-head">
+            <img
+              class="contact-concept-icon"
+              src="/logo-mail.svg"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+              decoding="async"
+              aria-hidden="true"
+            />
+            <p class="contact-concept-tag">{L.email}</p>
+          </div>
+          <div class="contact-file-tree__panel contact-terminal-email-body">
+            <ul class="contact-file-tree__list" role="list">
+              {contact.emails.map((email, i) => (
+                <li
+                  class:list={['contact-file-tree__row', { 'contact-file-tree__row--active': i === 0 }]}
+                  data-tree-row
+                  id={nextRowId()}
+                  aria-current={i === 0 ? 'true' : 'false'}
+                >
+                  <a href={`mailto:${email}`} class="contact-file-tree__primary contact-terminal-email-link">
+                    {email}
+                  </a>
+                  <button
+                    type="button"
+                    class="contact-copy-btn"
+                    data-copy-value={email}
+                    aria-label={L.contactCopyEmailAria}
+                    title={email}
+                    tabindex="0"
+                  >
+                    <ContactCopyIcon class="contact-copy-btn__glyph" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (channel === 'telegram') {
+      return (
+        <div class="contact-file-tree__section">
+          <div class="contact-concept-head contact-file-tree__section-head">
+            <img
+              class="contact-concept-icon"
+              src="/logo-telegram.svg"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+              decoding="async"
+              aria-hidden="true"
+            />
+            <p class="contact-concept-tag">{L.telegram}</p>
+          </div>
+          <div class="contact-file-tree__panel contact-terminal-email-body">
+            <ul class="contact-file-tree__list" role="list">
+              <li class="contact-file-tree__row" data-tree-row id={nextRowId()} aria-current="false">
+                <a
+                  class="contact-file-tree__primary"
+                  href={telegramUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {telegramHandle}
+                </a>
+                <button
+                  type="button"
+                  class="contact-copy-btn"
+                  data-copy-value={telegramUrl}
+                  aria-label={L.contactCopyLinkAria}
+                  title={telegramUrl}
+                  tabindex="0"
+                >
+                  <ContactCopyIcon class="contact-copy-btn__glyph" />
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (channel === 'max') {
+      return (
+        <div class="contact-file-tree__section">
+          <div class="contact-concept-head contact-file-tree__section-head">
+            <img
+              class="contact-concept-icon contact-concept-icon--max"
+              src="/logo-max.svg"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+              decoding="async"
+              aria-hidden="true"
+            />
+            <p class="contact-concept-tag">{L.max}</p>
+          </div>
+          <div class="contact-file-tree__panel contact-terminal-email-body">
+            <ul class="contact-file-tree__list" role="list">
+              <li class="contact-file-tree__row" data-tree-row id={nextRowId()} aria-current="false">
+                <a class="contact-file-tree__primary" href={`tel:${contact.maxTel}`}>
+                  {contact.maxInvite}
+                </a>
+                <button
+                  type="button"
+                  class="contact-copy-btn"
+                  data-copy-value={contact.maxTel}
+                  aria-label={L.contactCopyPhoneAria}
+                  title={contact.maxTel}
+                  tabindex="0"
+                >
+                  <ContactCopyIcon class="contact-copy-btn__glyph" />
+                </button>
+              </li>
+              <li class="contact-file-tree__row" data-tree-row id={nextRowId()} aria-current="false">
+                <a
+                  class="contact-file-tree__primary contact-file-tree__primary--link"
+                  href={contact.maxHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {L.maxProfileLink}
+                </a>
+                <button
+                  type="button"
+                  class="contact-copy-btn"
+                  data-copy-value={contact.maxHref}
+                  aria-label={L.contactCopyLinkAria}
+                  title={contact.maxHref}
+                  tabindex="0"
+                >
+                  <ContactCopyIcon class="contact-copy-btn__glyph" />
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (channel === 'linkedin') {
+      return (
+        <div class="contact-file-tree__section">
+          <div class="contact-concept-head contact-file-tree__section-head">
+            <img
+              class="contact-concept-icon"
+              src="/logo-linkedin.svg"
+              alt=""
+              width="20"
+              height="20"
+              loading="lazy"
+              decoding="async"
+              aria-hidden="true"
+            />
+            <p class="contact-concept-tag">{L.linkedin}</p>
+          </div>
+          <div class="contact-file-tree__panel contact-terminal-email-body">
+            <ul class="contact-file-tree__list" role="list">
+              <li class="contact-file-tree__row" data-tree-row id={nextRowId()} aria-current="false">
+                <a
+                  class="contact-file-tree__primary contact-file-tree__primary--link"
+                  href={contact.linkedinHref}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {contact.linkedinLabel}
+                </a>
+                <button
+                  type="button"
+                  class="contact-copy-btn"
+                  data-copy-value={contact.linkedinHref}
+                  aria-label={L.contactCopyLinkAria}
+                  title={contact.linkedinHref}
+                  tabindex="0"
+                >
+                  <ContactCopyIcon class="contact-copy-btn__glyph" />
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div class="contact-terminal-linkedin-meter mt-2" aria-hidden="true" />
+        </div>
+      );
+    }
+
+    return null;
+  })
+}

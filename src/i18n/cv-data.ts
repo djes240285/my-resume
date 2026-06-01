@@ -1,5 +1,6 @@
 import { TECH_STACK_DOC_HREFS } from '../config/tech-stack-docs';
 import { getContactContent } from '../lib/load-contact';
+import type { ContactButtonDef, ContactChannelKind } from '../lib/resolve-contact-buttons';
 
 export type Lang = 'ru' | 'en';
 
@@ -228,6 +229,8 @@ export type CVContent = {
     maxTel: string;
     mailSubjectPin: string;
     mailSubjectPortfolio: string;
+    buttons: ContactButtonDef[];
+    channelOrder?: ContactChannelKind[];
   };
   sections: {
     about: { title: string; body: string };

@@ -1,12 +1,17 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { showMaxContact } from '../config/contact-links';
 import { getMissionControl } from '../i18n/mission-control-data';
+import {
+  bridgeButtons,
+  heroButtons,
+  resolveContactButtons,
+} from '../lib/resolve-contact-buttons';
 import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
 import MissionMindsetPath from './MissionMindsetPath.astro';
 import MissionEngineerPassport from './MissionEngineerPassport.astro';
 import MissionCaseLog from './MissionCaseLog.astro';
+import ContactHeroButtons from './contact/ContactHeroButtons.astro';
 
 interface Props {
   lang: Lang;
@@ -18,7 +23,9 @@ const m = getMissionControl(lang);
 const portfolioHref = `/${lang}/portfolio`;
 const resumeHref = `/${lang}/`;
 const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponent(m.bridge.mailtoSubject)}`;
-const showMax = showMaxContact(lang);
+const resolved = resolveContactButtons(t.contact, lang);
+const heroCtas = heroButtons(resolved);
+const bridgeCtas = bridgeButtons(resolved);
 ---
 
 <div class="mc-page">
@@ -38,33 +45,7 @@ const showMax = showMaxContact(lang);
             <MissionAvatarTerminal lang={lang} alt={m.hero.avatarAlt} />
           </div>
           <div class="mc-hero-deck__actions">
-            <a
-              class="mission-btn mission-btn--primary mission-btn--icon mission-btn--glow mission-btn--attention"
-              href={`mailto:${t.contact.emails[0]}`}
-            >
-              <img class="mission-btn__icon" src="/logo-mail.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-              <span>{m.cta.email}</span>
-            </a>
-            <a
-              class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-              href={t.contact.telegramHref}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img class="mission-btn__icon" src="/logo-telegram.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-              <span>{m.cta.telegram}</span>
-            </a>
-            {showMax && (
-              <a
-                class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-                href={t.contact.maxHref}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img class="mission-btn__icon mission-btn__icon--max" src="/logo-max.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-                <span>{m.cta.max}</span>
-              </a>
-            )}
+            <ContactHeroButtons buttons={heroCtas} />
           </div>
         </div>
 
@@ -89,9 +70,18 @@ const showMax = showMaxContact(lang);
       >
         {m.bridge.cta}
       </a>
-      <a class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary" href={t.contact.telegramHref} target="_blank" rel="noopener noreferrer">
-        {m.cta.telegram}
-      </a>
+      {
+        bridgeCtas.map((btn) => (
+          <a
+            class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary"
+            href={btn.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {btn.label}
+          </a>
+        ))
+      }
     </div>
   </section>
 

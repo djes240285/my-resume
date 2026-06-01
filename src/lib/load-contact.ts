@@ -1,6 +1,7 @@
 import type { Lang } from '../i18n/cv-data';
 import { contactYamlPath } from './content-paths';
 import { loadYamlContent } from './load-yaml-content';
+import type { ContactButtonDef, ContactChannelKind } from './resolve-contact-buttons';
 
 export type SiteContact = {
   emails: string[];
@@ -14,6 +15,8 @@ export type SiteContact = {
   maxTel: string;
   mailSubjectPin: string;
   mailSubjectPortfolio: string;
+  buttons: ContactButtonDef[];
+  channelOrder?: ContactChannelKind[];
 };
 
 export function getContactContent(lang: Lang): SiteContact {

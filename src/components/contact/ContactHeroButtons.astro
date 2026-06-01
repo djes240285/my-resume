@@ -1,0 +1,36 @@
+---
+import type { ResolvedContactButton } from '../../lib/resolve-contact-buttons';
+
+interface Props {
+  buttons: ResolvedContactButton[];
+}
+
+const { buttons } = Astro.props;
+---
+
+{
+  buttons.map((btn) => (
+    <a
+      class:list={[
+        'mission-btn mission-btn--icon',
+        btn.style === 'primary'
+          ? 'mission-btn--primary mission-btn--glow mission-btn--attention'
+          : 'mission-btn--ghost mission-btn--ghost-thin',
+      ]}
+      href={btn.href}
+      {...(btn.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+    >
+      <img
+        class:list={['mission-btn__icon', btn.kind === 'max' && 'mission-btn__icon--max']}
+        src={btn.iconSrc}
+        alt=""
+        width="18"
+        height="18"
+        loading="lazy"
+        decoding="async"
+        aria-hidden="true"
+      />
+      <span>{btn.label}</span>
+    </a>
+  ))
+}

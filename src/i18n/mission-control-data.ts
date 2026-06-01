@@ -117,11 +117,6 @@ export type MissionControlContent = {
   footer: {
     contactsLabel: string;
   };
-  cta: {
-    email: string;
-    telegram: string;
-    max: string;
-  };
 };
 
 export function getMissionControl(lang: Lang): MissionControlContent {

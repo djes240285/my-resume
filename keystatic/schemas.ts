@@ -15,6 +15,64 @@ export const contactSchema = {
   maxTel: fields.text({ label: 'MAX phone (tel: / E.164)' }),
   mailSubjectPin: fields.text({ label: 'Mailto subject — contact pin / site' }),
   mailSubjectPortfolio: fields.text({ label: 'Mailto subject — portfolio CTA' }),
+  buttons: fields.array(
+    fields.object({
+      kind: fields.select({
+        label: 'Type',
+        options: [
+          { label: 'Email', value: 'email' },
+          { label: 'Telegram', value: 'telegram' },
+          { label: 'MAX', value: 'max' },
+          { label: 'LinkedIn', value: 'linkedin' },
+          { label: 'Custom link', value: 'custom' },
+        ],
+        defaultValue: 'email',
+      }),
+      label: fields.text({ label: 'Button label' }),
+      style: fields.select({
+        label: 'Style (mission hero)',
+        options: [
+          { label: 'Primary', value: 'primary' },
+          { label: 'Ghost', value: 'ghost' },
+        ],
+        defaultValue: 'ghost',
+      }),
+      href: fields.url({
+        label: 'URL override',
+        description: 'Only for Custom, or to override the default link for this type',
+      }),
+      mailSubject: fields.text({
+        label: 'Mail subject',
+        description: 'Only for Email (overrides mailSubjectPin)',
+      }),
+      showOnHero: fields.checkbox({ label: 'Show on mission hero', defaultValue: true }),
+      showInPin: fields.checkbox({ label: 'Show in contact pin menu', defaultValue: true }),
+      showInBridge: fields.checkbox({
+        label: 'Show in bridge block (secondary)',
+        defaultValue: false,
+      }),
+    }),
+    {
+      label: 'Contact buttons (drag to reorder)',
+      itemLabel: (props) => props.fields.label.value || props.fields.kind.value,
+    },
+  ),
+  channelOrder: fields.array(
+    fields.select({
+      label: 'Channel',
+      options: [
+        { label: 'Email', value: 'email' },
+        { label: 'Telegram', value: 'telegram' },
+        { label: 'MAX', value: 'max' },
+        { label: 'LinkedIn', value: 'linkedin' },
+      ],
+      defaultValue: 'email',
+    }),
+    {
+      label: 'Resume contact tree order',
+      itemLabel: (props) => props.value || 'channel',
+    },
+  ),
 };
 
 const mindsetIndicator = fields.select({
@@ -156,22 +214,5 @@ export const missionControlSchema = {
       contactsLabel: fields.text({ label: 'Contacts label' }),
     },
     { label: 'Footer' },
-  ),
-  cta: fields.object(
-    {
-      email: fields.text({
-        label: 'Email button label',
-        description: 'Link → Contacts · emails[0]',
-      }),
-      telegram: fields.text({
-        label: 'Telegram button label',
-        description: 'URL → Contacts · telegramHref',
-      }),
-      max: fields.text({
-        label: 'MAX button label',
-        description: 'URL → Contacts · maxHref (hidden on EN site)',
-      }),
-    },
-    { label: 'Hero CTA labels only (URLs → Contacts · RU/EN)' },
   ),
 };

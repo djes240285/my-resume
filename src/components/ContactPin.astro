@@ -1,8 +1,9 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { getContactMenuLabels, showMaxContact } from '../config/contact-links';
+import { getContactMenuLabels } from '../config/contact-links';
 import { CONTACT_PIN_VARIANT } from '../config/contact-pin-variant';
+import { pinButtons, resolveContactButtons } from '../lib/resolve-contact-buttons';
 import ContactPinLisa from './contact-pin/ContactPinLisa.astro';
 import ContactPinMario from './contact-pin/ContactPinMario.astro';
 
@@ -13,11 +14,8 @@ interface Props {
 const { lang } = Astro.props;
 const cv = getCv(lang);
 const labels = getContactMenuLabels(lang, CONTACT_PIN_VARIANT);
-const email = cv.contact.emails[0];
-const maxHref = cv.contact.maxHref;
-const mailto = `mailto:${email}?subject=${encodeURIComponent(cv.contact.mailSubjectPin)}`;
+const menuButtons = pinButtons(resolveContactButtons(cv.contact, lang));
 const isMario = CONTACT_PIN_VARIANT === 'mario';
-const showMax = showMaxContact(lang);
 ---
 
 <div
@@ -50,39 +48,28 @@ const showMax = showMaxContact(lang);
     hidden
   >
     <p class="contact-pin-pixel__menu-title" aria-hidden="true">{labels.menuTitle}</p>
-    <a
-      class="contact-pin-pixel__menu-item"
-      role="menuitem"
-      href={mailto}
-      {...(isMario ? { 'data-contact-sfx': 'coin' } : {})}
-    >
-      <span class="contact-pin-pixel__menu-glyph" aria-hidden="true">@</span>
-      {labels.email}
-    </a>
-    <a
-      class="contact-pin-pixel__menu-item"
-      role="menuitem"
-      href={cv.contact.telegramHref}
-      target="_blank"
-      rel="noopener noreferrer"
-      {...(isMario ? { 'data-contact-sfx': 'jump' } : {})}
-    >
-      <span class="contact-pin-pixel__menu-glyph" aria-hidden="true">TG</span>
-      {labels.telegram}
-    </a>
-    {showMax && (
-      <a
-        class="contact-pin-pixel__menu-item"
-        role="menuitem"
-        href={maxHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        {...(isMario ? { 'data-contact-sfx': 'powerup' } : {})}
-      >
-        <span class="contact-pin-pixel__menu-glyph contact-pin-pixel__menu-glyph--max" aria-hidden="true">M</span>
-        {labels.max}
-      </a>
-    )}
+    {
+      menuButtons.map((btn) => (
+        <a
+          class="contact-pin-pixel__menu-item"
+          role="menuitem"
+          href={btn.href}
+          {...(btn.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          {...(isMario && btn.marioSfx ? { 'data-contact-sfx': btn.marioSfx } : {})}
+        >
+          <span
+            class:list={[
+              'contact-pin-pixel__menu-glyph',
+              btn.kind === 'max' && 'contact-pin-pixel__menu-glyph--max',
+            ]}
+            aria-hidden="true"
+          >
+            {btn.pinGlyph}
+          </span>
+          {btn.label}
+        </a>
+      ))
+    }
   </div>
 </div>
 
