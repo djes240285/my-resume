@@ -92,6 +92,7 @@ const stackContour = fields.select({
     { label: 'Backend', value: 'backend' },
     { label: 'Frontend', value: 'frontend' },
     { label: 'AI', value: 'ai' },
+    { label: 'Ops / DevOps', value: 'ops' },
   ],
   defaultValue: 'backend',
 });
@@ -101,6 +102,7 @@ const readoutTone = fields.select({
   options: [
     { label: 'Stability', value: 'stability' },
     { label: 'AI', value: 'ai' },
+    { label: 'Ops / DevOps', value: 'ops' },
   ],
   defaultValue: 'stability',
 });

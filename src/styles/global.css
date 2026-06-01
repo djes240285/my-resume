@@ -5438,6 +5438,8 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__row--stack dd {
   min-width: 0;
+  display: flex;
+  align-items: center;
 }
 
 .mc-passport__stack-icons {
@@ -5449,8 +5451,8 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__stack-icon {
   display: block;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
   transition: transform 0.15s ease;
 }
@@ -5519,6 +5521,11 @@ html.audience-mode-pending [data-audience-approach-body] {
   background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(109, 40, 217, 0.08));
 }
 
+.mc-passport__readout--ops {
+  border-color: rgba(52, 211, 153, 0.3);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.75), rgba(5, 150, 105, 0.1));
+}
+
 .mc-passport__readout-head {
   display: flex;
   flex-wrap: wrap;
@@ -5543,6 +5550,10 @@ html.audience-mode-pending [data-audience-approach-body] {
   color: rgba(196, 181, 253, 0.9);
 }
 
+.mc-passport__readout--ops .mc-passport__readout-code {
+  color: rgba(110, 231, 183, 0.9);
+}
+
 .mc-passport__readout-label {
   font-size: 0.625rem;
   font-weight: 700;
@@ -5565,6 +5576,10 @@ html.audience-mode-pending [data-audience-approach-body] {
 
 .mc-passport__readout--ai .mc-passport__readout-headline {
   color: #ddd6fe;
+}
+
+.mc-passport__readout--ops .mc-passport__readout-headline {
+  color: #a7f3d0;
 }
 
 .mc-passport__readout-detail {

@@ -33,9 +33,9 @@ export type PassportMetric = {
 
 export type PassportStackGroup = {
   label: string;
-  /** Для screen readers; в UI показываем только иконки */
+  /** Текст для screen readers; в UI — иконки */
   value: string;
-  contour: 'backend' | 'frontend' | 'ai';
+  contour: 'backend' | 'frontend' | 'ai' | 'ops';
 };
 
 /** Бортовой readout в паспорте (вместо «голых» процентов) */
@@ -44,7 +44,7 @@ export type PassportReadout = {
   label: string;
   headline: string;
   detail: string;
-  tone: 'stability' | 'ai';
+  tone: 'stability' | 'ai' | 'ops';
 };
 
 export type MindsetIndicatorVariant = 'audit' | 'regime' | 'scale' | 'e2e';

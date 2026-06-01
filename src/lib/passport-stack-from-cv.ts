@@ -1,39 +1,39 @@
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
 
-export type PassportContour = 'backend' | 'frontend' | 'ai';
+export type PassportContour = 'backend' | 'frontend' | 'ai' | 'ops';
 
 const LANE_TITLES: Record<Lang, Record<PassportContour, string[]>> = {
   ru: {
-    backend: [
-      'CMS и платформы контента',
-      'Сервисы и рантайм',
-      'Данные и кеш',
-      'Платформа и эксплуатация',
-    ],
+    backend: ['CMS и платформы контента', 'Сервисы и рантайм', 'Данные и кеш'],
     frontend: ['Интерфейс и витрина'],
     ai: ['Инструменты и практики'],
+    ops: ['Платформа и эксплуатация'],
   },
   en: {
-    backend: ['CMS & content platforms', 'Services & runtime', 'Data & cache', 'Platform & operations'],
+    backend: ['CMS & content platforms', 'Services & runtime', 'Data & cache'],
     frontend: ['Interface & storefront'],
     ai: ['Tools & practices'],
+    ops: ['Platform & operations'],
   },
 };
+
+/** Только ИИ-инструменты; git/npm/gitlab — не сюда. */
+const AI_TOOL_ICONS = new Set(['cursor', 'claude']);
 
 /** Порядок иконок в строке (сначала ключевые для контура). */
 const ICON_PRIORITY: Record<PassportContour, string[]> = {
-  backend: ['php', 'laravel', 'magento', 'mysql', 'docker', 'nginx', 'python', 'redis', 'postgresql', 'zend'],
+  backend: ['php', 'laravel', 'magento', 'mysql', 'redis', 'python', 'postgresql', 'zend'],
   frontend: ['vuedotjs', 'react', 'statamic', 'html5', 'vite', 'tailwindcss', 'figma', 'jquery'],
-  ai: ['cursor', 'claude', 'git', 'gitlab', 'visualstudiocode', 'npm'],
+  ai: ['cursor', 'claude'],
+  ops: ['docker', 'nginx', 'gitlab', 'git', 'rabbitmq', 'zabbix'],
 };
-
-const AI_TOOL_ICONS = new Set(ICON_PRIORITY.ai);
 
 const EXTRA_BY_CONTOUR: Record<PassportContour, string[]> = {
   backend: ['php'],
   frontend: ['tailwindcss', 'figma'],
-  ai: [],
+  ai: ['cursor', 'claude'],
+  ops: [],
 };
 
 const MAX_ICONS = 8;
