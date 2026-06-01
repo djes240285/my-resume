@@ -1,0 +1,105 @@
+metaTitle: "Eugene Zhukov — web systems: build & support"
+metaDescription: "Design, evolve, and support web systems: features, backend, interfaces. Predictable production, 16+ years of experience."
+hero:
+  headline: I design, build, and support web systems.
+  lead: I help businesses ship complex features, optimize backends, and craft precise interfaces while keeping production predictable and stable.
+  avatarAlt: Eugene Zhukov
+engineerPassport:
+  name: Eugene Zhukov
+  role: Engineer · Full-stack architect
+  metricsTitle: Developer metrics
+  metrics:
+    - label: Status
+      value: Active
+      valueNote: part-time · header indicator
+    - label: Timezone
+      value: UTC+3 · Moscow (Simferopol)
+    - label: Business hours
+      value: Mon–Fri 10:00–19:00 MSK
+      valueNote: typically reply within 4h
+    - label: Experience
+      value: 16+ years in commercial engineering
+    - label: Profile
+      value: Fullstack · core architect
+    - label: Focus
+      value: Core infrastructure build & evolution
+    - label: Domains
+      value: Highload, e-commerce, AI integrations
+  stackTitle: Primary stack contour
+  stackGroups:
+    - label: Backend
+      value: PHP (Laravel, Magento 1/2), Node.js, REST API, SQL
+      contour: backend
+    - label: Frontend
+      value: Vue.js, React, Blade, Tailwind CSS, Figma (pixel-perfect)
+      contour: frontend
+    - label: AI-Driven
+      value: Cursor agents, workflow automation, LLM integrations
+      contour: ai
+  readouts:
+    - code: STAB
+      label: Production stability
+      headline: Evolution, not big-bang
+      detail: Iterative releases, rollback plan, and monitoring. P1 triage within team SLA — business flows keep running.
+      tone: stability
+    - code: AI-OPS
+      label: AI in workflows
+      headline: Cursor agents + LLM in daily work
+      detail: Scope review, diff review, boilerplate, migrations, legacy regression hunts. Architecture and critical paths stay hand-owned.
+      tone: ai
+  activityLabel: Contour involvement
+  activityHint: 12 mo. · commercial engagement intensity
+  vizAriaLabel: Stability pulse and involvement heatmap
+mindset:
+  title: How I work
+  badge: APPROACH
+  steps:
+    - phase: 01 ·
+      title: Immersion, audit, and dialogue
+      detail: I start by reading the code and architecture. I give honest feedback, align it with your expectations, and agree on goals. Listening to the business and earning trust comes first — not pushing a template playbook.
+      indicatorLabel: AUDIT·DIFF
+      indicator: audit
+    - phase: 02 ·
+      title: Fit your operating rules
+      detail: If you have no process yet, I help shape one and coach the team. If you already run strict versioning, feature flow, and release rules — I plug into your contour and follow your standards without friction.
+      indicatorLabel: GIT·FLOW
+      indicator: regime
+    - phase: 03 ·
+      title: Simple first, then depth
+      detail: I stay concept-driven and avoid over-engineering early. We stabilize core nodes and ship the main features first, then grow the system step by step. I pick the best delivery path for your budget and scale.
+      indicatorLabel: ITER·SCALE
+      indicator: scale
+    - phase: 04 ·
+      title: End-to-end product ownership
+      detail: I own the system as a whole — from clean backend to interface logic. Pixel-perfect Figma match and thoughtful edge-case UI so the business gets a ready, self-sufficient asset.
+      indicatorLabel: BE·FE·UI
+      indicator: e2e
+caseLog:
+  title: Selected projects
+  intro: "Commercial work summary: project, scope, stack icons, and status. Full post-mortem — in the portfolio."
+  statusLegend: "Status: Live · Support · Completed · Partner · Archive · Closed contour — each suffixed with «· NDA» (limited public detail). Years under the name reflect involvement, not last commit date."
+  colId: ID
+  colTarget: Project
+  colOperation: Scope
+  colStack: Stack
+  colStatus: Status
+  rowAction: Details
+  drumAriaLabel: "Project list: wheel over the table, drag rows, or use the scrollbar on the right"
+  windowTitle: PRACTICE.LOG
+  foldLightsAria: Project list controls
+  foldClose: Collapse list
+  foldPreviewMode: Show preview (3 projects)
+  foldOpen: Expand full list
+bridge:
+  title: Let's discuss your project
+  body: "Bring any request: from an early idea or audit to a focused fix, urgent incident, or scaling roadmap. Share your goal in plain words even without a formal spec, and I will break it down into steps with a practical stack and a safe delivery plan."
+  cta: Start a conversation
+  mailtoSubject: Project discussion
+ai:
+  line: AI speeds up routine work; architecture and production accountability stay with the engineer.
+footer:
+  contactsLabel: "Contacts: EZ monogram, email, and LinkedIn"
+cta:
+  email: Email me
+  telegram: Telegram
+  max: MAX

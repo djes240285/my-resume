@@ -12,6 +12,7 @@ import AvatarViewfinderOverlay from './AvatarViewfinderOverlay.astro';
 import ContactCopyIcon from './ContactCopyIcon.astro';
 import LiveStatusInit from './LiveStatusInit.astro';
 import TechRoadmap from './TechRoadmap.astro';
+import { showMaxContact } from '../config/contact-links';
 
 interface Props {
   lang: Lang;
@@ -74,14 +75,15 @@ const stackSlides = AVATAR_STACK_SLIDES.map((slide) => ({
   webpSrc: slide.webpSrc,
   label: avatarSlideLabel(slide, lang),
 }));
-const TELEGRAM_HANDLE = '@DJES240285';
-const TELEGRAM_URL = 'https://t.me/DJES240285';
+const telegramHandle = t.contact.telegramHandle;
+const telegramUrl = t.contact.telegramHref;
 const treeRowId = (i: number) => `contact-tree-row-${i}`;
 const emailRowCount = t.contact.emails.length;
+const showMax = showMaxContact(lang);
 const idxTelegram = emailRowCount;
 const idxMaxPhone = emailRowCount + 1;
 const idxMaxProfile = emailRowCount + 2;
-const idxLinkedin = emailRowCount + 3;
+const idxLinkedin = emailRowCount + (showMax ? 3 : 1);
 const audienceConsoleTitle = lang === 'ru' ? 'ПРОФИЛЬНЫЙ КОНТЕКСТ' : 'PROFILE CONTEXT';
 const techLegend =
   lang === 'ru'
@@ -404,18 +406,18 @@ const audienceMode = {
                   >
                     <a
                       class="contact-file-tree__primary"
-                      href={TELEGRAM_URL}
+                      href={telegramUrl}
                       target="_blank"
                       rel="noreferrer noopener"
                     >
-                      {TELEGRAM_HANDLE}
+                      {telegramHandle}
                     </a>
                     <button
                       type="button"
                       class="contact-copy-btn"
-                      data-copy-value={TELEGRAM_URL}
+                      data-copy-value={telegramUrl}
                       aria-label={L.contactCopyLinkAria}
-                      title={TELEGRAM_URL}
+                      title={telegramUrl}
                       tabindex="0"
                     >
                       <ContactCopyIcon class="contact-copy-btn__glyph" />
@@ -425,73 +427,75 @@ const audienceMode = {
               </div>
             </div>
 
-            <div class="contact-file-tree__section">
-              <div class="contact-concept-head contact-file-tree__section-head">
-                <img
-                  class="contact-concept-icon contact-concept-icon--max"
-                  src="/logo-max.svg"
-                  alt=""
-                  width="20"
-                  height="20"
-                  loading="lazy"
-                  decoding="async"
-                  aria-hidden="true"
-                />
-                <p class="contact-concept-tag">{L.max}</p>
+            {showMax && (
+              <div class="contact-file-tree__section">
+                <div class="contact-concept-head contact-file-tree__section-head">
+                  <img
+                    class="contact-concept-icon contact-concept-icon--max"
+                    src="/logo-max.svg"
+                    alt=""
+                    width="20"
+                    height="20"
+                    loading="lazy"
+                    decoding="async"
+                    aria-hidden="true"
+                  />
+                  <p class="contact-concept-tag">{L.max}</p>
+                </div>
+                <div class="contact-file-tree__panel contact-terminal-email-body">
+                  <ul class="contact-file-tree__list" role="list">
+                    <li
+                      class="contact-file-tree__row"
+                      data-tree-row
+                      id={treeRowId(idxMaxPhone)}
+                      aria-current="false"
+                    >
+                      <a
+                        class="contact-file-tree__primary"
+                        href={`tel:${t.contact.maxTel}`}
+                      >
+                        {t.contact.maxInvite}
+                      </a>
+                      <button
+                        type="button"
+                        class="contact-copy-btn"
+                        data-copy-value={t.contact.maxTel}
+                        aria-label={L.contactCopyPhoneAria}
+                        title={t.contact.maxTel}
+                        tabindex="0"
+                      >
+                        <ContactCopyIcon class="contact-copy-btn__glyph" />
+                      </button>
+                    </li>
+                    <li
+                      class="contact-file-tree__row"
+                      data-tree-row
+                      id={treeRowId(idxMaxProfile)}
+                      aria-current="false"
+                    >
+                      <a
+                        class="contact-file-tree__primary contact-file-tree__primary--link"
+                        href={t.contact.maxHref}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        {L.maxProfileLink}
+                      </a>
+                      <button
+                        type="button"
+                        class="contact-copy-btn"
+                        data-copy-value={t.contact.maxHref}
+                        aria-label={L.contactCopyLinkAria}
+                        title={t.contact.maxHref}
+                        tabindex="0"
+                      >
+                        <ContactCopyIcon class="contact-copy-btn__glyph" />
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div class="contact-file-tree__panel contact-terminal-email-body">
-                <ul class="contact-file-tree__list" role="list">
-                  <li
-                    class="contact-file-tree__row"
-                    data-tree-row
-                    id={treeRowId(idxMaxPhone)}
-                    aria-current="false"
-                  >
-                    <a
-                      class="contact-file-tree__primary"
-                      href={`tel:${t.contact.maxTel}`}
-                    >
-                      {t.contact.maxInvite}
-                    </a>
-                    <button
-                      type="button"
-                      class="contact-copy-btn"
-                      data-copy-value={t.contact.maxTel}
-                      aria-label={L.contactCopyPhoneAria}
-                      title={t.contact.maxTel}
-                      tabindex="0"
-                    >
-                      <ContactCopyIcon class="contact-copy-btn__glyph" />
-                    </button>
-                  </li>
-                  <li
-                    class="contact-file-tree__row"
-                    data-tree-row
-                    id={treeRowId(idxMaxProfile)}
-                    aria-current="false"
-                  >
-                    <a
-                      class="contact-file-tree__primary contact-file-tree__primary--link"
-                      href={t.contact.maxHref}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {L.maxProfileLink}
-                    </a>
-                    <button
-                      type="button"
-                      class="contact-copy-btn"
-                      data-copy-value={t.contact.maxHref}
-                      aria-label={L.contactCopyLinkAria}
-                      title={t.contact.maxHref}
-                      tabindex="0"
-                    >
-                      <ContactCopyIcon class="contact-copy-btn__glyph" />
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            )}
 
             <div class="contact-file-tree__section">
               <div class="contact-concept-head contact-file-tree__section-head">

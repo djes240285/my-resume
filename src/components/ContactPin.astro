@@ -1,7 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import { getContactMenuLabels, SITE_TELEGRAM_URL } from '../config/contact-links';
+import { getContactMenuLabels, showMaxContact } from '../config/contact-links';
 import { CONTACT_PIN_VARIANT } from '../config/contact-pin-variant';
 import ContactPinLisa from './contact-pin/ContactPinLisa.astro';
 import ContactPinMario from './contact-pin/ContactPinMario.astro';
@@ -15,8 +15,9 @@ const cv = getCv(lang);
 const labels = getContactMenuLabels(lang, CONTACT_PIN_VARIANT);
 const email = cv.contact.emails[0];
 const maxHref = cv.contact.maxHref;
-const mailto = `mailto:${email}?subject=${encodeURIComponent(lang === 'ru' ? 'Связь с сайта' : 'Message from site')}`;
+const mailto = `mailto:${email}?subject=${encodeURIComponent(cv.contact.mailSubjectPin)}`;
 const isMario = CONTACT_PIN_VARIANT === 'mario';
+const showMax = showMaxContact(lang);
 ---
 
 <div
@@ -61,7 +62,7 @@ const isMario = CONTACT_PIN_VARIANT === 'mario';
     <a
       class="contact-pin-pixel__menu-item"
       role="menuitem"
-      href={SITE_TELEGRAM_URL}
+      href={cv.contact.telegramHref}
       target="_blank"
       rel="noopener noreferrer"
       {...(isMario ? { 'data-contact-sfx': 'jump' } : {})}
@@ -69,17 +70,19 @@ const isMario = CONTACT_PIN_VARIANT === 'mario';
       <span class="contact-pin-pixel__menu-glyph" aria-hidden="true">TG</span>
       {labels.telegram}
     </a>
-    <a
-      class="contact-pin-pixel__menu-item"
-      role="menuitem"
-      href={maxHref}
-      target="_blank"
-      rel="noopener noreferrer"
-      {...(isMario ? { 'data-contact-sfx': 'powerup' } : {})}
-    >
-      <span class="contact-pin-pixel__menu-glyph contact-pin-pixel__menu-glyph--max" aria-hidden="true">M</span>
-      {labels.max}
-    </a>
+    {showMax && (
+      <a
+        class="contact-pin-pixel__menu-item"
+        role="menuitem"
+        href={maxHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        {...(isMario ? { 'data-contact-sfx': 'powerup' } : {})}
+      >
+        <span class="contact-pin-pixel__menu-glyph contact-pin-pixel__menu-glyph--max" aria-hidden="true">M</span>
+        {labels.max}
+      </a>
+    )}
   </div>
 </div>
 

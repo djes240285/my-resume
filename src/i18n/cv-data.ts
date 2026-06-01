@@ -1,4 +1,5 @@
 import { TECH_STACK_DOC_HREFS } from '../config/tech-stack-docs';
+import { getContactContent } from '../lib/load-contact';
 
 export type Lang = 'ru' | 'en';
 
@@ -217,12 +218,16 @@ export type CVContent = {
     location?: string;
     linkedinLabel: string;
     linkedinHref: string;
+    telegramHref: string;
+    telegramHandle: string;
     /** Ссылка на профиль в мессенджере MAX */
     maxHref: string;
     /** Телефон под тегом [МАХ]/[MAX] (отображение) */
     maxInvite: string;
     /** Номер для tel: и копирования (E.164, без пробелов) */
     maxTel: string;
+    mailSubjectPin: string;
+    mailSubjectPortfolio: string;
   };
   sections: {
     about: { title: string; body: string };
@@ -277,7 +282,7 @@ export type CVContent = {
   };
 };
 
-export const cv: Record<Lang, CVContent> = {
+export const cv: Record<Lang, Omit<CVContent, 'contact'>> = {
   ru: {
     metaTitle: 'Евгений Жуков — восстановление систем, fullstack и архитектура',
     metaDescription:
@@ -296,15 +301,6 @@ export const cv: Record<Lang, CVContent> = {
     role: 'Fullstack · архитектор · инженер восстановления систем',
     summary:
       'Стабилизирую системы, к которым другие не подключаются — легаси, миграции, интеграции — когда прод не терпит паузы.',
-    contact: {
-      emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
-      linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
-      linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
-      maxHref:
-        'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
-      maxInvite: '+7 978 160 49 74',
-      maxTel: '+79781604974',
-    },
     heroHudFacts: [
       { label: 'ФОКУС', value: 'RESCUE · LEGACY · E-COM' },
       { label: 'ОПЫТ', value: '16+ ЛЕТ ПРОДАКШЕНА' },
@@ -1249,15 +1245,6 @@ export const cv: Record<Lang, CVContent> = {
     role: 'Fullstack · architect · system rescue engineer',
     summary:
       'I stabilize systems others won’t touch—legacy, migrations, integrations—when production can’t pause.',
-    contact: {
-      emails: ['evgenii.zhukov.igorevich@gmail.com', 'evgenii.z.i@yandex.ru'],
-      linkedinLabel: 'linkedin.com/in/eugene-zhukov-24a96164',
-      linkedinHref: 'https://www.linkedin.com/in/eugene-zhukov-24a96164/',
-      maxHref:
-        'https://max.ru/u/f9LHodD0cOIQKhdp9uLyThPkZcKQRbIzWXiog-j90GhkeLT9cvMTqo9ytpM',
-      maxInvite: '+7 978 160 49 74',
-      maxTel: '+79781604974',
-    },
     heroHudFacts: [
       { label: 'FOCUS', value: 'RESCUE · LEGACY · E-COM' },
       { label: 'EXPERIENCE', value: '16+ YEARS IN PROD' },
@@ -2214,5 +2201,8 @@ export function isLang(value: string | undefined): value is Lang {
 }
 
 export function getCv(lang: Lang): CVContent {
-  return withTechStackDocs(cv[lang]);
+  return withTechStackDocs({
+    ...cv[lang],
+    contact: getContactContent(lang),
+  });
 }

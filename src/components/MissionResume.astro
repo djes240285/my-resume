@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
+import { showMaxContact } from '../config/contact-links';
 import { getMissionControl } from '../i18n/mission-control-data';
 import MissionAvatarTerminal from './MissionAvatarTerminal.astro';
 import MissionMindsetPath from './MissionMindsetPath.astro';
@@ -16,8 +17,8 @@ const t = getCv(lang);
 const m = getMissionControl(lang);
 const portfolioHref = `/${lang}/portfolio`;
 const resumeHref = `/${lang}/`;
-const TELEGRAM_URL = 'https://t.me/DJES240285';
 const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURIComponent(m.bridge.mailtoSubject)}`;
+const showMax = showMaxContact(lang);
 ---
 
 <div class="mc-page">
@@ -46,22 +47,24 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
             </a>
             <a
               class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-              href={TELEGRAM_URL}
+              href={t.contact.telegramHref}
               target="_blank"
               rel="noopener noreferrer"
             >
               <img class="mission-btn__icon" src="/logo-telegram.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
               <span>{m.cta.telegram}</span>
             </a>
-            <a
-              class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
-              href={t.contact.maxHref}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img class="mission-btn__icon mission-btn__icon--max" src="/logo-max.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
-              <span>{m.cta.max}</span>
-            </a>
+            {showMax && (
+              <a
+                class="mission-btn mission-btn--ghost mission-btn--ghost-thin mission-btn--icon"
+                href={t.contact.maxHref}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img class="mission-btn__icon mission-btn__icon--max" src="/logo-max.svg" alt="" width="18" height="18" loading="lazy" decoding="async" aria-hidden="true" />
+                <span>{m.cta.max}</span>
+              </a>
+            )}
           </div>
         </div>
 
@@ -86,7 +89,7 @@ const bridgeMailHref = `mailto:${t.contact.emails[0]}?subject=${encodeURICompone
       >
         {m.bridge.cta}
       </a>
-      <a class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary" href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+      <a class="mission-btn mission-btn--ghost mission-btn--ghost-thin mc-bridge__btn-secondary" href={t.contact.telegramHref} target="_blank" rel="noopener noreferrer">
         {m.cta.telegram}
       </a>
     </div>

@@ -3,23 +3,27 @@ import path from 'node:path';
 import { homedir } from 'node:os';
 import { defineConfig } from 'astro/config';
 
+import react from '@astrojs/react';
+import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 
-/** Вне Nextcloud: иначе pre-bundle (`deps_temp_*`) часто залипает на синхронизации/I-O в `node_modules/.vite`. */
+/** Keystatic — только dev; на Netlify (production build) не подключаем. */
+const isProdBuild = process.env.NODE_ENV === 'production';
+
+/** Кэш Vite вне Nextcloud (ускоряет pre-bundle). */
 const viteCacheDir = path.join(homedir(), '.cache', 'ezhukov-site-vite');
 
-/** Netlify задаёт URL при CI-сборке; fallback — prod-домен (не localhost). */
 const site =
   process.env.URL ||
   process.env.SITE_URL ||
   process.env.PUBLIC_SITE_URL ||
   'https://eugene-zhukov.netlify.app';
 
-// https://astro.build/config
 export default defineConfig({
   site,
+  integrations: [react(), ...(isProdBuild ? [] : [keystatic()])],
   vite: {
     cacheDir: viteCacheDir,
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+  },
 });

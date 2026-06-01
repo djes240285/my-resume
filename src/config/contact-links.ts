@@ -1,8 +1,6 @@
 import type { Lang } from '../i18n/cv-data';
 import type { ContactPinVariant } from './contact-pin-variant';
 
-export const SITE_TELEGRAM_URL = 'https://t.me/DJES240285';
-
 export type ContactMenuLabels = {
   button: string;
   menuTitle: string;
@@ -10,6 +8,11 @@ export type ContactMenuLabels = {
   telegram: string;
   max: string;
 };
+
+/** MAX — только для RU-аудитории (мессенджер не релевантен на EN). */
+export function showMaxContact(lang: Lang): boolean {
+  return lang === 'ru';
+}
 
 export function getContactMenuLabels(
   lang: Lang,

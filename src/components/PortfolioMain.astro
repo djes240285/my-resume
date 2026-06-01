@@ -100,7 +100,6 @@ const labels =
           'Если проект вырос, легаси тормозит развитие, а команда боится правок в продакшене — опишите архитектуру или текущие боли. Без созвонов и брифов: точечный технический разбор и варианты стабилизации.',
         diagnosticCta: 'Отправить симптомы на анализ',
         postMortemLabel: 'РАЗБОР КЕЙСА',
-        mailSubject: 'Симптомы системы — запрос разбора',
       }
     : {
         section: 'Site section',
@@ -152,7 +151,6 @@ const labels =
           'If your system outgrew its architecture, legacy blocks change, and the team fears production edits — send architecture notes or pain points. No calls or brief forms: focused triage and stabilization options.',
         diagnosticCta: 'Send symptoms for analysis',
         postMortemLabel: 'CASE POST-MORTEM',
-        mailSubject: 'System symptoms — triage request',
       };
 
 type ShowcaseCard = {
@@ -1136,7 +1134,7 @@ const curatedShowcase = dedupeShowcaseCards(
     </p>
     <a
       class="portfolio-diagnostic__cta mission-btn mission-btn--primary mt-5"
-      href={`mailto:${cv.contact.emails[0]}?subject=${encodeURIComponent(labels.mailSubject)}`}
+      href={`mailto:${cv.contact.emails[0]}?subject=${encodeURIComponent(cv.contact.mailSubjectPortfolio)}`}
     >
       {labels.diagnosticCta}
     </a>
