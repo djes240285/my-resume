@@ -117,7 +117,10 @@ const PELLET_COUNT = 14;
     var pelletsRoot = document.querySelector('[data-scroll-pacman-pellets]');
     if (!btn || !runLayer || !actor || !pelletsRoot) return;
 
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reduce =
+      window.a11yMotionReduced
+        ? window.a11yMotionReduced()
+        : window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var threshold = 380;
     var sharedAudioCtx = null;
     var pacmanActive = false;

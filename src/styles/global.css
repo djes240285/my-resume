@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@import "./a11y.css";
+
 /* Локальные WOFF2 — без Google Fonts (меньше DNS/TLS и блокировок при LH) */
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
@@ -3500,31 +3502,76 @@ html.audience-mode-pending [data-audience-approach-body] {
   }
 }
 
-/* /mission — компактная шапка на мобилке */
+/* /mission — компактная шапка на мобилке + выезжающее меню */
+.terminal-mobile-menu-btn {
+  display: none;
+}
+
+.terminal-mobile-nav-backdrop {
+  display: none;
+}
+
 @media (max-width: 767px) {
   .terminal-header--mission .terminal-header__inner {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "logo brand status"
-      "nav nav lang";
+      'logo brand tools'
+      'status status status';
     align-items: center;
     gap: 0.35rem 0.45rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.45rem 0.75rem 0.5rem;
   }
 
-  .terminal-header--mission .terminal-header__left,
-  .terminal-header--mission .terminal-header__right {
-    display: contents;
-  }
-
-  .terminal-header--mission .terminal-logo {
+  .terminal-header--mission .terminal-header__logo {
     grid-area: logo;
   }
 
-  .terminal-header--mission .terminal-header-mission-id {
+  .terminal-header--mission .terminal-header__brand {
     grid-area: brand;
+  }
+
+  .terminal-header--mission .terminal-header__tools {
+    grid-area: tools;
+    justify-self: end;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+  }
+
+  .terminal-header--mission .terminal-mobile-menu-btn {
+    flex-shrink: 0;
+    margin-left: 0.1rem;
+  }
+
+  .terminal-header--mission .terminal-mobile-menu-btn__label {
+    display: none;
+  }
+
+  .terminal-header--mission .terminal-header__status {
+    grid-area: status;
+    justify-self: stretch;
+    width: 100%;
     min-width: 0;
+  }
+
+  .terminal-header--mission .terminal-header-status {
+    width: 100%;
+    max-width: none;
+    padding: 0.42rem 0.55rem;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .terminal-header--mission .terminal-header-status__dot {
+    margin-top: 0.15rem;
+  }
+
+  .terminal-header--mission .terminal-header-status__body {
+    flex: 1;
+    gap: 0.18rem;
   }
 
   .terminal-header--mission .terminal-header-mission-id__brand {
@@ -3539,55 +3586,180 @@ html.audience-mode-pending [data-audience-approach-body] {
     display: none;
   }
 
-  .terminal-header--mission .terminal-nav {
-    grid-area: nav;
-    flex-wrap: nowrap;
-    gap: 0.15rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    min-width: 0;
-    padding-bottom: 0.05rem;
-  }
-
-  .terminal-header--mission .terminal-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .terminal-header--mission .terminal-nav-link {
-    padding: 0.22rem 0.32rem;
-    font-size: 0.7rem;
-    flex-shrink: 0;
-  }
-
-  .terminal-header--mission .terminal-nav-link__bracket {
-    font-size: 0.62rem;
-  }
-
-  .terminal-header--mission .terminal-header-status {
-    grid-area: status;
-    max-width: none;
-    padding: 0.2rem 0.4rem;
-    justify-self: end;
-  }
-
   .terminal-header--mission .terminal-header-status__ready {
-    font-size: 0.5rem;
+    font-size: 0.625rem;
     letter-spacing: 0.06em;
+    line-height: 1.35;
+    white-space: normal;
+    word-break: break-word;
   }
 
   .terminal-header--mission .terminal-header-status__schedule {
-    font-size: 0.45rem;
+    font-size: 0.5625rem;
+    line-height: 1.3;
+    white-space: normal;
   }
 
   .terminal-header--mission .terminal-lang-switch {
-    grid-area: lang;
-    justify-self: end;
     font-size: 0.65rem;
   }
 
   .terminal-header--mission .terminal-lang-pill {
     padding: 0.15rem 0.4rem;
+  }
+
+  .terminal-mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    min-height: 2rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px dashed rgba(56, 189, 248, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(15, 23, 42, 0.9);
+    color: #a5f3fc;
+    cursor: pointer;
+    transition:
+      border-color 0.16s ease,
+      color 0.16s ease,
+      background-color 0.16s ease;
+  }
+
+  .terminal-mobile-menu-btn:hover,
+  .terminal-mobile-menu-btn:focus-visible {
+    border-color: rgba(45, 212, 191, 0.75);
+    color: #ccfbf1;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.35);
+  }
+
+  .terminal-mobile-menu-btn[aria-expanded='true'] {
+    border-color: rgba(45, 212, 191, 0.85);
+    background: rgba(34, 211, 238, 0.12);
+    color: #99f6e4;
+  }
+
+  .terminal-mobile-menu-btn__bars {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.14rem;
+    width: 0.85rem;
+  }
+
+  .terminal-mobile-menu-btn__bars span {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+
+  .terminal-mobile-menu-btn__label {
+    font-family: "JetBrains Mono Variable", ui-monospace, monospace;
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .terminal-header--mission .terminal-header__nav {
+    display: none;
+    position: fixed;
+    z-index: 58;
+    top: calc(var(--terminal-header-height, 3.5rem) + 0.35rem);
+    left: auto;
+    right: 0.75rem;
+    width: min(16.5rem, calc(100vw - 1.5rem));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    padding: 0.65rem;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(2, 6, 23, 0.98);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  html.mobile-nav-open .terminal-header--mission .terminal-header__nav {
+    display: flex;
+  }
+
+  .terminal-header--mission .terminal-header__nav .terminal-nav-link {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.8125rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    background: rgba(15, 23, 42, 0.65);
+  }
+
+  .terminal-header--mission .terminal-header__nav .terminal-nav-link--active {
+    border-color: rgba(45, 212, 191, 0.75);
+    background: rgba(34, 211, 238, 0.15);
+    color: #99f6e4;
+  }
+
+  .terminal-mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 57;
+    background: rgba(2, 6, 23, 0.55);
+  }
+
+  html.mobile-nav-open .terminal-mobile-nav-backdrop:not([hidden]) {
+    display: block;
+  }
+
+  html.mobile-nav-open {
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 768px) {
+  .terminal-header--mission .terminal-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.65rem 1rem;
+  }
+
+  .terminal-header--mission .terminal-header__logo {
+    order: 1;
+  }
+
+  .terminal-header--mission .terminal-header__brand {
+    order: 2;
+    flex: 0 1 auto;
+  }
+
+  .terminal-header--mission .terminal-header__nav {
+    order: 3;
+    display: flex !important;
+    position: static;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: row;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .terminal-header--mission .terminal-header__tools {
+    order: 4;
+    margin-left: auto;
+  }
+
+  .terminal-header--mission .terminal-header__status {
+    order: 5;
+  }
+
+  .terminal-header--mission .terminal-mobile-nav-backdrop {
+    display: none !important;
   }
 }
 
@@ -5016,6 +5188,25 @@ html.audience-mode-pending [data-audience-approach-body] {
 }
 
 @media (max-width: 899px) {
+  .mc-hero-deck__actions {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .mc-hero-deck__actions .mission-btn {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.8125rem;
+  }
+
+  .mc-hero-deck__actions .mission-btn span {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
   .mc-hero-primary__card {
     padding: 1rem 1rem 1.1rem;
   }

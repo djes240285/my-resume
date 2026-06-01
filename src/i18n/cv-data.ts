@@ -246,6 +246,25 @@ export type CVContent = {
     };
   };
   footerQuote: string;
+  /** Настройки отображения (a11y / WCAG) */
+  a11y: {
+    skipLink: string;
+    navLabel: string;
+    homeLabel: string;
+    panelToggle: string;
+    panelToggleShort: string;
+    panelTitle: string;
+    fontSize: string;
+    font100: string;
+    font125: string;
+    font150: string;
+    highContrast: string;
+    reduceMotion: string;
+    simplifyUi: string;
+    reset: string;
+    footerLink: string;
+    menuToggle: string;
+  };
   portfolio: {
     metaTitle: string;
     metaDescription: string;
@@ -1161,6 +1180,24 @@ export const cv: Record<Lang, CVContent> = {
     },
     footerQuote:
       'Не «закрыть тикет», а вернуть контуру предсказуемость — чтобы рост снова был задачей бизнеса, а не пожаротушения.',
+    a11y: {
+      skipLink: 'Перейти к содержимому',
+      navLabel: 'Основная навигация',
+      homeLabel: 'Евгений Жуков — на главную',
+      panelToggle: 'Настройки отображения',
+      panelToggleShort: 'Отображение',
+      panelTitle: 'Настройки отображения',
+      fontSize: 'Размер текста',
+      font100: '100%',
+      font125: '125%',
+      font150: '150%',
+      highContrast: 'Высокий контраст',
+      reduceMotion: 'Меньше анимаций',
+      simplifyUi: 'Проще оформление',
+      reset: 'Сбросить настройки',
+      footerLink: 'Настройки отображения',
+      menuToggle: 'Меню',
+    },
     portfolio: {
       metaTitle: 'Портфолио — Евгений Жуков',
       metaDescription:
@@ -2096,6 +2133,24 @@ export const cv: Record<Lang, CVContent> = {
     },
     footerQuote:
       'Not “close the ticket”—restore predictability so growth is the business job again, not firefighting.',
+    a11y: {
+      skipLink: 'Skip to content',
+      navLabel: 'Main navigation',
+      homeLabel: 'Eugene Zhukov — home',
+      panelToggle: 'Display settings',
+      panelToggleShort: 'Display',
+      panelTitle: 'Display settings',
+      fontSize: 'Text size',
+      font100: '100%',
+      font125: '125%',
+      font150: '150%',
+      highContrast: 'High contrast',
+      reduceMotion: 'Reduce motion',
+      simplifyUi: 'Simpler layout',
+      reset: 'Reset settings',
+      footerLink: 'Display settings',
+      menuToggle: 'Menu',
+    },
     portfolio: {
       metaTitle: 'Portfolio — Eugene Zhukov',
       metaDescription:

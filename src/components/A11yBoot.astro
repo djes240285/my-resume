@@ -1,0 +1,66 @@
+---
+import { A11Y_PREFS_STORAGE_KEY } from '../config/a11y';
+---
+
+<script is:inline define:vars={{ storageKey: A11Y_PREFS_STORAGE_KEY }}>
+  (function () {
+    var root = document.documentElement;
+    var defaults = { font: '100', contrast: 'default', motion: 'default', simple: 'off' };
+
+    function parsePrefs(raw) {
+      if (!raw) return null;
+      try {
+        var o = JSON.parse(raw);
+        if (!o || typeof o !== 'object') return null;
+        var font = o.font === '125' || o.font === '150' ? o.font : '100';
+        var contrast = o.contrast === 'high' ? 'high' : 'default';
+        var motion = o.motion === 'reduce' ? 'reduce' : 'default';
+        var simple = o.simple === 'on' ? 'on' : 'off';
+        return { font: font, contrast: contrast, motion: motion, simple: simple };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function applyPrefs(prefs) {
+      if (prefs.font !== defaults.font) root.setAttribute('data-a11y-font', prefs.font);
+      else root.removeAttribute('data-a11y-font');
+
+      if (prefs.contrast !== defaults.contrast) root.setAttribute('data-a11y-contrast', prefs.contrast);
+      else root.removeAttribute('data-a11y-contrast');
+
+      if (prefs.motion !== defaults.motion) root.setAttribute('data-a11y-motion', prefs.motion);
+      else root.removeAttribute('data-a11y-motion');
+
+      if (prefs.simple !== defaults.simple) root.setAttribute('data-a11y-simple', prefs.simple);
+      else root.removeAttribute('data-a11y-simple');
+    }
+
+    window.a11yMotionReduced = function () {
+      if (root.getAttribute('data-a11y-motion') === 'reduce') return true;
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    };
+
+    window.a11yApplyPrefs = applyPrefs;
+    window.a11yDefaultPrefs = function () {
+      return {
+        font: defaults.font,
+        contrast: defaults.contrast,
+        motion: defaults.motion,
+        simple: defaults.simple,
+      };
+    };
+
+    window.a11yParsePrefs = parsePrefs;
+    window.a11yStorageKey = storageKey;
+
+    var saved = null;
+    try {
+      saved = localStorage.getItem(storageKey);
+    } catch (e) {
+      /* ignore */
+    }
+    var prefs = parsePrefs(saved) || defaults;
+    applyPrefs(prefs);
+  })();
+</script>

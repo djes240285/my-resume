@@ -95,8 +95,8 @@ const isMario = CONTACT_PIN_VARIANT === 'mario';
     var marioAudioCtx = null;
     var marioSfxMuted =
       typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.a11yMotionReduced &&
+      window.a11yMotionReduced();
 
     function getMarioAudioCtx() {
       if (marioSfxMuted) return null;

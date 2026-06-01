@@ -11,7 +11,7 @@ const { selectors, rootSelector } = Astro.props;
 
 <script define:vars={{ selectors, rootSelector }}>
   document.addEventListener('DOMContentLoaded', function () {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.a11yMotionReduced ? window.a11yMotionReduced() : window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     var root = rootSelector ? document.querySelector(rootSelector) : document;
     if (!root) return;

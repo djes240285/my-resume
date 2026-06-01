@@ -71,7 +71,11 @@ const ariaLabel =
     var vfSuppressTimer = null;
     var idx = 0;
     var avatarSwapBusy = false;
-    var motionOkAvatar = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var motionOkAvatar = !(
+      window.a11yMotionReduced
+        ? window.a11yMotionReduced()
+        : window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
 
     function clearVfSuppressTimer() {
       if (vfSuppressTimer) {

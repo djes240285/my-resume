@@ -1,0 +1,299 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import { getCv } from '../i18n/cv-data';
+import { A11Y_FONT_OPTIONS, A11Y_PREFS_STORAGE_KEY } from '../config/a11y';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const a = getCv(lang).a11y;
+const fontLabels: Record<(typeof A11Y_FONT_OPTIONS)[number], string> = {
+  '100': a.font100,
+  '125': a.font125,
+  '150': a.font150,
+};
+---
+
+<div class="a11y-panel-root" data-a11y-panel-root>
+  <button
+    type="button"
+    class="a11y-panel-toggle"
+    data-a11y-panel-toggle
+    aria-label={a.panelToggle}
+    aria-expanded="false"
+    aria-controls="a11y-panel-popover"
+    title={a.panelToggle}
+  >
+    <span class="a11y-panel-toggle__icon" aria-hidden="true">♿</span>
+    <span class="a11y-panel-toggle__label">{a.panelToggleShort}</span>
+  </button>
+
+  <div class="a11y-panel-backdrop" data-a11y-backdrop hidden aria-hidden="true"></div>
+
+  <div
+    id="a11y-panel-popover"
+    class="a11y-panel-popover"
+    data-a11y-panel-popover
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="a11y-panel-title"
+    hidden
+  >
+    <p id="a11y-panel-title" class="a11y-panel-popover__title">{a.panelTitle}</p>
+
+    <div class="a11y-panel-field">
+      <span class="a11y-panel-field__label" id="a11y-font-label">{a.fontSize}</span>
+      <div class="a11y-panel-segment" role="group" aria-labelledby="a11y-font-label">
+        {
+          A11Y_FONT_OPTIONS.map((size) => (
+            <button
+              type="button"
+              class="a11y-panel-segment__btn"
+              data-a11y-font-btn={size}
+            >
+              {fontLabels[size]}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="a11y-panel-toggle-row">
+      <span id="a11y-contrast-label">{a.highContrast}</span>
+      <button
+        type="button"
+        class="a11y-panel-switch"
+        data-a11y-switch="contrast"
+        role="switch"
+        aria-checked="false"
+        aria-labelledby="a11y-contrast-label"
+      />
+    </div>
+
+    <div class="a11y-panel-toggle-row">
+      <span id="a11y-motion-label">{a.reduceMotion}</span>
+      <button
+        type="button"
+        class="a11y-panel-switch"
+        data-a11y-switch="motion"
+        role="switch"
+        aria-checked="false"
+        aria-labelledby="a11y-motion-label"
+      />
+    </div>
+
+    <div class="a11y-panel-toggle-row">
+      <span id="a11y-simple-label">{a.simplifyUi}</span>
+      <button
+        type="button"
+        class="a11y-panel-switch"
+        data-a11y-switch="simple"
+        role="switch"
+        aria-checked="false"
+        aria-labelledby="a11y-simple-label"
+      />
+    </div>
+
+    <button type="button" class="a11y-panel-reset" data-a11y-reset>
+      {a.reset}
+    </button>
+  </div>
+</div>
+
+<script is:inline define:vars={{ storageKey: A11Y_PREFS_STORAGE_KEY }}>
+  (function () {
+    var root = document.querySelector('[data-a11y-panel-root]');
+    var toggle = document.querySelector('[data-a11y-panel-toggle]');
+    var popover = document.querySelector('[data-a11y-panel-popover]');
+    var backdrop = document.querySelector('[data-a11y-backdrop]');
+    if (!root || !toggle || !popover) return;
+
+    var fontBtns = Array.from(document.querySelectorAll('[data-a11y-font-btn]'));
+    var switches = Array.from(document.querySelectorAll('[data-a11y-switch]'));
+    var resetBtn = document.querySelector('[data-a11y-reset]');
+    var html = document.documentElement;
+
+    function readPrefs() {
+      if (typeof window.a11yDefaultPrefs === 'function') {
+        var defaults = window.a11yDefaultPrefs();
+        var saved = null;
+        try {
+          saved = localStorage.getItem(storageKey);
+        } catch (e) {
+          /* ignore */
+        }
+        if (typeof window.a11yParsePrefs === 'function') {
+          return window.a11yParsePrefs(saved) || defaults;
+        }
+        return defaults;
+      }
+      return { font: '100', contrast: 'default', motion: 'default', simple: 'off' };
+    }
+
+    function savePrefs(prefs) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(prefs));
+      } catch (e) {
+        /* ignore */
+      }
+      if (typeof window.a11yApplyPrefs === 'function') {
+        window.a11yApplyPrefs(prefs);
+      }
+      document.dispatchEvent(
+        new CustomEvent('a11y-prefs-change', { detail: prefs })
+      );
+    }
+
+    function syncUi(prefs) {
+      fontBtns.forEach(function (btn) {
+        var size = btn.getAttribute('data-a11y-font-btn');
+        btn.classList.toggle('is-active', size === prefs.font);
+        btn.setAttribute('aria-pressed', size === prefs.font ? 'true' : 'false');
+      });
+
+      switches.forEach(function (sw) {
+        var key = sw.getAttribute('data-a11y-switch');
+        var on = false;
+        if (key === 'contrast') on = prefs.contrast === 'high';
+        if (key === 'motion') on = prefs.motion === 'reduce';
+        if (key === 'simple') on = prefs.simple === 'on';
+        sw.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
+    }
+
+    function isPanelOpen() {
+      return toggle.getAttribute('aria-expanded') === 'true';
+    }
+
+    function isPanelTarget(target) {
+      if (!(target instanceof Node)) return false;
+      return root.contains(target) || popover.contains(target);
+    }
+
+    function isMobilePanel() {
+      return !!(window.matchMedia && window.matchMedia('(max-width: 767px)').matches);
+    }
+
+    function mountOverlayNodes() {
+      if (!isMobilePanel()) return;
+      if (backdrop && backdrop.parentElement !== document.body) {
+        document.body.appendChild(backdrop);
+      }
+      if (popover.parentElement !== document.body) {
+        document.body.appendChild(popover);
+      }
+    }
+
+    function restoreOverlayNodes() {
+      if (!root) return;
+      if (popover.parentElement === document.body) {
+        root.appendChild(popover);
+      }
+      if (backdrop && backdrop.parentElement === document.body) {
+        root.appendChild(backdrop);
+      }
+    }
+
+    function setOpen(open) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) {
+        mountOverlayNodes();
+        popover.removeAttribute('hidden');
+        if (backdrop && isMobilePanel()) {
+          backdrop.removeAttribute('hidden');
+          backdrop.setAttribute('aria-hidden', 'false');
+        } else if (backdrop) {
+          backdrop.setAttribute('hidden', '');
+          backdrop.setAttribute('aria-hidden', 'true');
+        }
+        if (isMobilePanel()) {
+          document.documentElement.classList.add('a11y-panel-open');
+        }
+      } else {
+        popover.setAttribute('hidden', '');
+        if (backdrop) {
+          backdrop.setAttribute('hidden', '');
+          backdrop.setAttribute('aria-hidden', 'true');
+        }
+        document.documentElement.classList.remove('a11y-panel-open');
+        restoreOverlayNodes();
+      }
+    }
+
+    syncUi(readPrefs());
+
+    toggle.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+      var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      setOpen(!isOpen);
+    });
+
+    if (backdrop) {
+      backdrop.addEventListener('click', function () {
+        setOpen(false);
+      });
+    }
+
+    popover.addEventListener('click', function (ev) {
+      ev.stopPropagation();
+    });
+
+    document.addEventListener('click', function (ev) {
+      if (!isPanelOpen()) return;
+      if (isPanelTarget(ev.target)) return;
+      setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && isPanelOpen()) setOpen(false);
+    });
+
+    fontBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var size = btn.getAttribute('data-a11y-font-btn');
+        if (!size) return;
+        var prefs = readPrefs();
+        prefs.font = size;
+        savePrefs(prefs);
+        syncUi(prefs);
+      });
+    });
+
+    switches.forEach(function (sw) {
+      sw.addEventListener('click', function () {
+        var key = sw.getAttribute('data-a11y-switch');
+        var prefs = readPrefs();
+        if (key === 'contrast') {
+          prefs.contrast = prefs.contrast === 'high' ? 'default' : 'high';
+        } else if (key === 'motion') {
+          prefs.motion = prefs.motion === 'reduce' ? 'default' : 'reduce';
+          document.querySelectorAll('.reveal-2026').forEach(function (el) {
+            el.classList.add('is-in');
+          });
+        } else if (key === 'simple') {
+          prefs.simple = prefs.simple === 'on' ? 'off' : 'on';
+        }
+        savePrefs(prefs);
+        syncUi(prefs);
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        var prefs =
+          typeof window.a11yDefaultPrefs === 'function'
+            ? window.a11yDefaultPrefs()
+            : { font: '100', contrast: 'default', motion: 'default', simple: 'off' };
+        savePrefs(prefs);
+        syncUi(prefs);
+      });
+    }
+
+    document.addEventListener('a11y-open-panel', function () {
+      setOpen(true);
+      toggle.focus();
+    });
+  })();
+</script>

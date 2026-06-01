@@ -899,7 +899,7 @@ const curatedShowcase = dedupeShowcaseCards(
 );
 ---
 
-<main class="portfolio-page" data-portfolio-root data-portfolio-mode="legacy">
+<div class="portfolio-page" data-portfolio-root data-portfolio-mode="legacy">
   <header class="">
     <p class="text-xs font-bold uppercase tracking-widest text-cyan-300">
       {labels.section}
@@ -1141,7 +1141,7 @@ const curatedShowcase = dedupeShowcaseCards(
       {labels.diagnosticCta}
     </a>
   </section>
-</main>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -1165,13 +1165,16 @@ const curatedShowcase = dedupeShowcaseCards(
         var tagOk = filter === 'all' || tags.indexOf(filter) >= 0;
         var modes = (card.getAttribute('data-portfolio-modes') || '').split(',').filter(Boolean);
         var modeOk = modes.length === 0 || modes.indexOf(mode) >= 0;
-        card.classList.toggle('case-card--hidden', !(tagOk && modeOk));
+        var hidden = !(tagOk && modeOk);
+        card.classList.toggle('case-card--hidden', hidden);
+        card.setAttribute('aria-hidden', hidden ? 'true' : 'false');
       });
       btns.forEach(function (btn) {
         var on = btn.getAttribute('data-case-filter-btn') === filter;
         btn.classList.toggle('border-cyan-500/45', on);
         btn.classList.toggle('bg-cyan-500/10', on);
         btn.classList.toggle('text-cyan-200', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         if (!on) {
           btn.classList.remove('border-cyan-500/45', 'bg-cyan-500/10', 'text-cyan-200');
           btn.classList.add('border-slate-700', 'text-slate-300');
@@ -1209,6 +1212,7 @@ const curatedShowcase = dedupeShowcaseCards(
         btn.classList.toggle('border-cyan-500/45', on);
         btn.classList.toggle('bg-cyan-500/10', on);
         btn.classList.toggle('text-cyan-200', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         if (!on) {
           btn.classList.remove('border-cyan-500/45', 'bg-cyan-500/10', 'text-cyan-200');
           btn.classList.add('border-slate-700', 'text-slate-300');
@@ -1279,9 +1283,10 @@ const curatedShowcase = dedupeShowcaseCards(
       applyFilter('all');
       target.classList.remove('case-card--hidden');
 
-      var reduce =
-        typeof window.matchMedia !== 'undefined' &&
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reduce = window.a11yMotionReduced
+        ? window.a11yMotionReduced()
+        : typeof window.matchMedia !== 'undefined' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       function go() {
         target.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });

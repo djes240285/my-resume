@@ -4,8 +4,10 @@
     if (!roots.length) return;
 
     var reduceMotion =
-      typeof window.matchMedia !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      typeof window.a11yMotionReduced === 'function'
+        ? window.a11yMotionReduced()
+        : typeof window.matchMedia !== 'undefined' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     var mobileMq =
       typeof window.matchMedia !== 'undefined'

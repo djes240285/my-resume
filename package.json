@@ -12,6 +12,7 @@
     "build": "astro build",
     "build:verbose": "astro build --verbose",
     "preview": "astro preview",
+    "a11y:check": "npx @axe-core/cli http://127.0.0.1:4321/ru/ http://127.0.0.1:4321/ru/portfolio --tags wcag2a,wcag2aa --save ./a11y-report.json",
     "astro": "astro",
     "previews:fetch": "node ./scripts/fetch-portfolio-previews.mjs",
     "contact-pin:pixelate": "node ./scripts/pixelate-contact-pin.mjs",

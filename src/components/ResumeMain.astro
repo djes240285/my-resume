@@ -159,7 +159,7 @@ const audienceMode = {
 } as const;
 ---
 
-<main class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
+<div class="terminal-page-root mx-auto px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
   <section class="terminal-module terminal-module--window reveal-2026" style="--reveal-delay: 80ms">
     <header class="terminal-module-windowbar">
       <p class="terminal-module-windowbar__title" aria-hidden="true">{L.heroWindowTitle}</p>
@@ -783,7 +783,7 @@ const audienceMode = {
       }
     </div>
   </section>
-</main>
+</div>
 
 <LiveStatusInit
   textId="hero-live-status"
@@ -975,7 +975,11 @@ const audienceMode = {
       var conTitle = con && con.querySelector('[data-hero-console-title]');
       var conView = con && con.querySelector('[data-hero-console-viewport]');
       if (hc && con && conTitle && conView && hc.commands && hc.title) {
-        var motionOk = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        var motionOk = !(
+          window.a11yMotionReduced
+            ? window.a11yMotionReduced()
+            : window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        );
         function revealConsole() {
           con.removeAttribute('data-booting');
         }
@@ -1061,7 +1065,11 @@ const audienceMode = {
     var vfSuppressTimer = null;
     var idx = 0;
     var avatarSwapBusy = false;
-    var motionOkAvatar = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var motionOkAvatar = !(
+      window.a11yMotionReduced
+        ? window.a11yMotionReduced()
+        : window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    );
 
     function clearVfSuppressTimer() {
       if (vfSuppressTimer) {
@@ -1533,7 +1541,7 @@ const audienceMode = {
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.a11yMotionReduced ? window.a11yMotionReduced() : window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var eras = document.querySelectorAll('[data-project-era]');
     if (!eras.length || !('IntersectionObserver' in window)) return;
     var AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -1682,7 +1690,7 @@ const audienceMode = {
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.a11yMotionReduced ? window.a11yMotionReduced() : window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     var selectors = [
       '.terminal-log--project',
@@ -1753,7 +1761,7 @@ const audienceMode = {
       techZone.classList.toggle('is-active', value);
     }
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.a11yMotionReduced ? window.a11yMotionReduced() : window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setActive(true);
       return;
     }

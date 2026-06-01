@@ -5,6 +5,7 @@ import { getCv } from '../i18n/cv-data';
 import SiteHeader from '../components/SiteHeader.astro';
 import ScrollToTop from '../components/ScrollToTop.astro';
 import ContactPin from '../components/ContactPin.astro';
+import A11yBoot from '../components/A11yBoot.astro';
 import { UI_FLAGS } from '../config/ui';
 
 interface Props {
@@ -34,6 +35,7 @@ const personJsonLd = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <A11yBoot />
     <script is:inline>
       (function () {
         var root = document.documentElement;
@@ -79,21 +81,31 @@ const personJsonLd = {
     data-avatar-ring={UI_FLAGS.avatarGoldRing}
     data-theme={UI_FLAGS.theme}
   >
+    <a href="#main-content" class="skip-link">{t.a11y.skipLink}</a>
     <div class="ambient-bg-2026" aria-hidden="true"></div>
     <div class="pixel-grid-2026" aria-hidden="true"></div>
     <SiteHeader lang={lang} />
-    <slot />
+    <main id="main-content">
+      <slot />
+    </main>
     <footer class="border-t border-slate-800 bg-slate-950 py-8 text-center text-sm italic text-slate-300">
       <div class="mx-auto max-w-3xl px-4">
-        <span class="text-3xl leading-none text-white/30">“</span>
+        <span class="text-3xl leading-none text-white/30" aria-hidden="true">“</span>
         <p class="-mt-2">{t.footerQuote}</p>
+        <button type="button" class="site-footer-a11y-link" data-a11y-footer-open>
+          {t.a11y.footerLink}
+        </button>
       </div>
     </footer>
     <ContactPin lang={lang} />
     <ScrollToTop label={scrollTopLabel} />
     <script is:inline>
       (function () {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var motionReduced =
+          typeof window.a11yMotionReduced === 'function'
+            ? window.a11yMotionReduced()
+            : window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (motionReduced) {
           document.querySelectorAll('.reveal-2026').forEach(function (el) {
             el.classList.add('is-in');
           });
@@ -121,6 +133,13 @@ const personJsonLd = {
           observer.observe(el);
         });
       })();
+    </script>
+    <script is:inline>
+      document.querySelectorAll('[data-a11y-footer-open]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.dispatchEvent(new CustomEvent('a11y-open-panel'));
+        });
+      });
     </script>
   </body>
 </html>
