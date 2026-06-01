@@ -3,6 +3,7 @@ import type { Lang } from '../i18n/cv-data';
 import type { MissionEngineerPassport as PassportData } from '../i18n/mission-control-data';
 import { techStackIconUrl } from '../config/tech-stack-icons';
 import { iconsForPassportContour } from '../lib/passport-stack-from-cv';
+import MissionContributionGraph from './MissionContributionGraph.astro';
 
 interface Props {
   lang: Lang;
@@ -11,13 +12,6 @@ interface Props {
 
 const { passport, lang } = Astro.props;
 
-/** Детерминированная «активность» для микро-heatmap (12×4) */
-const activityCells = [
-  0.25, 0.45, 0.7, 0.55, 0.85, 0.65, 0.9, 0.5, 0.75, 0.6, 0.95, 0.4,
-  0.35, 0.6, 0.5, 0.8, 0.45, 0.7, 0.55, 0.85, 0.65, 0.75, 0.5, 0.9,
-  0.5, 0.7, 0.85, 0.6, 0.95, 0.75, 0.55, 0.8, 0.65, 0.9, 0.7, 0.45,
-  0.4, 0.55, 0.65, 0.75, 0.5, 0.85, 0.6, 0.7, 0.8, 0.55, 0.65, 0.5,
-];
 const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,11 L42,11 L44,7 L47,15 L50,11 L64,11';
 ---
 
@@ -114,29 +108,6 @@ const ecgPath = 'M0,12 L6,12 L8,5 L11,19 L14,10 L18,12 L26,12 L28,4 L31,18 L34,1
       </svg>
     </div>
 
-    <div class="mc-passport__activity">
-      <p class="mc-passport__activity-label">
-        {passport.activityLabel}
-        <span class="mc-passport__activity-hint">{passport.activityHint}</span>
-      </p>
-      <svg class="mc-passport__activity-grid" viewBox="0 0 120 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        {
-          activityCells.map((opacity, i) => {
-            const col = i % 12;
-            const row = Math.floor(i / 12);
-            return (
-              <rect
-                x={col * 10}
-                y={row * 8}
-                width="8"
-                height="6"
-                rx="1"
-                fill={`rgba(74, 222, 128, ${opacity})`}
-              />
-            );
-          })
-        }
-      </svg>
-    </div>
+    <MissionContributionGraph lang={lang} passport={passport} />
   </section>
 </div>

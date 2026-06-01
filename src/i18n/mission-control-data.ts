@@ -68,6 +68,19 @@ export type MissionEngineerPassport = {
   readouts: PassportReadout[];
   activityLabel: string;
   activityHint: string;
+  /** Легенда слева (шкала интенсивности) */
+  activityLegendLess: string;
+  /** Легенда справа */
+  activityLegendMore: string;
+  /** Итог за период; в тексте подставьте {count} */
+  activityTotal: string;
+  activityPeriods: {
+    week: string;
+    month: string;
+    year: string;
+    twoYears: string;
+    all: string;
+  };
   vizAriaLabel: string;
 };
 

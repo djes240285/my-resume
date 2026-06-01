@@ -5617,6 +5617,234 @@ html.audience-mode-pending [data-audience-approach-body] {
   height: auto;
 }
 
+/* GitHub-style contribution grid (mc-contrib) */
+.mc-contrib {
+  margin-top: 0.15rem;
+}
+
+.mc-contrib__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.35rem 0 0.25rem;
+}
+
+.mc-contrib__period-btn {
+  padding: 0.2rem 0.45rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(100, 116, 139, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.mc-contrib__period-btn:hover {
+  color: #b6ffcf;
+  border-color: rgba(74, 222, 128, 0.45);
+}
+
+.mc-contrib__period-btn--active {
+  color: #0f172a;
+  background: #4ade80;
+  border-color: #4ade80;
+}
+
+.mc-contrib__period {
+  margin: 0.1rem 0 0.35rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #b6ffcf;
+}
+
+.mc-contrib__scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  padding: 0.35rem 0 0.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mc-contrib__panels {
+  width: 100%;
+}
+
+.mc-contrib__scroll--compact {
+  width: 100%;
+  min-width: 100%;
+}
+
+.mc-contrib__scroll--compact .mc-contrib__svg--fit {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: 4.5rem;
+}
+
+.mc-contrib__scroll--month {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.mc-contrib__scroll--month .mc-contrib__svg--month {
+  display: block;
+  width: min(100%, 11rem);
+  max-width: 100%;
+  min-width: 10rem;
+  height: auto;
+  max-height: none;
+}
+
+.mc-contrib__scroll--month .mc-contrib__month {
+  font-size: 10px;
+}
+
+.mc-contrib__scroll--month .mc-contrib__week-col {
+  font-size: 9px;
+}
+
+.mc-contrib__scroll--month .mc-contrib__dow {
+  font-size: 9px;
+}
+
+.mc-contrib__week-col {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 8px;
+  font-weight: 600;
+  fill: #64748b;
+}
+
+.mc-contrib__dow {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9px;
+  font-weight: 600;
+  fill: #94a3b8;
+  text-transform: lowercase;
+}
+
+.mc-contrib__dow--row {
+  font-size: 8px;
+}
+
+.mc-contrib__svg {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Год / 2 года / всё время: натуральный размер + горизонтальная прокрутка (важно на мобиле) */
+.mc-contrib__scroll--wide {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(74, 222, 128, 0.35) rgba(15, 23, 42, 0.5);
+}
+
+.mc-contrib__scroll--wide .mc-contrib__svg--wide {
+  max-width: none;
+  width: auto;
+  height: auto;
+  min-height: 5.5rem;
+}
+
+.mc-contrib__scroll--wide::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0.35rem;
+  width: 1.75rem;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.95));
+}
+
+@media (min-width: 640px) {
+  .mc-contrib__scroll--wide .mc-contrib__svg--wide {
+    min-height: 6.25rem;
+  }
+}
+
+@media (max-width: 639px) {
+  .mc-contrib__scroll--wide {
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
+  }
+
+  .mc-contrib__scroll--wide .mc-contrib__svg--wide {
+    min-height: 6rem;
+  }
+
+  .mc-contrib__scroll--wide::after {
+    width: 2.25rem;
+  }
+}
+
+.mc-contrib__month {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+.mc-contrib__cell {
+  transition: filter 0.12s ease;
+}
+
+.mc-contrib__cell:hover {
+  filter: brightness(1.15);
+}
+
+.mc-contrib__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.mc-contrib__legend-scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mc-contrib__legend-label {
+  font-size: 0.58rem;
+  color: #94a3b8;
+}
+
+.mc-contrib__legend-swatch {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  border: 1px solid rgba(100, 116, 139, 0.45);
+  flex-shrink: 0;
+}
+
+.mc-contrib__total {
+  margin: 0.4rem 0 0;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  letter-spacing: 0.02em;
+}
+
+
 @media (max-width: 899px) {
   .mc-passport__row {
     grid-template-columns: 1fr;

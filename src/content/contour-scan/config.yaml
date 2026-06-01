@@ -1,0 +1,79 @@
+# Репозитории для карты коммитов. Keystatic → Contour scan · repos (git heatmap).
+# После изменений локально: bun run activity:scan → закоммитить src/data/contour-activity.json
+
+authors:
+  - evgenii.z.i@yandex.ru
+  - Evgenii Zhukov
+
+noMerges: true
+
+repos:
+  - id: dostavka-zpr-live
+    note: CDEK / dostavka-zpr · прод
+    path: /Users/djes/Sites/work/CDEK-ZPR.ru/public_live
+    enabled: true
+
+  - id: wdist-v2
+    note: Крымресурс · v2 (новая площадка)
+    path: /Users/djes/Sites/work/wdist/public_html/v2
+    enabled: true
+
+  - id: wdist-migration
+    note: wdist · v2_do_migration_branch (смешанный прод)
+    path: /Users/djes/Sites/work/wdist/public_html/v2_do_migration_branch
+    enabled: true
+
+  - id: wdist-production
+    note: wdist · production (legacy, 3 приложения)
+    path: /Users/djes/Sites/work/wdist/public_html/production
+    enabled: true
+
+  - id: sechat
+    note: Sechat · stage
+    path: /Users/djes/Sites/work/sechat/stage_html
+    enabled: true
+
+  - id: okr-bot-public
+    note: okr_bot · public
+    path: /Users/djes/Sites/work/okr_bot/public
+    enabled: true
+
+  - id: kurortexpert-v2
+    note: Kurortexpert · public_v2
+    path: /Users/djes/Sites/Kurortexpert/public_v2
+    enabled: true
+
+  - id: kurortexpert-html
+    note: Kurortexpert · public_html
+    path: /Users/djes/Sites/Kurortexpert/public_html
+    enabled: true
+
+  - id: medpult
+    note: Медпульт
+    path: /Users/djes/Sites/RP/medpult/public_html
+    enabled: true
+
+  - id: kpsk
+    note: КПСК / kpsk
+    path: /Users/djes/Sites/RP/kpsk/kpsk
+    enabled: true
+
+  - id: gagarin-statamic
+    note: Гагарин · Statamic G1
+    path: /Users/djes/Sites/RP/Gagarin/public_html/G1-statamic/G1
+    enabled: true
+
+  - id: 102pes-reload
+    note: 102 ПЭС · reload
+    path: /Users/djes/Sites/RP/102pes-reload/102pes01/102pes
+    enabled: true
+
+  - id: 102pes-ru
+    note: 102pes_ru · public_html
+    path: /Users/djes/Sites/RP/102pes_ru/public_html
+    enabled: true
+
+  - id: my-resume
+    note: ezhukov-site · GitHub djes240285/my-resume
+    path: /Users/djes/Nextcloud/I'm/Resume/ezhukov-site
+    enabled: true

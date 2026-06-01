@@ -16,6 +16,7 @@
     "astro": "astro",
     "previews:fetch": "node ./scripts/fetch-portfolio-previews.mjs",
     "content:seed": "bun run scripts/seed-content-yaml.ts",
+    "activity:scan": "node ./scripts/scan-git-contours.mjs",
     "contact-pin:pixelate": "node ./scripts/pixelate-contact-pin.mjs",
     "contact-pin:mario": "node ./scripts/pixelate-contact-pin-mario.mjs"
   },

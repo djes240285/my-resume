@@ -1,5 +1,5 @@
 import { config, singleton } from '@keystatic/core';
-import { contactSchema, missionControlSchema } from './keystatic/schemas';
+import { contactSchema, contourScanSchema, missionControlSchema } from './keystatic/schemas';
 
 export default config({
   storage: {
@@ -29,6 +29,12 @@ export default config({
       path: 'src/content/mission-control/en',
       format: { data: 'yaml' },
       schema: missionControlSchema,
+    }),
+    contourScan: singleton({
+      label: 'Contour scan · repos (git heatmap)',
+      path: 'src/content/contour-scan/config',
+      format: { data: 'yaml' },
+      schema: contourScanSchema,
     }),
   },
 });

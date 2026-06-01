@@ -47,9 +47,18 @@ engineerPassport:
       headline: Cursor-агенты и LLM в daily-workflow
       detail: Оценка ТЗ, ревью diff, бойлерплейт, миграции и поиск регрессий в легаси. Архитектуру и критичные узлы проектирую вручную.
       tone: ai
-  activityLabel: Вовлечённость по контурам
-  activityHint: 12 мес. · интенсивность коммерческой работы
-  vizAriaLabel: Пульс стабильности и тепловая карта вовлечённости
+  activityLabel: Коммиты в репозиториях
+  activityHint: выбранные репозитории · период ниже
+  activityLegendLess: реже
+  activityLegendMore: чаще
+  activityTotal: "За период: {count} коммитов"
+  activityPeriods:
+    week: Неделя
+    month: Месяц
+    year: Год
+    twoYears: 2 года
+    all: Всё время
+  vizAriaLabel: Пульс стабильности и карта коммитов за год
 mindset:
   title: Как я работаю
   badge: ПОДХОД

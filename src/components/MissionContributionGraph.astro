@@ -1,0 +1,141 @@
+---
+import type { Lang } from '../i18n/cv-data';
+import type { MissionEngineerPassport } from '../i18n/mission-control-data';
+import { formatContribPeriod } from '../lib/contrib-graph-labels';
+import { isMonthCalendarLayout, isWideYearLayout, useFullWidthGrid } from '../lib/contrib-graph-layout';
+import { getContributionClientPayload, getRange } from '../lib/load-contour-activity';
+import { renderContributionSvg } from '../lib/render-contribution-svg';
+import { RANGE_KEYS, type RangeKey } from '../lib/contour-activity-types';
+
+interface Props {
+  lang: Lang;
+  passport: Pick<
+    MissionEngineerPassport,
+    | 'activityLabel'
+    | 'activityHint'
+    | 'activityLegendLess'
+    | 'activityLegendMore'
+    | 'activityTotal'
+    | 'activityPeriods'
+  >;
+}
+
+const { lang, passport } = Astro.props;
+const clientPayload = getContributionClientPayload();
+const initialKey = clientPayload.defaultRange;
+
+const levelFill: Record<number, string> = {
+  0: 'rgba(74, 222, 128, 0.06)',
+  1: 'rgba(74, 222, 128, 0.28)',
+  2: 'rgba(74, 222, 128, 0.48)',
+  3: 'rgba(74, 222, 128, 0.72)',
+  4: 'rgba(74, 222, 128, 0.95)',
+};
+
+function panelFor(key: RangeKey) {
+  const range = getRange(key);
+  if (!range) return null;
+  return {
+    key,
+    svg: renderContributionSvg(lang, range),
+    period: formatContribPeriod(lang, range.gridStart, range.gridEnd),
+    total: String(range.totalCommits),
+    compact: useFullWidthGrid(range),
+    month: isMonthCalendarLayout(range),
+    wide: isWideYearLayout(range),
+  };
+}
+
+const panels = RANGE_KEYS.map(panelFor).filter(Boolean) as NonNullable<ReturnType<typeof panelFor>>[];
+const initialPanel = panels.find((p) => p.key === initialKey) ?? panels[0];
+const periodLabelsJson = JSON.stringify(passport.activityPeriods);
+---
+
+<div
+  class="mc-contrib"
+  data-mc-contrib
+  data-lang={lang}
+  data-default-range={initialKey}
+  data-period-labels={periodLabelsJson}
+  data-total-template={passport.activityTotal}
+>
+  <p class="mc-passport__activity-label">
+    {passport.activityLabel}
+    <span class="mc-passport__activity-hint">{passport.activityHint}</span>
+  </p>
+
+  <div class="mc-contrib__toolbar" role="group" aria-label={passport.activityLabel}>
+    {
+      panels.map((p) => (
+        <button
+          type="button"
+          class:list={[
+            'mc-contrib__period-btn',
+            p.key === initialKey && 'mc-contrib__period-btn--active',
+          ]}
+          data-range={p.key}
+          aria-pressed={p.key === initialKey ? 'true' : 'false'}
+        >
+          {passport.activityPeriods[p.key]}
+        </button>
+      ))
+    }
+  </div>
+
+  <p class="mc-contrib__period" data-contrib-period>{initialPanel?.period ?? ''}</p>
+
+  <div class="mc-contrib__panels" data-contrib-panels>
+    {
+      panels.map((p) => (
+        <div
+          class:list={[
+            'mc-contrib__scroll',
+            p.compact && 'mc-contrib__scroll--compact',
+            p.month && 'mc-contrib__scroll--month',
+            p.wide && 'mc-contrib__scroll--wide',
+          ]}
+          data-range-panel={p.key}
+          data-period={p.period}
+          data-total={p.total}
+          hidden={p.key !== initialKey}
+          role="img"
+          aria-label={passport.activityTotal.replace('{count}', p.total)}
+          set:html={p.svg}
+        />
+      ))
+    }
+  </div>
+
+  <div class="mc-contrib__legend" aria-hidden="true">
+    <span class="mc-contrib__legend-label">{passport.activityLegendLess}</span>
+    <span class="mc-contrib__legend-scale">
+      {[0, 1, 2, 3, 4].map((level) => (
+        <span class="mc-contrib__legend-swatch" style={`background: ${levelFill[level]}`} />
+      ))}
+    </span>
+    <span class="mc-contrib__legend-label">{passport.activityLegendMore}</span>
+  </div>
+
+  {clientPayload.fromGit && initialPanel ? (
+    <p class="mc-contrib__total" data-contrib-total>
+      {passport.activityTotal.replace('{count}', initialPanel.total)}
+    </p>
+  ) : null}
+</div>
+
+<script>
+  import { initContributionGraph } from '../scripts/mc-contribution-graph';
+
+  const root = document.querySelector<HTMLElement>('[data-mc-contrib]');
+
+  if (root) {
+    const lang = root.dataset.lang === 'en' ? 'en' : 'ru';
+    const periodLabels = JSON.parse(root.dataset.periodLabels ?? '{}');
+
+    initContributionGraph(root, {
+      lang,
+      periodLabels,
+      totalTemplate: root.dataset.totalTemplate ?? '{count}',
+    });
+  }
+</script>

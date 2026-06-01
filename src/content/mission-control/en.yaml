@@ -47,9 +47,18 @@ engineerPassport:
       headline: Cursor agents + LLM in daily work
       detail: Scope review, diff review, boilerplate, migrations, legacy regression hunts. Architecture and critical paths stay hand-owned.
       tone: ai
-  activityLabel: Contour involvement
-  activityHint: 12 mo. · commercial engagement intensity
-  vizAriaLabel: Stability pulse and involvement heatmap
+  activityLabel: Repository commits
+  activityHint: selected repos · period below
+  activityLegendLess: less
+  activityLegendMore: more
+  activityTotal: "{count} commits in period"
+  activityPeriods:
+    week: Week
+    month: Month
+    year: Year
+    twoYears: 2 years
+    all: All time
+  vizAriaLabel: Stability pulse and year commit map
 mindset:
   title: How I work
   badge: APPROACH

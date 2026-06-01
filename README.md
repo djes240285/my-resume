@@ -13,6 +13,15 @@
 | `bun run build` | Сборка в `./dist/` |
 | `bun run preview` | Просмотр собранного сайта |
 | `bun run content:seed` | Перезаписать YAML из `cv-data` / mission (бэкап) |
+| `bun run activity:scan` | Heatmap пульта: git из `src/content/contour-scan/config.yaml` → `src/data/contour-activity.json` |
+
+## Heatmap коммитов (пульт /mission)
+
+1. **Keystatic** → `Contour scan · repos` (`src/content/contour-scan/config.yaml`): пути, `enabled`.
+2. Локально: `bun run activity:scan` → `src/data/contour-activity.json` (все периоды: неделя … всё время).
+3. Закоммитьте JSON — на Netlify локальный git недоступен; на сайте переключатель периодов без пересчёта.
+
+Пересчёт **только** через `activity:scan` (не в браузере): git читает диск при сборке/скане.
 
 ## Контент
 

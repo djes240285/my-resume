@@ -150,6 +150,19 @@ export const missionControlSchema = {
       ),
       activityLabel: fields.text({ label: 'Activity label' }),
       activityHint: fields.text({ label: 'Activity hint' }),
+      activityLegendLess: fields.text({ label: 'Activity legend (less)' }),
+      activityLegendMore: fields.text({ label: 'Activity legend (more)' }),
+      activityTotal: fields.text({ label: 'Activity total ({count})' }),
+      activityPeriods: fields.object(
+        {
+          week: fields.text({ label: 'Period: week' }),
+          month: fields.text({ label: 'Period: month' }),
+          year: fields.text({ label: 'Period: year' }),
+          twoYears: fields.text({ label: 'Period: 2 years' }),
+          all: fields.text({ label: 'Period: all time' }),
+        },
+        { label: 'Activity period switcher' },
+      ),
       vizAriaLabel: fields.text({ label: 'Viz aria label' }),
     },
     { label: 'Engineer passport' },
@@ -214,5 +227,31 @@ export const missionControlSchema = {
       contactsLabel: fields.text({ label: 'Contacts label' }),
     },
     { label: 'Footer' },
+  ),
+};
+
+export const contourScanSchema = {
+  authors: fields.array(fields.text({ label: 'Git author (email or name)' }), {
+    label: 'Authors filter',
+    description: 'git log --author; только эти авторы попадут в heatmap',
+    itemLabel: (props) => props.value || 'author',
+  }),
+  noMerges: fields.checkbox({ label: 'Exclude merge commits', defaultValue: true }),
+  repos: fields.array(
+    fields.object({
+      id: fields.text({ label: 'ID (slug)' }),
+      note: fields.text({ label: 'Note (internal)' }),
+      path: fields.text({
+        label: 'Absolute path on disk',
+        description: 'Папка с .git на вашем Mac. Скан только локально: bun run activity:scan',
+      }),
+      enabled: fields.checkbox({ label: 'Include in scan', defaultValue: true }),
+    }),
+    {
+      label: 'Repositories',
+      description:
+        'Список репозиториев для карты коммитов. После правок: bun run activity:scan и закоммитить src/data/contour-activity.json',
+      itemLabel: (props) => props.fields.id.value || props.fields.note.value || 'repo',
+    },
   ),
 };
