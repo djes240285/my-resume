@@ -1170,7 +1170,7 @@ export const cv: Record<Lang, CVContent> = {
         'Сжатые разборы коммерческих проектов: что было сломано, что сделано, какой результат. Ниже — карточки, фильтры по типу системы и переключатель акцента.',
       introTitle: 'Как пользоваться страницей',
       introBody:
-        'Каждая карточка — post-mortem: цель, диагноз, работы, метрики и стек. Фильтры «Фокус» показывают только нужный тип (e-commerce, enterprise, миграции, процесс). «Режим экспертизы» меняет подачу заголовков и кнопок. Ссылка «Открыть контур» ведёт на материалы кейса, если они доступны публично.',
+        'Каждая карточка — post-mortem: цель, диагноз, работы, метрики и стек. Фильтры «Фокус» сужают список по типу системы. «Режим экспертизы» меняет только заголовки карточек. Кнопка «Открыть сайт … ↗» ведёт на живой сайт проекта в новой вкладке; разбор кейса — на этой странице, в карточке.',
       cards: [
         {
           title: 'Веб-Стар Технологии — кейсы',
@@ -2105,7 +2105,7 @@ export const cv: Record<Lang, CVContent> = {
         'Compact post-mortems from commercial work: what broke, what was done, what changed. Cards, filters by system type, and an expertise mode switch below.',
       introTitle: 'How to use this page',
       introBody:
-        'Each card is a post-mortem: target, diagnosis, work done, metrics, and stack. Focus filters narrow the list (e-commerce, enterprise, migrations, process). Expertise mode changes how titles and CTAs are framed. “Open contour” links to public case material when available.',
+        'Each card is a post-mortem: target, diagnosis, work done, metrics, and stack. Focus filters narrow the list by system type. Expertise mode changes card titles only. The “Open … ↗” button opens the live project site in a new tab; the case breakdown stays on this page.',
       cards: [
         {
           title: 'WebStar Technology — case hub',

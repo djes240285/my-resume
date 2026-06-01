@@ -14,6 +14,39 @@ interface Props {
 const { lang } = Astro.props;
 const cv = getCv(lang);
 const p = cv.portfolio;
+
+function formatExternalSiteCta(
+  href: string,
+  lang: Lang
+): { text: string; ariaLabel: string; title: string } {
+  try {
+    const host = new URL(href).hostname.replace(/^www\./i, '');
+    if (lang === 'ru') {
+      return {
+        text: `Открыть сайт ${host} ↗`,
+        ariaLabel: `Открыть сайт ${host} в новой вкладке`,
+        title: 'Живой сайт проекта · новая вкладка',
+      };
+    }
+    return {
+      text: `Open ${host} ↗`,
+      ariaLabel: `Open ${host} in a new tab`,
+      title: 'Live project site · new tab',
+    };
+  } catch {
+    return lang === 'ru'
+      ? {
+          text: 'Открыть сайт ↗',
+          ariaLabel: 'Открыть сайт в новой вкладке',
+          title: 'Новая вкладка',
+        }
+      : {
+          text: 'Open site ↗',
+          ariaLabel: 'Open site in a new tab',
+          title: 'New tab',
+        };
+  }
+}
 const projectGroups = await resolveProjectCaseLinks(cv.sections.experience.projectGroups);
 const labels =
   lang === 'ru'
@@ -28,8 +61,7 @@ const labels =
         layerTarget: 'ЦЕЛЬ',
         layerMetrics: 'РЕЗУЛЬТАТ',
         layerStack: 'СТЕК',
-        openCase: 'Открыть контур',
-        openDetails: 'Развернуть кейс',
+        openDetails: 'Без публичной ссылки на сайт',
         ndaBadge: 'NDA',
         expertiseTitle: 'Режим экспертизы',
         modeLegacy: 'Легаси и стабильность',
@@ -57,12 +89,6 @@ const labels =
         badgeRescue: 'Реанимация',
         badgeStabilized: 'Стабилизирован',
         badgeAiEnhanced: 'С ИИ',
-        ctaLegacy: 'Смотреть разбор реанимации',
-        ctaProfit: 'Смотреть эффект для бизнеса',
-        ctaAi: 'Смотреть ИИ-контур',
-        ctaLegacyGlyph: '[Р]',
-        ctaProfitGlyph: '[Б]',
-        ctaAiGlyph: '[ИИ]',
         storyLegacy:
           'Режим «Реанимация»: кейсы стабилизации легаси без остановки бизнеса и лишнего риска.',
         storyProfit:
@@ -87,8 +113,7 @@ const labels =
         layerTarget: 'TARGET',
         layerMetrics: 'OUTCOME',
         layerStack: 'STACK',
-        openCase: 'Open contour',
-        openDetails: 'View case',
+        openDetails: 'No public site link',
         ndaBadge: 'NDA-safe',
         expertiseTitle: 'Expertise mode',
         modeLegacy: 'Legacy & stability',
@@ -116,12 +141,6 @@ const labels =
         badgeRescue: 'Rescue',
         badgeStabilized: 'Stabilized',
         badgeAiEnhanced: 'AI enhanced',
-        ctaLegacy: 'View rescue breakdown',
-        ctaProfit: 'View business impact',
-        ctaAi: 'View AI contour',
-        ctaLegacyGlyph: '[R]',
-        ctaProfitGlyph: '[G]',
-        ctaAiGlyph: '[AI]',
         storyLegacy:
           'Rescue mode: stabilizing legacy systems without business interruption.',
         storyProfit:
@@ -302,13 +321,43 @@ function inferChallenges(
       ];
 }
 
+/** Один кейс на slug и на публичный host (featured + cv-data). */
+function dedupeShowcaseCards(cards: ShowcaseCard[]): ShowcaseCard[] {
+  const slugSeen = new Set<string>();
+  const hostSeen = new Set<string>();
+  const out: ShowcaseCard[] = [];
+
+  for (const card of cards) {
+    const slug = (card.slug ?? caseSlug(card.title)).toLowerCase();
+    let host = '';
+    if (card.href) {
+      try {
+        host = new URL(card.href).hostname.replace(/^www\./i, '').toLowerCase();
+      } catch {
+        /* ignore */
+      }
+    }
+    if (slugSeen.has(slug) || (host && hostSeen.has(host))) continue;
+    slugSeen.add(slug);
+    if (host) hostSeen.add(host);
+    out.push(card);
+  }
+  return out;
+}
+
 function narrativeTitle(
   card: ShowcaseCard,
   mode: 'legacy' | 'profit' | 'ai',
   lang: Lang
 ): string {
   if (mode === 'legacy') {
-    return lang === 'ru' ? `Реанимация системы: ${card.title}` : `System rescue: ${card.title}`;
+    if (card.rescue) {
+      return lang === 'ru' ? `Реанимация системы: ${card.title}` : `System rescue: ${card.title}`;
+    }
+    if (card.tags.includes('migrations')) {
+      return lang === 'ru' ? `Миграция платформы: ${card.title}` : `Platform migration: ${card.title}`;
+    }
+    return card.title;
   }
   if (mode === 'profit') {
     return lang === 'ru' ? `Экономика результата: ${card.title}` : `Result economics: ${card.title}`;
@@ -701,6 +750,7 @@ const featuredLayer: ShowcaseCard[] =
         },
         {
           title: 'windowcleaner.com: M1 → M2 и рост продаж',
+          slug: 'windowcleaner',
           tag: 'E-commerce · Magento',
           href: 'https://windowcleaner.com/',
           problem:
@@ -792,6 +842,7 @@ const featuredLayer: ShowcaseCard[] =
         },
         {
           title: 'windowcleaner.com: M1 → M2 and sales growth',
+          slug: 'windowcleaner',
           tag: 'E-commerce · Magento',
           href: 'https://windowcleaner.com/',
           problem:
@@ -829,19 +880,23 @@ const featuredLayer: ShowcaseCard[] =
         },
       ];
 
-const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
-  const titleLc = card.title.toLowerCase();
-  const inferred = inferPortfolioMeta(card.title, `${card.problem} ${card.action}`, '');
-  const tags = card.tags.length > 1 ? card.tags : inferred.tags;
-  const portfolioModes = card.portfolioModes ?? inferred.modes;
-  const rescue = card.rescue ?? inferred.rescue;
-  const aiEnhanced = card.aiEnhanced ?? inferred.aiEnhanced;
-  const status = card.status ?? (rescue ? 'stabilized' : 'delivery');
-  const challenges = card.challenges ?? inferChallenges(lang, titleLc, card.problem, card.action);
-  const slug = card.slug ?? caseSlug(card.title);
-  const stack = card.stack ?? inferStack(titleLc, tags, lang);
-  return { ...card, slug, stack, tags, portfolioModes, rescue, aiEnhanced, status, challenges };
-});
+const curatedShowcase = dedupeShowcaseCards(
+  [...featuredLayer, ...showcase]
+    .map((card) => {
+      const titleLc = card.title.toLowerCase();
+      const inferred = inferPortfolioMeta(card.title, `${card.problem} ${card.action}`, '');
+      const tags = card.tags.length > 1 ? card.tags : inferred.tags;
+      const portfolioModes = card.portfolioModes ?? inferred.modes;
+      const rescue = card.rescue ?? inferred.rescue;
+      const aiEnhanced = card.aiEnhanced ?? inferred.aiEnhanced;
+      const status = card.status ?? (rescue ? 'stabilized' : 'delivery');
+      const challenges = card.challenges ?? inferChallenges(lang, titleLc, card.problem, card.action);
+      const slug = card.slug ?? caseSlug(card.title);
+      const stack = card.stack ?? inferStack(titleLc, tags, lang);
+      return { ...card, slug, stack, tags, portfolioModes, rescue, aiEnhanced, status, challenges };
+    })
+    .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0) || (b.score ?? 0) - (a.score ?? 0))
+);
 ---
 
 <main class="portfolio-page" data-portfolio-root data-portfolio-mode="legacy">
@@ -922,7 +977,9 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
   <section class="mt-6">
     <div class="space-y-4">
-      {curatedShowcase.map((card) => (
+      {curatedShowcase.map((card) => {
+        const siteCta = card.href ? formatExternalSiteCta(card.href, lang) : null;
+        return (
         <article
           id={`case-${card.slug}`}
           class="case-card case-card--incident case-card--postmortem retro-panel-soft lift-2026"
@@ -1018,23 +1075,16 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
               </dl>
 
               <footer class="case-card__footer">
-                {card.href ? (
+                {siteCta ? (
                   <a
                     href={card.href}
                     target="_blank"
                     rel="noreferrer noopener"
                     class="case-card__cta"
-                    data-case-cta
-                    data-cta-base={labels.openCase}
-                    data-cta-legacy={labels.ctaLegacy}
-                    data-cta-profit={labels.ctaProfit}
-                    data-cta-ai={labels.ctaAi}
-                    data-cta-glyph-legacy={labels.ctaLegacyGlyph}
-                    data-cta-glyph-profit={labels.ctaProfitGlyph}
-                    data-cta-glyph-ai={labels.ctaAiGlyph}
+                    aria-label={siteCta.ariaLabel}
+                    title={siteCta.title}
                   >
-                    <span class="case-cta__glyph" data-case-cta-glyph>{labels.ctaLegacyGlyph}</span>
-                    <span data-case-cta-text>{labels.openCase}</span>
+                    {siteCta.text}
                   </a>
                 ) : (
                   <span class="case-card__cta case-card__cta--muted">{labels.openDetails}</span>
@@ -1071,7 +1121,8 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
           <span class="case-card__corner" aria-hidden="true">✦</span>
         </article>
-      ))}
+        );
+      })}
     </div>
   </section>
 
@@ -1204,18 +1255,6 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
           var attr = mode === 'legacy' ? 'data-title-legacy' : mode === 'profit' ? 'data-title-profit' : 'data-title-ai';
           var nextTitle = title.getAttribute(attr) || title.getAttribute('data-title-base');
           if (nextTitle) title.textContent = nextTitle;
-        }
-        var cta = card.querySelector('[data-case-cta]');
-        if (cta instanceof HTMLElement) {
-          var ctaAttr = mode === 'legacy' ? 'data-cta-legacy' : mode === 'profit' ? 'data-cta-profit' : 'data-cta-ai';
-          var nextCta = cta.getAttribute(ctaAttr) || cta.getAttribute('data-cta-base');
-          var ctaText = cta.querySelector('[data-case-cta-text]');
-          if (nextCta && ctaText instanceof HTMLElement) ctaText.textContent = nextCta;
-          var glyphAttr =
-            mode === 'legacy' ? 'data-cta-glyph-legacy' : mode === 'profit' ? 'data-cta-glyph-profit' : 'data-cta-glyph-ai';
-          var nextGlyph = cta.getAttribute(glyphAttr);
-          var ctaGlyph = cta.querySelector('[data-case-cta-glyph]');
-          if (nextGlyph && ctaGlyph instanceof HTMLElement) ctaGlyph.textContent = nextGlyph;
         }
       });
 
