@@ -44,6 +44,7 @@ const drumRows = loopScroll ? [...entries, ...entries] : entries;
   <div class="reveal-2026" style="--reveal-delay: 160ms">
     <h2 id="mc-case-log-title" class="mc-section-title mc-section-title--prose">{caseLog.title}</h2>
     <p class="mc-case-log__intro">{caseLog.intro}</p>
+    <p class="mc-case-log__status-legend">{caseLog.statusLegend}</p>
   </div>
   <details class="mc-case-log__fold" data-mc-case-fold data-fold-mode="collapsed">
     <summary class="mc-case-log__fold-summary sys-window-chrome">
@@ -123,29 +124,33 @@ const drumRows = loopScroll ? [...entries, ...entries] : entries;
                     </span>
                     <span class="mc-case-log__arrow" aria-hidden="true">→</span>
                     <span class="mc-case-log__op" role="cell">{entry.operation}</span>
-                    <span class="mc-case-log__stack" role="cell">
+                    <span
+                      class="mc-case-log__stack"
+                      role="cell"
+                      title={entry.stack}
+                      aria-label={entry.stack}
+                    >
                       {
                         (() => {
                           const icons = resolveCaseStackIcons(entry.stackIcons, entry.stack);
+                          if (!entry.stackLeadLabel && !icons.length) return null;
                           return (
-                            <>
-                              {icons.length ? (
-                                <span class="mc-case-log__stack-icons" aria-hidden="true">
-                                  {icons.map((slug) => (
-                                    <img
-                                      class="mc-case-log__stack-icon"
-                                      src={techStackIconUrlMuted(slug)}
-                                      alt=""
-                                      width="16"
-                                      height="16"
-                                      loading="lazy"
-                                      decoding="async"
-                                    />
-                                  ))}
-                                </span>
+                            <span class="mc-case-log__stack-icons">
+                              {entry.stackLeadLabel ? (
+                                <span class="mc-case-log__stack-label">{entry.stackLeadLabel}</span>
                               ) : null}
-                              <span class="mc-case-log__stack-text">{entry.stack}</span>
-                            </>
+                              {icons.map((slug) => (
+                                <img
+                                  class="mc-case-log__stack-icon"
+                                  src={techStackIconUrlMuted(slug)}
+                                  alt=""
+                                  width="24"
+                                  height="24"
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ))}
+                            </span>
                           );
                         })()
                       }

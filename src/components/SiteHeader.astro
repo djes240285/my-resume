@@ -98,12 +98,16 @@ const portfolioActive = path.includes('/portfolio');
       </div>
       <div class="terminal-header-status" role="status" aria-live="polite">
         <span class="terminal-header-status__dot" id="header-live-status-dot" aria-hidden="true" />
-        <span class="terminal-header-status__ready" id="header-live-status">—</span>
+        <span class="terminal-header-status__body">
+          <span class="terminal-header-status__ready" id="header-live-status">—</span>
+          <span class="terminal-header-status__schedule">{t.contactAvailability.headerSchedule}</span>
+        </span>
       </div>
       <LiveStatusInit
         textId="header-live-status"
         dotId="header-live-status-dot"
         messages={t.heroLiveStatus}
+        legends={t.contactAvailability.statusLegends}
         dotClassPrefix="terminal-header-status__dot"
       />
     </div>

@@ -1,6 +1,11 @@
 import type { Lang } from './cv-data';
 import { buildMissionCaseLogEntries } from '../lib/build-mission-case-log';
 
+export type StackQaPair = {
+  q: string;
+  a: string;
+};
+
 export type CaseLogEntry = {
   id: string;
   slug: string;
@@ -8,9 +13,14 @@ export type CaseLogEntry = {
   /** Уточнение, если бренд ≠ весь контур системы */
   context?: string;
   operation: string;
+  /** Краткая сводка для иконок и screen readers */
   stack: string;
+  /** Уточнение стека в формате планирования (вопрос → ответ) */
+  stackQa: StackQaPair[];
   /** slug иконок (simple-icons), как в tech-roadmap */
   stackIcons?: string[];
+  /** Текстовая подпись платформы вместо первой иконки (XenForo, 1С-Битрикс) */
+  stackLeadLabel?: string;
   status: string;
 };
 
@@ -83,6 +93,8 @@ export type MissionControlContent = {
     colOperation: string;
     colStack: string;
     colStatus: string;
+    /** Подсказка по значениям колонки «Статус» */
+    statusLegend: string;
     rowAction: string;
     drumAriaLabel: string;
     /** Мобилка: заголовок «окна» списка кейсов */
@@ -115,7 +127,7 @@ export type MissionControlContent = {
 const ru: MissionControlContent = {
   metaTitle: 'Евгений Жуков — веб-системы: разработка и поддержка',
   metaDescription:
-    'Проектирование, развитие и поддержка веб-систем: фичи, бэкенд, интерфейсы. Предсказуемый продакшен, 15+ лет опыта.',
+    'Проектирование, развитие и поддержка веб-систем: фичи, бэкенд, интерфейсы. Предсказуемый продакшен, 16+ лет опыта.',
   hero: {
     headline: 'Проектирую, развиваю и поддерживаю веб-системы.',
     lead:
@@ -127,8 +139,14 @@ const ru: MissionControlContent = {
     role: 'Инженер · Фулстек-архитектор',
     metricsTitle: 'Метрики разработчика',
     metrics: [
-      { label: 'Статус', value: 'Активен', valueNote: 'Частичная занятость' },
-      { label: 'Опыт', value: '15+ лет в коммерческом инжиниринге' },
+      { label: 'Статус', value: 'Активен', valueNote: 'Частичная занятость · индикатор в шапке' },
+      { label: 'Часовой пояс', value: 'UTC+3 · Москва' },
+      {
+        label: 'Рабочее окно',
+        value: 'Пн–Пт 10:00–19:00 МСК',
+        valueNote: 'обычно до 4 ч ответа',
+      },
+      { label: 'Опыт', value: '16+ лет в коммерческом инжиниринге' },
       { label: 'Профиль', value: 'Fullstack · core-архитектор' },
       { label: 'Специализация', value: 'Разработка и развитие core-инфраструктуры' },
       { label: 'Контуры', value: 'Highload, e-commerce, AI-интеграции' },
@@ -155,7 +173,7 @@ const ru: MissionControlContent = {
       {
         code: 'STAB',
         label: 'Стабильность продакшена',
-        headline: 'Эволюция без «большого взрыма»',
+        headline: 'Эволюция без «большого взрыва»',
         detail:
           'Итеративные релизы, rollback-план и мониторинг. P1 разбираю в SLA команды — без остановки бизнес-процессов.',
         tone: 'stability',
@@ -214,7 +232,9 @@ const ru: MissionControlContent = {
   caseLog: {
     title: 'Примеры из практики',
     intro:
-      'Сводка коммерческих контуров: проект, scope, стек и статус. Полный разбор с метриками — в портфолио.',
+      'Сводка коммерческих контуров: проект, scope, стек (иконки) и статус. Полный разбор — в портфолио.',
+    statusLegend:
+      'Статус: В проде · Сопровождение · Завершён · Партнёр · Архив · Закрытый контур — к каждому добавлено «· NDA» (ограничение публичной детализации). Годы под названием — участие, не дата последнего коммита.',
     colId: 'ID',
     colTarget: 'Проект',
     colOperation: 'Что сделано',
@@ -253,7 +273,7 @@ const ru: MissionControlContent = {
 const en: MissionControlContent = {
   metaTitle: 'Eugene Zhukov — web systems: build & support',
   metaDescription:
-    'Design, evolve, and support web systems: features, backend, interfaces. Predictable production, 15+ years of experience.',
+    'Design, evolve, and support web systems: features, backend, interfaces. Predictable production, 16+ years of experience.',
   hero: {
     headline: 'I design, build, and support web systems.',
     lead:
@@ -265,8 +285,14 @@ const en: MissionControlContent = {
     role: 'Engineer · Full-stack architect',
     metricsTitle: 'Developer metrics',
     metrics: [
-      { label: 'Status', value: 'Active', valueNote: 'part-time availability' },
-      { label: 'Experience', value: '15+ years in commercial engineering' },
+      { label: 'Status', value: 'Active', valueNote: 'part-time · header indicator' },
+      { label: 'Timezone', value: 'UTC+3 · Moscow (Simferopol)' },
+      {
+        label: 'Business hours',
+        value: 'Mon–Fri 10:00–19:00 MSK',
+        valueNote: 'typically reply within 4h',
+      },
+      { label: 'Experience', value: '16+ years in commercial engineering' },
       { label: 'Profile', value: 'Fullstack · core architect' },
       { label: 'Focus', value: 'Core infrastructure build & evolution' },
       { label: 'Domains', value: 'Highload, e-commerce, AI integrations' },
@@ -352,8 +378,9 @@ const en: MissionControlContent = {
   caseLog: {
     title: 'Selected projects',
     intro:
-      'Documented operations below. Each case in the portfolio includes analysis, diagrams, and optimization outcomes.',
-    lead: 'Click a row to open the post-mortem in the main portfolio.',
+      'Commercial work summary: project, scope, stack icons, and status. Full post-mortem — in the portfolio.',
+    statusLegend:
+      'Status: Live · Support · Completed · Partner · Archive · Closed contour — each suffixed with «· NDA» (limited public detail). Years under the name reflect involvement, not last commit date.',
     colId: 'ID',
     colTarget: 'Project',
     colOperation: 'Scope',

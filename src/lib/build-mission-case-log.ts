@@ -1,6 +1,7 @@
 import type { Lang, ExperienceProjectGroup, ProjectEntry } from '../i18n/cv-data';
 import { getCv } from '../i18n/cv-data';
-import type { CaseLogEntry } from '../i18n/mission-control-data';
+import type { CaseLogEntry, StackQaPair } from '../i18n/mission-control-data';
+import { buildProjectStackQa, stackQaToSummary } from './build-stack-qa';
 import { caseSlug } from './case-slug';
 import { resolveCaseStackIcons } from './resolve-stack-icons';
 
@@ -9,20 +10,33 @@ type Seed = {
   name: string;
   context: string;
   operation: string;
-  stack: string;
+  stackQa: StackQaPair[];
   stackIcons?: string[];
+  stackLeadLabel?: string;
   status: string;
   priority: number;
 };
 
-type ExtraSeedInput = Omit<Seed, 'slug' | 'stackIcons'> & { titleForSlug: string };
+type ExtraSeedInput = Omit<Seed, 'slug' | 'stackQa'> & {
+  titleForSlug: string;
+  stackQa: StackQaPair[];
+};
+
+const NDA_SUFFIX = ' · NDA';
+
+/** Базовые статусы колонки (суффикс NDA добавляется при сборке). */
+export const CASE_LOG_STATUS_VALUES = {
+  ru: ['В проде', 'Сопровождение', 'Завершён', 'Партнёр', 'Архив', 'Закрытый контур'] as const,
+  en: ['Live', 'Support', 'Completed', 'Partner', 'Archive', 'Closed contour'] as const,
+};
 
 function extraSeed(input: ExtraSeedInput): Seed {
-  const stack = input.stack;
+  const stack = stackQaToSummary(input.stackQa);
   return {
     ...input,
     slug: caseSlug(input.titleForSlug),
     stackIcons: resolveCaseStackIcons(undefined, stack),
+    status: withNdaSuffix(input.status),
   };
 }
 
@@ -33,7 +47,10 @@ const EXTRA_SEEDS: Record<Lang, Seed[]> = {
       name: 'verkter.dk',
       context: 'e-commerce · PWA',
       operation: 'Magento 2.4 + PWA (React/GraphQL): UI, интеграции, релизы',
-      stack: 'Magento 2.4, React, GraphQL, PHP',
+      stackQa: [
+        { q: 'Backend?', a: 'Magento 2.4, PHP' },
+        { q: 'Клиент / UI?', a: 'React, GraphQL, PWA' },
+      ],
       status: 'В проде',
       priority: 122,
     }),
@@ -42,17 +59,23 @@ const EXTRA_SEEDS: Record<Lang, Seed[]> = {
       name: 'rattanfurniturefairy.co.uk',
       context: 'e-commerce · Magento',
       operation: 'Модульные доработки витрины и UI по согласованным ТЗ',
-      stack: 'Magento, PHP, MySQL',
+      stackQa: [
+        { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+        { q: 'Клиент / UI?', a: 'тема + кастомные модули' },
+      ],
       status: 'Сопровождение',
       priority: 114,
     }),
     extraSeed({
       titleForSlug: 'Интерфейсная точность: Pixel Perfect + high-load',
       name: 'Pixel Perfect · high-load',
-      context: 'UI · NDA-safe',
-      operation: 'Pixel Perfect слой и кастомные аддоны под PWA/XenForo/ScandiPWA',
-      stack: 'PWA, React, PHP, автоматизация QA',
-      status: 'NDA · витрина',
+      context: '~2022—н.в.',
+      operation: 'Pixel Perfect слой и кастомные аддоны под PWA/XenForo/ScandiPWA (закрытый UI)',
+      stackQa: [
+        { q: 'Backend?', a: 'PHP, автоматизация QA' },
+        { q: 'Клиент / UI?', a: 'PWA, React, Pixel Perfect' },
+      ],
+      status: 'Закрытый контур',
       priority: 116,
     }),
   ],
@@ -62,7 +85,10 @@ const EXTRA_SEEDS: Record<Lang, Seed[]> = {
       name: 'verkter.dk',
       context: 'e-commerce · PWA',
       operation: 'Magento 2.4 + PWA (React/GraphQL): UI, integrations, releases',
-      stack: 'Magento 2.4, React, GraphQL, PHP',
+      stackQa: [
+        { q: 'Backend?', a: 'Magento 2.4, PHP' },
+        { q: 'Client / UI?', a: 'React, GraphQL, PWA' },
+      ],
       status: 'Live',
       priority: 122,
     }),
@@ -71,17 +97,23 @@ const EXTRA_SEEDS: Record<Lang, Seed[]> = {
       name: 'rattanfurniturefairy.co.uk',
       context: 'e-commerce · Magento',
       operation: 'Modular storefront and UI delivery per agreed scopes',
-      stack: 'Magento, PHP, MySQL',
+      stackQa: [
+        { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+        { q: 'Client / UI?', a: 'theme + custom modules' },
+      ],
       status: 'Support',
       priority: 114,
     }),
     extraSeed({
       titleForSlug: 'Interface precision: Pixel Perfect + high-load',
       name: 'Pixel Perfect · high-load',
-      context: 'UI · NDA-safe',
-      operation: 'Pixel Perfect layer and custom addons for PWA/XenForo/ScandiPWA',
-      stack: 'PWA, React, PHP, QA automation',
-      status: 'NDA · delivery',
+      context: '~2022—present',
+      operation: 'Pixel Perfect layer and custom addons for PWA/XenForo/ScandiPWA (closed UI)',
+      stackQa: [
+        { q: 'Backend?', a: 'PHP, QA automation' },
+        { q: 'Client / UI?', a: 'PWA, React, Pixel Perfect' },
+      ],
+      status: 'Closed contour',
       priority: 116,
     }),
   ],
@@ -100,54 +132,17 @@ function projectPriority(nameLc: string): number {
   return 50;
 }
 
-function inferStack(nameLc: string, lang: Lang): string {
-  const ru = lang === 'ru';
-  if (nameLc.includes('windowcleaner')) return 'Magento 1/2, PHP, MySQL, Redis';
-  if (nameLc.includes('102 пэс') || nameLc.includes('102 pes')) {
-    return ru ? 'Laravel, PHP, MySQL, API' : 'Laravel, PHP, MySQL, API';
-  }
-  if (nameLc.includes('кпск') || nameLc.includes('kpsk')) {
-    return ru ? 'Laravel, PHP, банк, API' : 'Laravel, PHP, banking, API';
-  }
-  if (nameLc.includes('гагарин') || nameLc.includes('gagarin')) {
-    return ru ? 'Laravel, Statamic, PHP' : 'Laravel, Statamic, PHP';
-  }
-  if (nameLc.includes('колл-центр') || nameLc.includes('call center')) {
-    return 'Laravel, PHP, MySQL';
-  }
-  if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
-    return ru
-      ? 'PHP, Laravel, интеграции, документооборот, API'
-      : 'PHP, Laravel, integrations, document workflows, API';
-  }
-  if (nameLc.includes('доставка') || nameLc.includes('dostavka')) {
-    return 'Laravel, PHP, CDEK API, MySQL';
-  }
-  if (nameLc.includes('sechat')) {
-    return ru ? 'Laravel, WebSockets, Redis, очереди' : 'Laravel, WebSockets, Redis, queues';
-  }
-  if (nameLc.includes('gratisiskolan')) return 'Magento 2.4, PHP, custom modules';
-  if (nameLc.includes('verkter')) return 'Magento 2.4, React, GraphQL, PHP';
-  if (nameLc.includes('mozgovnet')) return ru ? 'PHP, платежи, API, легаси' : 'PHP, payments, API, legacy';
-  if (nameLc.includes('бот') || nameLc.includes('bot')) return 'Python, aiogram, FSM, API';
-  if (nameLc.includes('layer.cafe')) return ru ? 'Figma, UI, прототипы' : 'Figma, UI, prototypes';
-  if (nameLc.includes('opcart') || nameLc.includes('opencart')) return 'OpenCart, PHP, MySQL';
-  if (nameLc.includes('bitrix') || nameLc.includes('битрикс')) return ru ? '1С-Битрикс, PHP, MySQL' : '1C-Bitrix, PHP, MySQL';
-  if (nameLc.includes('vue') || nameLc.includes('kolyom')) return 'Vue.js, PHP, MySQL';
-  if (/(magento|m1|m2)/.test(nameLc)) return 'Magento, PHP, MySQL';
-  return ru ? 'PHP, Laravel, API' : 'PHP, Laravel, API';
-}
-
-function primaryHref(project: ProjectEntry): string | undefined {
+function customerHref(project: ProjectEntry): string | undefined {
   return (
     project.href ??
-    project.links?.find((l) => l.kind !== 'partner')?.href ??
-    project.links?.[0]?.href
+    project.links?.find((l) => l.kind === 'customer')?.href
   );
 }
 
 function displayName(project: ProjectEntry): string {
-  const href = primaryHref(project);
+  if (project.caseLogName) return project.caseLogName;
+
+  const href = customerHref(project) ?? project.href;
   if (href) {
     try {
       return new URL(href).hostname.replace(/^www\./, '');
@@ -155,6 +150,7 @@ function displayName(project: ProjectEntry): string {
       /* ignore */
     }
   }
+
   const stripped = project.name.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
   if (stripped.length <= 48) return stripped;
   return stripped.slice(0, 47).trim() + '…';
@@ -168,19 +164,82 @@ function summarize(text: string, max = 76): string {
   return (sp > 40 ? cut.slice(0, sp) : cut).trim() + '…';
 }
 
-function statusFor(project: ProjectEntry, lang: Lang): string {
-  if (project.log?.status) return project.log.status;
-  const n = project.name.toLowerCase();
-  if (/(архив|archive)/i.test(n)) return lang === 'ru' ? 'Архив' : 'Archive';
-  if (/(nda|закрыт|корпоративные решения)/i.test(n)) return 'NDA';
-  if (/(бот|bot)/i.test(n)) return lang === 'ru' ? 'Собственный продукт' : 'Own product';
-  if (/(102 пэс|кпск|гагарин|музыкальный|пневматика|кко|партн)/i.test(n))
-    return lang === 'ru' ? 'Кейс партнёра' : 'Partner case';
-  return lang === 'ru' ? 'В контуре' : 'In scope';
+export function withNdaSuffix(base: string): string {
+  const trimmed = base.trim();
+  if (!trimmed) return 'NDA';
+  if (/\bnda\b/i.test(trimmed)) return trimmed;
+  return `${trimmed}${NDA_SUFFIX}`;
 }
 
 function periodContext(period: string): string {
   return period.replace(/\s*—\s*/g, ' · ').replace(/≈/g, '~').trim();
+}
+
+/** Годы из detail: (≈2014), 2011–2020, ≈2022, ≈2018–2019 и т.п. */
+function extractYearSpanFromDetail(detail: string): string | undefined {
+  const t = detail.replace(/\s+/g, ' ');
+  const range = t.match(/(?:≈|~)?\s*(\d{4})\s*[—–-]\s*(\d{4}|н\.в\.|present)/i);
+  if (range) {
+    const end = /н\.в\.|present/i.test(range[2]) ? (range[0].includes('present') ? 'present' : 'н.в.') : range[2];
+    const start = range[1];
+    const prefix = /≈|~/.test(range[0]) ? '~' : '';
+    return `${prefix}${start}—${end}`;
+  }
+  const single = t.match(/(?:\(|\s)(?:≈|~)?\s*(\d{4})(?:\)|\s|,|\.)/);
+  if (single) {
+    const prefix = /≈|~/.test(single[0]) ? '~' : '';
+    return `${prefix}${single[1]}`;
+  }
+  return undefined;
+}
+
+function projectContext(project: ProjectEntry, group: ExperienceProjectGroup): string {
+  if (project.caseLogPeriod) return project.caseLogPeriod.replace(/≈/g, '~').trim();
+  const fromDetail = extractYearSpanFromDetail(project.detail);
+  if (fromDetail) return fromDetail;
+  return periodContext(group.period);
+}
+
+function statusFor(project: ProjectEntry, group: ExperienceProjectGroup, lang: Lang): string {
+  const base = project.caseLogStatus ?? inferCaseLogStatus(project, group, lang);
+  return withNdaSuffix(base);
+}
+
+function inferCaseLogStatus(
+  project: ProjectEntry,
+  group: ExperienceProjectGroup,
+  lang: Lang
+): string {
+  if (project.log?.status) return project.log.status;
+
+  const n = project.name.toLowerCase();
+  const d = project.detail.toLowerCase();
+  const p = group.period.toLowerCase();
+  const ru = lang === 'ru';
+
+  if (/архив|archive/i.test(n) || /biznesmashin|shkafkrovat/i.test(n)) {
+    return ru ? 'Архив' : 'Archive';
+  }
+  if (/(102 пэс|кпск|гагарин|музыкальн|кко|muzteatr|kko concert)/i.test(n)) {
+    return ru ? 'Партнёр' : 'Partner';
+  }
+  if (/pixel perfect/i.test(n)) return ru ? 'Закрытый контур' : 'Closed contour';
+
+  if (/2022|н\.в\.|present/i.test(p)) {
+    if (/krymresurs|sechat|mozgovnet|крымресурс|бот|telegram|layer/i.test(n)) {
+      return ru ? 'В проде' : 'Live';
+    }
+    return ru ? 'В проде' : 'Live';
+  }
+
+  if (/verkter/i.test(n)) return ru ? 'В проде' : 'Live';
+  if (/rattan/i.test(n)) return ru ? 'Сопровождение' : 'Support';
+
+  if (project.href || /magento|opencart|zend|vue|wordpress|figma/i.test(d)) {
+    return ru ? 'Завершён' : 'Completed';
+  }
+
+  return ru ? 'Завершён' : 'Completed';
 }
 
 function projectToSeed(
@@ -189,32 +248,46 @@ function projectToSeed(
   lang: Lang
 ): Seed {
   const nameLc = project.name.toLowerCase();
-  const stack = inferStack(nameLc, lang);
   const operation = summarize(project.log?.action ?? project.detail);
+  const stackQa = buildProjectStackQa(project, group, lang, operation);
+  const stack = stackQaToSummary(stackQa);
   return {
     slug: caseSlug(project.name),
     name: displayName(project),
-    context: periodContext(group.period),
+    context: projectContext(project, group),
     operation,
-    stack,
-    stackIcons: resolveCaseStackIcons(undefined, stack),
-    status: statusFor(project, lang),
+    stackQa,
+    stackIcons: project.stackIcons?.length
+      ? project.stackIcons
+      : resolveCaseStackIcons(undefined, stack),
+    stackLeadLabel: project.stackLeadLabel,
+    status: statusFor(project, group, lang),
     priority: projectPriority(nameLc),
   };
 }
 
 function seedToEntry(seed: Seed, id: string): CaseLogEntry {
+  const stack = stackQaToSummary(seed.stackQa);
   return {
     id,
     slug: seed.slug,
     name: seed.name,
     context: seed.context,
     operation: seed.operation,
-    stack: seed.stack,
+    stack,
+    stackQa: seed.stackQa,
     stackIcons: seed.stackIcons,
+    stackLeadLabel: seed.stackLeadLabel,
     status: seed.status,
   };
 }
+
+/** Не показывать в «Примеры из практики» (остаётся в резюме). */
+const CASE_LOG_SKIP_SLUGS = new Set([
+  'dostavka-zpr',
+  'корпоративные-решения-nda',
+  'corporate-solutions-nda',
+]);
 
 /** Все кейсы из резюме + витрины портфолио, без дублей по slug. */
 export function buildMissionCaseLogEntries(lang: Lang): CaseLogEntry[] {
@@ -231,6 +304,7 @@ export function buildMissionCaseLogEntries(lang: Lang): CaseLogEntry[] {
   const seen = new Set<string>();
   const unique: Seed[] = [];
   for (const seed of seeds) {
+    if (CASE_LOG_SKIP_SLUGS.has(seed.slug)) continue;
     if (seen.has(seed.slug)) continue;
     seen.add(seed.slug);
     unique.push(seed);

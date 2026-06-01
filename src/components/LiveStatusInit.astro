@@ -6,13 +6,21 @@ interface Props {
   dotId: string;
   messages: HeroLiveStatus;
   dotClassPrefix: string;
+  legends?: HeroLiveStatus;
 }
 
-const { textId, dotId, messages, dotClassPrefix } = Astro.props;
+const { textId, dotId, messages, dotClassPrefix, legends } = Astro.props;
 ---
 
-<script define:vars={{ textId, dotId, messages, dotClassPrefix }}>
+<script define:vars={{ textId, dotId, messages, dotClassPrefix, legends }}>
   (function initLiveStatusMsk() {
+    function mskWeekdayShort() {
+      return new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Moscow',
+        weekday: 'short',
+      }).format(new Date());
+    }
+
     function mskTotalMinutes() {
       var parts = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Europe/Moscow',
@@ -29,9 +37,16 @@ const { textId, dotId, messages, dotClassPrefix } = Astro.props;
       return h * 60 + m;
     }
 
+    function isWeekendMsk() {
+      var d = mskWeekdayShort();
+      return d === 'Sat' || d === 'Sun';
+    }
+
+    /** Пн–Пт 10:00–19:00 МСК; обед 12:00–14:00 */
     function liveStatusKey() {
+      if (isWeekendMsk()) return 'unavailable';
       var t = mskTotalMinutes();
-      if (t >= 22 * 60 || t < 7 * 60) return 'unavailable';
+      if (t < 10 * 60 || t >= 19 * 60) return 'unavailable';
       if (t >= 12 * 60 && t < 14 * 60) return 'lunch';
       return 'available';
     }
@@ -53,6 +68,11 @@ const { textId, dotId, messages, dotClassPrefix } = Astro.props;
       var root = statusRoot(el);
       if (root) {
         root.setAttribute('data-live-status', k);
+        if (legends && legends[k]) {
+          root.setAttribute('title', legends[k]);
+        } else {
+          root.removeAttribute('title');
+        }
       }
     }
 

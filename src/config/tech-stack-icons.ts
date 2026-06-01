@@ -28,6 +28,7 @@ const SIMPLE_ICONS_HEX: Record<string, string> = {
   microsoftsqlserver: 'CC2927',
   redis: 'DC382D',
   opensearch: '005EB8',
+  elasticsearch: '005571',
   docker: '2496ED',
   nginx: '009639',
   rabbitmq: 'FF6600',
@@ -45,9 +46,16 @@ const SIMPLE_ICONS_HEX: Record<string, string> = {
   tailwindcss: '06B6D4',
   php: '777BB4',
   nodedotjs: '339933',
+  apache: 'D22128',
 };
 
 export function techStackIconUrl(slug: string): string {
+  if (slug === 'bitrix') {
+    return '/icons/bitrix.svg';
+  }
+  if (slug === 'xenforo') {
+    return '/icons/xenforo.svg';
+  }
   if (slug === 'diafan') {
     return '/icons/diafan.svg';
   }

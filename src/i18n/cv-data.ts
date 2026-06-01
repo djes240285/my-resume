@@ -40,6 +40,9 @@ export type ProjectOutbound = {
   kind: ProjectOutboundKind;
 };
 
+/** Уточнение стека на пульте (вопрос → ответ); приоритетнее автогенерации из detail */
+export type ProjectStackQa = { q: string; a: string };
+
 export type ProjectEntry = {
   name: string;
   detail: string;
@@ -48,6 +51,18 @@ export type ProjectEntry = {
   /** Несколько ссылок с разными подписями (кейс партнёра, сайт заказчика). */
   links?: ProjectOutbound[];
   log?: ProjectLogLine;
+  /** Явный Q→A по стеку (согласование; на пульте — иконки + stackLeadLabel) */
+  stackQa?: ProjectStackQa[];
+  /** Иконки стека (simple-icons slug), приоритетнее автоподбора */
+  stackIcons?: string[];
+  /** Подпись вместо первой иконки в таблице пульта (XenForo, 1С-Битрикс и т.п.) */
+  stackLeadLabel?: string;
+  /** Статус в таблице «Примеры из практики» на /mission (без суффикса NDA) */
+  caseLogStatus?: string;
+  /** Годы участия в таблице; если нет — эпоха группы или из detail */
+  caseLogPeriod?: string;
+  /** Имя в таблице пульта (если нельзя взять домен заказчика) */
+  caseLogName?: string;
 };
 
 /** Проекты сгруппированы по периоду работы (в данных — от новых к старым). Внутри группы порядок = от более значимого. */
@@ -146,6 +161,17 @@ export type HeroLiveStatus = {
   lunch: string;
 };
 
+/** Рабочее окно и подсказки для индикатора «на связи» (Пн–Пт 10–19 МСК, обед 12–14) */
+export type ContactAvailability = {
+  /** Короткая строка под статусом в шапке */
+  headerSchedule: string;
+  statusLegends: {
+    available: string;
+    unavailable: string;
+    lunch: string;
+  };
+};
+
 /** Консольный «питч» в hero: заголовок + строки после «>» (печать по одной) */
 export type HeroConsoleScript = {
   title: string;
@@ -180,8 +206,9 @@ export type CVContent = {
   careerPath: CareerMilestone[];
   /** Короткие HUD-строки в правой колонке hero (наполнение в стиле концепта; без строки статуса — она живёт отдельно) */
   heroHudFacts: { label: string; value: string }[];
-  /** Статус «на связи» по времени МСК: 07–12, 14–22 — available; 22–07 — unavailable; 12–14 — lunch */
+  /** Статус «на связи» по времени МСК (см. LiveStatusInit: Пн–Пт 10–19, обед 12–14) */
   heroLiveStatus: HeroLiveStatus;
+  contactAvailability: ContactAvailability;
   /** Блок «консоль» под ролью: зелёные строки с «>» и эффект печати */
   heroConsole: HeroConsoleScript;
   contact: {
@@ -235,7 +262,7 @@ export const cv: Record<Lang, CVContent> = {
   ru: {
     metaTitle: 'Евгений Жуков — восстановление систем, fullstack и архитектура',
     metaDescription:
-      'Fullstack и архитектор: стабилизирую легаси, миграции Magento, e-commerce и корпоративные контуры под нагрузкой. 15+ лет в продакшене. Симферополь / удалённо.',
+      'Fullstack и архитектор: стабилизирую легаси, миграции Magento, e-commerce и корпоративные контуры под нагрузкой. 16+ лет в продакшене. Симферополь / удалённо.',
     navResume: 'Резюме',
     navPortfolio: 'Портфолио',
     navMission: 'Пульт',
@@ -243,7 +270,7 @@ export const cv: Record<Lang, CVContent> = {
       metaTitle: 'Евгений Жуков — инженерный пульт · восстановление систем',
       metaDescription:
         'Пульт управления: стабилизация легаси, миграции, архитектура, e-commerce и инженерия с ИИ. Более 15 лет в продакшене.',
-      headerBrand: 'ЕЖ · ИНЖЕНЕРНЫЙ ПУЛЬТ',
+      headerBrand: 'ИНЖЕНЕРНЫЙ ПУЛЬТ',
       headerTitle: 'ПУЛЬТ УПРАВЛЕНИЯ',
     },
     name: 'Евгений Жуков',
@@ -261,13 +288,22 @@ export const cv: Record<Lang, CVContent> = {
     },
     heroHudFacts: [
       { label: 'ФОКУС', value: 'RESCUE · LEGACY · E-COM' },
-      { label: 'ОПЫТ', value: '15+ ЛЕТ ПРОДАКШЕНА' },
+      { label: 'ОПЫТ', value: '16+ ЛЕТ ПРОДАКШЕНА' },
       { label: 'РЕЖИМ', value: 'УДАЛЁННО · ОТКРЫТ' },
     ],
     heroLiveStatus: {
-      available: 'ONLINE · НА СВЯЗИ',
-      unavailable: 'OFFLINE · НЕ ДОСТУПЕН (МСК 22–07)',
-      lunch: 'AWAY · ОБЕД · МОГУ ОТСУТСТВОВАТЬ (12–14 МСК)',
+      available: 'ОНЛАЙН · на связи',
+      unavailable: 'OFFLINE · вне окна',
+      lunch: 'ПЕРЕРЫВ · обед',
+    },
+    contactAvailability: {
+      headerSchedule: 'Пн–Пт 10–19 МСК',
+      statusLegends: {
+        available: 'Сейчас в рабочем окне (Пн–Пт 10:00–19:00 МСК) — отвечаю в обычном режиме',
+        lunch: 'Обеденный перерыв 12:00–14:00 МСК — ответ может задержаться',
+        unavailable:
+          'Вне рабочего окна: выходные, до 10:00 и после 19:00 МСК — напишите, отвечу в ближайшую смену',
+      },
     },
     heroConsole: {
       title: 'ЗАПУСК КОНТУРА RESCUE...',
@@ -287,7 +323,7 @@ export const cv: Record<Lang, CVContent> = {
     },
     bootLines: [
       '> подключение к контуру rescue...',
-      '> загрузка опыта (15+ лет)...',
+      '> загрузка опыта ( лет)...',
       '> готов к разбору задачи',
     ],
     terminalLabels: {
@@ -332,7 +368,7 @@ export const cv: Record<Lang, CVContent> = {
     coreStats: [
       {
         icon: 'target',
-        value: '15+',
+        value: '16+',
         label: 'лет в продакшене: e-commerce, корпоративные контуры, легаси под нагрузкой',
       },
       {
@@ -725,47 +761,94 @@ export const cv: Record<Lang, CVContent> = {
                 href: 'https://dostavka-zpr.ru/',
               },
               {
-                name: 'Крымресурс — обучающий центр',
+                name: 'Крымресурс — ERP (обучающий центр)',
                 detail:
-                  'Симптом: разрозненные приложения и документооборот. Решение: единая модель на Laravel, интеграции и генерация документов; сейчас в работе — в том числе с ИИ-инструментами в рутине разработки. krymresurs.ru — публичная витрина, не весь объём системы.',
+                  'ERP-контур: разрозненные приложения и документооборот свели в единую модель на Laravel — интеграции, генерация документов, техсопровождение; сейчас в работе, в том числе с ИИ в рутине разработки. krymresurs.ru — публичная витрина, не весь объём ERP.',
                 href: 'https://krymresurs.ru/',
+                stackIcons: ['laravel', 'php', 'mysql', 'redis', 'docker', 'react', 'vuedotjs'],
+                stackQa: [
+                  { q: 'Контур?', a: 'ERP, документооборот, интеграции' },
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, Redis, Docker' },
+                  { q: 'Клиент / UI?', a: 'React, Vue.js' },
+                ],
+                caseLogStatus: 'В проде',
               },
               {
                 name: 'sechat.ru',
                 detail: 'Развитие коммуникационного продукта по задачам заказчика.',
                 href: 'https://sechat.ru',
+                stackIcons: ['laravel', 'php', 'redis', 'rabbitmq', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, WebSockets, Redis, очереди' },
+                  { q: 'Клиент / UI?', a: 'веб-клиент, nginx' },
+                ],
+                caseLogStatus: 'В проде',
               },
               {
                 name: 'mozgovnet.com',
                 detail: 'Платёжные интеграции и восстановление легаси.',
                 href: 'https://mozgovnet.com/',
+                stackIcons: ['vuedotjs', 'laravel', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, MySQL, платёжные API' },
+                  { q: 'Клиент / UI?', a: 'Vue.js, nginx' },
+                ],
+                caseLogStatus: 'В проде',
               },
               {
                 name: 'biznesmashin.ru',
                 detail: 'Интернет-магазин грузовой техники на «1С-Битрикс».',
                 href: 'https://biznesmashin.ru/',
+                stackLeadLabel: '1С-Битрикс',
+                stackIcons: ['php', 'mysql', 'apache'],
+                stackQa: [
+                  { q: 'Backend?', a: '1С-Битрикс, PHP, MySQL, Apache' },
+                  { q: 'Клиент / UI?', a: 'витрина на CMS' },
+                ],
+                caseLogStatus: 'Архив',
               },
               {
                 name: 'AI Telegram-бот: напоминания и микро-коучинг (Python)',
                 detail:
                   'Собственная разработка: бот напоминает о задачах и «мыслях», которые пользователь сам помечает важными, задаёт уточняющие вопросы по настраиваемому сценарию. Стек: Python, aiogram, FSM. Значительное время ушло на проработку UX диалога и устойчивого состояния.',
+                stackIcons: ['python', 'postgresql', 'claude'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Python, aiogram, PostgreSQL' },
+                  { q: 'AI?', a: 'LLM — формирование ответов и диалог' },
+                  { q: 'Клиент / UI?', a: 'Telegram' },
+                ],
+                caseLogStatus: 'В проде',
               },
               {
                 name: 'layer.cafe',
                 detail: 'Дизайн для ранних этапов публичного сайта продукта.',
                 href: 'https://layer.cafe/',
+                stackIcons: ['figma'],
+                stackQa: [
+                  { q: 'Backend?', a: '—' },
+                  { q: 'Клиент / UI?', a: 'Figma, UI-прототипы' },
+                ],
+                caseLogStatus: 'Завершён',
               },
             ],
           },
           {
-            period: '2019—2024',
+            period: '2019—2020',
             context:
               'Корпоративные контуры на Laravel с партнёром; отдельно — миграции Magento 2.x (gratisiskolan и др.).',
             projects: [
               {
                 name: 'gratisiskolan.se (Швеция)',
-                detail: 'Миграция на Magento 2.4; адаптация пользовательских модулей под 2.4.',
+                detail:
+                  'Миграция на Magento 2.4; адаптация пользовательских модулей под 2.4. Основное участие — ориентировочно 2016 или 2018 (точный год не зафиксировал).',
                 href: 'https://gratisiskolan.se/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento 2.4, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'витрина + кастомные модули' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '~2016—2018',
               },
               {
                 name: '102 ПЭС (Минобороны электрических сетей)',
@@ -775,29 +858,81 @@ export const cv: Record<Lang, CVContent> = {
                   { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
                   { kind: 'customer', href: 'https://102pes.ru/' },
                 ],
+                stackIcons: ['laravel', 'php', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, nginx' },
+                  { q: 'Клиент / UI?', a: 'кабинеты + публичная витрина' },
+                  { q: 'Не брали?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Партнёр',
               },
               {
                 name: 'КПСК (страхование) — кейс партнёра',
                 detail:
-                  'Laravel/PHP, без Magento: адаптация тяжёлого банковского легаси под страховую витрину и интеграции. Долго входил в контур (без ИИ того периода), жёсткая security; в итоге стабилизировали и развили — заказчик и партнёр оценили результат.',
+                  'Самописный банковский контур на PHP: адаптация тяжёлого легаси под страховую витрину, внутренняя логика и интеграции по API (Apache, MySQL). Без Laravel и Magento. Долго входил в контур (без ИИ того периода), жёсткая security; в итоге стабилизировали и развили — заказчик и партнёр оценили результат.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
+                caseLogName: 'КПСК',
+                stackIcons: ['apache', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'PHP (самописный), Apache, MySQL, API' },
+                  { q: 'Клиент / UI?', a: 'страховая витрина + внутренние контуры' },
+                  { q: 'Не брали?', a: 'Laravel, Magento' },
+                ],
+                caseLogStatus: 'Партнёр',
               },
               {
                 name: 'Фитнес-клуб «Гагарин»',
                 detail:
                   'Laravel и систематизация под Statamic: структура сайта, интеграции под особенности CMS и процесс партнёра. Magento не использовался.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
+                caseLogName: 'Гагарин',
+                stackIcons: ['laravel', 'statamic', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, Statamic, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'сайт клуба на CMS' },
+                  { q: 'Не брали?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Партнёр',
               },
               {
-                name: 'Музыкальный театр Крыма, Завод Пневматика, концертный зал ККО',
+                name: 'Музыкальный театр Крыма',
                 detail:
-                  'Точечная поддержка и доработки сложных участков в проектах партнёра (по задачам и этапам). Magento не использовался.',
+                  'Точечная поддержка и доработки на WordPress в проекте партнёра (по задачам и этапам). Без Laravel и Magento.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+                caseLogName: 'Муз. театр Крыма',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'сайт на WP' },
+                  { q: 'Не брали?', a: 'Laravel, Magento' },
+                ],
+                caseLogStatus: 'Партнёр',
+              },
+              {
+                name: 'Концертный зал ККО',
+                detail:
+                  'Точечные доработки WordPress в проекте партнёра. Без Laravel и Magento.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+                caseLogName: 'ККО',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'сайт на WP' },
+                ],
+                caseLogStatus: 'Партнёр',
               },
               {
                 name: 'Медицинский колл-центр (архив)',
                 detail:
                   'Laravel с нуля на проработанном ТЗ: скетчи процессов и дизайн — проект лёг по срокам. Связка со страховым контуром КПСК (случаи, больницы). Сейчас не развивается по внешним причинам заказчика.',
+                caseLogName: 'Медколл-центр',
+                stackIcons: ['laravel', 'php', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, nginx' },
+                  { q: 'Клиент / UI?', a: 'кабинеты, процессы по ТЗ' },
+                  { q: 'Не брали?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Архив',
               },
               {
                 name: 'Корпоративные решения (NDA)',
@@ -813,43 +948,98 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'windowcleaner.com (США)',
                 detail:
-                  'Ключевой долгий контур (~5 лет): Magento 1.4 → 1.9 → M2 без «большого взрыва», кастомные платежи и релизы под нагрузкой. В том же бизнесе — связанные витрины, в т.ч. SWCR.',
+                  'Подключился на этапе крупных новых задач на Magento 1: закрыл объём на M1, затем поэтапный переход на M2 без «большого взрыва». Запустил новые площадки под линейки продукции; ~35% к продажам — за счёт тепловых карт и доработок UI (каталог, checkout). В том же бизнесе — связанные витрины, в т.ч. SWCR.',
                 href: 'https://windowcleaner.com/',
+                stackIcons: ['magento', 'php', 'mysql', 'redis'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento 1.4→2.x, PHP, MySQL, Redis' },
+                  { q: 'Клиент / UI?', a: 'e-commerce витрины' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'store.finaldraft.com',
-                detail: 'Поддержка и развитие (Magento).',
+                detail: 'Поддержка и развитие витрины на Magento.',
                 href: 'https://store.finaldraft.com/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'витрина' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'microline.ua',
-                detail: 'Поддержка и развитие (Magento).',
+                detail:
+                  'Magento: поддержка и развитие. Поиск — Sphinx (не Elasticsearch). Веб-сервер — гибрид nginx + Apache.',
                 href: 'https://microline.ua/',
+                stackIcons: ['magento', 'php', 'mysql', 'nginx', 'apache'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL, Sphinx' },
+                  { q: 'Клиент / UI?', a: 'витрина' },
+                  { q: 'Инфра?', a: 'nginx + Apache' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'nancysbeauty.com (США)',
-                detail: 'Поддержка и развитие витрины.',
+                detail: 'Поддержка и развитие витрины на Magento.',
                 href: 'https://nancysbeauty.com/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'витрина' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'epik.com',
-                detail: 'Поддержка и развитие.',
+                detail:
+                  'Самописный контур на Zend Framework: управление и покупка доменов, интеграции и сопровождение.',
                 href: 'https://www.epik.com/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'веб-интерфейс сервиса' },
+                  { q: 'Не брали?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'cargo.flowers',
-                detail: 'Поддержка и развитие.',
+                detail: 'Самописный проект на Zend Framework (ZF): сопровождение и доработки.',
                 href: 'https://cargo.flowers/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Не брали?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'kolyom.co.il',
-                detail: 'Поддержка и развитие; фронт на Vue.js.',
+                detail:
+                  '≈2018–2019 (~год): фронт на Vue.js в команде; бэкенд на Python — мой вклад на стороне клиента.',
                 href: 'https://www.kolyom.co.il/',
+                stackIcons: ['vuedotjs', 'python'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Python (команда)' },
+                  { q: 'Клиент / UI?', a: 'Vue.js — мой контур' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '2018—2019',
               },
               {
                 name: 'turexpertiza.ru',
-                detail: 'Разработка уникальной системы подсчёта распределённой звёздности.',
+                detail:
+                  'Самописная система на Zend Framework: расчёт распределённой «звёздности» и сопутствующая логика.',
                 href: 'https://www.turexpertiza.ru/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'веб-сервис' },
+                ],
+                caseLogStatus: 'Завершён',
               },
             ],
           },
@@ -860,38 +1050,88 @@ export const cv: Record<Lang, CVContent> = {
             projects: [
               {
                 name: 'dnforum.com',
-                detail: 'Разработка дополнений.',
+                detail:
+                  'Доработки и дополнения для XenForo (≈2022): PHP, интеграции и кастомная логика форума.',
                 href: 'https://www.dnforum.com/',
+                stackLeadLabel: 'XenForo',
+                stackIcons: ['php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'XenForo, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'тема и аддоны форума' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '2022',
               },
               {
                 name: 'terradelyssa.com',
-                detail: 'Разработка дополнений.',
+                detail:
+                  '2011–2020: несколько площадок и сборок — самописные контуры на Zend Framework (ZF), отдельные проекты на WordPress, PHP/MySQL.',
                 href: 'https://terradelyssa.com/',
+                stackIcons: ['zend', 'wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'ZF (самописный), WordPress, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'разные площадки по эпохам' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '2011—2020',
               },
               {
                 name: 'Grungy Gentleman',
                 detail:
-                  'Контур Gluzdov: ювелирная тематика, магазины и франшизы. Публичная витрина со временем сильно менялась; актуальный вид — на сайте бренда.',
+                  'Контур Gluzdov (≈2015): ювелирная тематика, магазины и франшизы на Magento. Публичная витрина со временем сильно менялась; актуальный вид — на сайте бренда.',
                 href: 'https://www.grungygentleman.com/',
+                stackIcons: ['magento', 'php', 'mysql', 'elasticsearch', 'docker'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL, Elasticsearch, Docker' },
+                  { q: 'Клиент / UI?', a: 'витрина e-commerce' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '~2015',
               },
               {
                 name: 'Accuscore (accuscore.com)',
                 detail:
-                  'Временное подключение к команде: отдельные фрагменты логики по запросу заказчика, без долгого контура сопровождения.',
+                  'Самописный проект на Zend Framework (2011–2013): точечные доработки и фрагменты логики по запросу заказчика, без долгого сопровождения.',
                 href: 'https://www.accuscore.com',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'веб-сервис' },
+                ],
+                caseLogStatus: 'Завершён',
+                caseLogPeriod: '2011—2013',
               },
               {
                 name: 'shkafkrovat.com.ua',
-                detail: 'Сайт мебели (для отца товарища).',
+                detail: 'Сайт мебели на WordPress (≈2014), небольшой объём — для отца товарища.',
                 href: 'https://shkafkrovat.com.ua/',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'тема / витрина' },
+                ],
+                caseLogStatus: 'Архив',
+                caseLogPeriod: '2014',
               },
               {
                 name: 'Dikoros-Taiga',
-                detail: 'Интернет-магазин спецодежды; в том числе контур на OpenCart.',
+                detail: 'Интернет-магазин спецодежды на OpenCart.',
+                stackIcons: ['opencart', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'OpenCart, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'витрина' },
+                ],
+                caseLogStatus: 'Завершён',
               },
               {
                 name: 'rkb-bank',
                 detail: 'Разработка на Magento: банковская прослойка интернет-магазина.',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Клиент / UI?', a: 'банковская витрина' },
+                ],
+                caseLogStatus: 'Завершён',
               },
             ],
           },
@@ -934,7 +1174,7 @@ export const cv: Record<Lang, CVContent> = {
       cards: [
         {
           title: 'Веб-Стар Технологии — кейсы',
-          tag: 'Партнёр · Симферополь',
+          tag: 'Партнёр',
           body: 'Каталог проектов и отраслевые страницы: удобно заимствовать идею «один URL — один кейс» и явные блоки «задача / стек / результат».',
           href: 'https://webstartechnology.ru',
         },
@@ -945,9 +1185,9 @@ export const cv: Record<Lang, CVContent> = {
           href: 'https://webstartechnology.ru/kpsk',
         },
         {
-          title: 'Крымресурс',
-          tag: 'Корпоративный контур',
-          body: 'Публичная витрина; основная система — внутренний документооборот и объединение данных.',
+          title: 'Крымресурс — ERP',
+          tag: 'ERP · Laravel',
+          body: 'ERP: документооборот, интеграции и объединение данных; krymresurs.ru — публичная витрина, не весь контур.',
           href: 'https://krymresurs.ru/',
         },
       ],
@@ -957,14 +1197,14 @@ export const cv: Record<Lang, CVContent> = {
   en: {
     metaTitle: 'Eugene Zhukov — system rescue, fullstack & architecture',
     metaDescription:
-      'Fullstack engineer and architect: legacy stabilization, Magento migrations, e-commerce and enterprise systems under load. 15+ years in production. Crimea / remote.',
+      'Fullstack engineer and architect: legacy stabilization, Magento migrations, e-commerce and enterprise systems under load. 16+ years in production. Crimea / remote.',
     navResume: 'Resume',
     navPortfolio: 'Portfolio',
     navMission: 'Control',
     mission: {
       metaTitle: 'Eugene Zhukov — engineering mission control',
       metaDescription:
-        'Mission control page: legacy stabilization, migrations, architecture, e-commerce, and AI-augmented engineering. 15+ years in production.',
+        'Mission control page: legacy stabilization, migrations, architecture, e-commerce, and AI-augmented engineering. 16+ years in production.',
       headerBrand: 'EZ · MISSION CONTROL',
       headerTitle: 'ENGINEERING CONTROL',
     },
@@ -983,13 +1223,22 @@ export const cv: Record<Lang, CVContent> = {
     },
     heroHudFacts: [
       { label: 'FOCUS', value: 'RESCUE · LEGACY · E-COM' },
-      { label: 'EXPERIENCE', value: '15+ YEARS IN PROD' },
+      { label: 'EXPERIENCE', value: '16+ YEARS IN PROD' },
       { label: 'MODE', value: 'REMOTE · OPEN' },
     ],
     heroLiveStatus: {
-      available: 'ONLINE · AVAILABLE',
-      unavailable: 'OFFLINE · UNAVAILABLE (MSK 22–07)',
-      lunch: 'AWAY · LUNCH · MAY BE AFK (12–14 MSK)',
+      available: 'ONLINE · available',
+      unavailable: 'OFFLINE · outside hours',
+      lunch: 'AWAY · lunch break',
+    },
+    contactAvailability: {
+      headerSchedule: 'Mon–Fri 10–19 MSK',
+      statusLegends: {
+        available: 'Within business hours (Mon–Fri 10:00–19:00 MSK) — normal response time',
+        lunch: 'Lunch break 12:00–14:00 MSK — replies may be delayed',
+        unavailable:
+          'Outside business hours: weekends, before 10:00 and after 19:00 MSK — message me, I will reply next shift',
+      },
     },
     heroConsole: {
       title: 'BOOTING RESCUE CONTUR...',
@@ -1009,7 +1258,7 @@ export const cv: Record<Lang, CVContent> = {
     },
     bootLines: [
       '> connecting to rescue contur...',
-      '> loading experience (15+ years)...',
+      '> loading experience (16+ years)...',
       '> ready for triage',
     ],
     terminalLabels: {
@@ -1054,7 +1303,7 @@ export const cv: Record<Lang, CVContent> = {
     coreStats: [
       {
         icon: 'target',
-        value: '15+',
+        value: '16+',
         label: 'years in production: e-commerce, enterprise boundaries, legacy under load',
       },
       {
@@ -1109,7 +1358,7 @@ export const cv: Record<Lang, CVContent> = {
       about: {
         title: 'About me',
         body:
-          'When production and revenue don’t get a maintenance window—and every deploy feels like a lottery—I step in for calm diagnosis and fixes that survive the next release, not a vanity “rewrite everything” pitch. 15+ years across e-commerce, enterprise boundaries, and real load; I look at the whole system—from architecture to operations. Modern tooling and AI only where they speed delivery without diluting accountability for quality.',
+          'When production and revenue don’t get a maintenance window—and every deploy feels like a lottery—I step in for calm diagnosis and fixes that survive the next release, not a vanity “rewrite everything” pitch. 16+ years across e-commerce, enterprise boundaries, and real load; I look at the whole system—from architecture to operations. Modern tooling and AI only where they speed delivery without diluting accountability for quality.',
       },
       collaboration: {
         title: 'How engagements work',
@@ -1447,79 +1696,178 @@ export const cv: Record<Lang, CVContent> = {
                 href: 'https://dostavka-zpr.ru/',
               },
               {
-                name: 'Krymresurs training center',
+                name: 'Krymresurs — ERP (training center)',
                 detail:
-                  'Symptom: scattered apps and document chaos. Solution: unified Laravel contour, integrations, doc generation—now including AI tooling in day-to-day engineering. krymresurs.ru is the public face, not the full system.',
+                  'ERP contour: unified scattered apps and document workflows on Laravel—integrations, doc generation, technical operations; ongoing work including AI in engineering routine. krymresurs.ru is the public storefront, not the full ERP scope.',
                 href: 'https://krymresurs.ru/',
+                stackIcons: ['laravel', 'php', 'mysql', 'redis', 'docker', 'react', 'vuedotjs'],
+                stackQa: [
+                  { q: 'Contour?', a: 'ERP, document workflows, integrations' },
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, Redis, Docker' },
+                  { q: 'Client / UI?', a: 'React, Vue.js' },
+                ],
+                caseLogStatus: 'Live',
               },
               {
                 name: 'sechat.ru',
                 detail: 'Product engineering work for a communications platform (scoped by the client).',
                 href: 'https://sechat.ru',
+                stackIcons: ['laravel', 'php', 'redis', 'rabbitmq', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, WebSockets, Redis, queues' },
+                  { q: 'Client / UI?', a: 'web client, nginx' },
+                ],
+                caseLogStatus: 'Live',
               },
               {
                 name: 'mozgovnet.com',
                 detail: 'Payment integrations and legacy recovery work.',
                 href: 'https://mozgovnet.com/',
+                stackIcons: ['vuedotjs', 'laravel', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, MySQL, payment APIs' },
+                  { q: 'Client / UI?', a: 'Vue.js, nginx' },
+                ],
+                caseLogStatus: 'Live',
               },
               {
                 name: 'biznesmashin.ru',
                 detail: 'Heavy machinery store on 1C-Bitrix.',
                 href: 'https://biznesmashin.ru/',
+                stackLeadLabel: '1C-Bitrix',
+                stackIcons: ['php', 'mysql', 'apache'],
+                stackQa: [
+                  { q: 'Backend?', a: '1C-Bitrix, PHP, MySQL, Apache' },
+                  { q: 'Client / UI?', a: 'CMS storefront' },
+                ],
+                caseLogStatus: 'Archive',
               },
               {
                 name: 'AI Telegram bot: reminders & micro-coaching (Python)',
                 detail:
                   'Personal build: reminders for tasks and “thoughts” the user marks as important, follow-up questions driven by configurable flows. Stack: Python, aiogram, FSM. Significant time spent on dialog UX and durable conversation state.',
+                stackIcons: ['python', 'postgresql', 'claude'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Python, aiogram, PostgreSQL' },
+                  { q: 'AI?', a: 'LLM — responses and conversation' },
+                  { q: 'Client / UI?', a: 'Telegram' },
+                ],
+                caseLogStatus: 'Live',
               },
               {
                 name: 'layer.cafe',
                 detail: 'Design work for early-stage marketing site of the product.',
                 href: 'https://layer.cafe/',
+                stackIcons: ['figma'],
+                stackQa: [
+                  { q: 'Backend?', a: '—' },
+                  { q: 'Client / UI?', a: 'Figma, UI prototypes' },
+                ],
+                caseLogStatus: 'Completed',
               },
             ],
           },
           {
-            period: '2019–2024',
+            period: '2019–2020',
             context:
               'Corporate Laravel programs with a partner; separately—Magento 2.x migrations (e.g. gratisiskolan).',
             projects: [
               {
                 name: 'gratisiskolan.se (Sweden)',
-                detail: 'Magento 2.4 migration; adapting custom modules to 2.4.',
+                detail:
+                  'Magento 2.4 migration; adapting custom modules to 2.4. Main involvement was roughly 2016 or 2018 (exact year not recorded).',
                 href: 'https://gratisiskolan.se/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento 2.4, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'storefront + custom modules' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '~2016—2018',
               },
               {
                 name: '102 PES (Ministry of Defense electrical networks)',
                 detail:
                   'Greenfield Laravel—I wrote the codebase end-to-end and learned the domain. Portals for technicians, customers, managers, admins; public shell. Hard part: semi-government governance (planning, estimates, approvals); delivered a working contour. No Magento.',
+                stackIcons: ['laravel', 'php', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, nginx' },
+                  { q: 'Client / UI?', a: 'portals + public storefront' },
+                  { q: 'Out of scope?', a: 'Magento' },
+                ],
                 links: [
                   { kind: 'partner', href: 'https://webstartechnology.ru/102pes' },
                   { kind: 'customer', href: 'https://102pes.ru/' },
                 ],
+                caseLogStatus: 'Partner',
               },
               {
                 name: 'KPSK (insurance) — partner case page',
                 detail:
-                  'Laravel/PHP, no Magento: adapting heavy banking legacy for the insurance storefront and integrations. Long onboarding (pre-AI era), strict security; stabilized and extended—client and partner were happy with the outcome.',
+                  'Custom banking-style PHP codebase: adapting heavy legacy for the insurance storefront, internal logic and API integrations (Apache, MySQL). No Laravel or Magento. Long onboarding (pre-AI era), strict security; stabilized and extended—client and partner were happy with the outcome.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/kpsk' }],
+                caseLogName: 'KPSK',
+                stackIcons: ['apache', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'custom PHP, Apache, MySQL, API' },
+                  { q: 'Client / UI?', a: 'insurance storefront + internal flows' },
+                  { q: 'Out of scope?', a: 'Laravel, Magento' },
+                ],
+                caseLogStatus: 'Partner',
               },
               {
                 name: 'Gagarin fitness club',
                 detail:
                   'Laravel structuring for Statamic: site architecture and integrations around CMS specifics and the partner process. No Magento.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/gagarin' }],
+                caseLogName: 'Gagarin',
+                stackIcons: ['laravel', 'statamic', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, Statamic, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'club site on CMS' },
+                  { q: 'Out of scope?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Partner',
               },
               {
-                name: 'Crimean Musical Theatre, Pneumo plant, KKO concert hall',
+                name: 'Crimean Musical Theatre',
                 detail:
-                  'Focused support and enhancements on complex slices inside partner projects (by phase). No Magento.',
+                  'Focused WordPress support and enhancements in a partner-led project (by phase). No Laravel or Magento.',
                 links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+                caseLogName: 'Crimean Musical Theatre',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'WP site' },
+                  { q: 'Out of scope?', a: 'Laravel, Magento' },
+                ],
+                caseLogStatus: 'Partner',
+              },
+              {
+                name: 'KKO concert hall',
+                detail:
+                  'Targeted WordPress work in a partner-led project. No Laravel or Magento.',
+                links: [{ kind: 'partner', href: 'https://webstartechnology.ru/muzteatr' }],
+                caseLogName: 'KKO',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'WP site' },
+                ],
+                caseLogStatus: 'Partner',
               },
               {
                 name: 'Medical call center (archived)',
                 detail:
                   'Greenfield Laravel on mature specs—process sketches and design kept delivery on schedule. Tied to KPSK insurance/hospital flows; archived for external client reasons.',
+                caseLogName: 'Med call center',
+                stackIcons: ['laravel', 'php', 'mysql', 'nginx'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Laravel, PHP, MySQL, nginx' },
+                  { q: 'Client / UI?', a: 'portals, process flows per spec' },
+                  { q: 'Out of scope?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Archive',
               },
               {
                 name: 'Corporate solutions (NDA)',
@@ -1535,43 +1883,98 @@ export const cv: Record<Lang, CVContent> = {
               {
                 name: 'windowcleaner.com (USA)',
                 detail:
-                  'Core long engagement (~5y): Magento 1.4 → 1.9 → M2 without big-bang, custom payments and releases under load. Same business—related storefronts including SWCR.',
+                  'Joined at a wave of major new work on Magento 1: delivered the M1 scope, then a phased move to M2 without big-bang. Launched new storefronts for product lines; ~35% sales uplift from heatmaps and UI work (catalog, checkout). Same business—related storefronts including SWCR.',
                 href: 'https://windowcleaner.com/',
+                stackIcons: ['magento', 'php', 'mysql', 'redis'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento 1.4→2.x, PHP, MySQL, Redis' },
+                  { q: 'Client / UI?', a: 'e-commerce storefronts' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'store.finaldraft.com',
-                detail: 'Maintenance and evolution (Magento).',
+                detail: 'Magento storefront maintenance and evolution.',
                 href: 'https://store.finaldraft.com/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'storefront' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'microline.ua',
-                detail: 'Maintenance and evolution (Magento).',
+                detail:
+                  'Magento maintenance and evolution. Search: Sphinx (not Elasticsearch). Web tier: nginx + Apache hybrid.',
                 href: 'https://microline.ua/',
+                stackIcons: ['magento', 'php', 'mysql', 'nginx', 'apache'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL, Sphinx' },
+                  { q: 'Client / UI?', a: 'storefront' },
+                  { q: 'Infra?', a: 'nginx + Apache' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'nancysbeauty.com (USA)',
-                detail: 'Ongoing maintenance and improvements.',
+                detail: 'Magento storefront maintenance and evolution.',
                 href: 'https://nancysbeauty.com/',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'storefront' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'epik.com',
-                detail: 'Maintenance and evolution.',
+                detail:
+                  'Custom Zend Framework codebase: domain management and purchase flows, integrations, and ongoing engineering.',
                 href: 'https://www.epik.com/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'service web UI' },
+                  { q: 'Out of scope?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'cargo.flowers',
-                detail: 'Maintenance and evolution.',
+                detail: 'Custom Zend Framework (ZF) project—maintenance and enhancements.',
                 href: 'https://cargo.flowers/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Out of scope?', a: 'Magento' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'kolyom.co.il',
-                detail: 'Maintenance and evolution (Vue.js on the frontend).',
+                detail:
+                  '~2018–2019 (about a year): Vue.js frontend on my side; Python backend in the team.',
                 href: 'https://www.kolyom.co.il/',
+                stackIcons: ['vuedotjs', 'python'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Python (team)' },
+                  { q: 'Client / UI?', a: 'Vue.js — my scope' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '2018—2019',
               },
               {
                 name: 'turexpertiza.ru',
-                detail: 'Custom system for distributed “star rating” calculations.',
+                detail:
+                  'Custom Zend Framework system for distributed “star rating” calculations and related logic.',
                 href: 'https://www.turexpertiza.ru/',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'web service' },
+                ],
+                caseLogStatus: 'Completed',
               },
             ],
           },
@@ -1582,38 +1985,88 @@ export const cv: Record<Lang, CVContent> = {
             projects: [
               {
                 name: 'dnforum.com',
-                detail: 'Extension and addon development.',
+                detail:
+                  'XenForo extensions and custom logic (~2022): PHP, integrations, forum addons.',
                 href: 'https://www.dnforum.com/',
+                stackLeadLabel: 'XenForo',
+                stackIcons: ['php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'XenForo, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'forum theme and addons' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '2022',
               },
               {
                 name: 'terradelyssa.com',
-                detail: 'Extension and addon development.',
+                detail:
+                  '2011–2020: multiple sites and builds—custom Zend Framework (ZF) codebases, WordPress projects, PHP/MySQL.',
                 href: 'https://terradelyssa.com/',
+                stackIcons: ['zend', 'wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'ZF (custom), WordPress, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'several platforms over time' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '2011—2020',
               },
               {
                 name: 'Grungy Gentleman',
                 detail:
-                  'Within Gluzdov-led work: jewelry Retail and franchise store builds. The public site changed substantially over time; current brand presence is on the live domain.',
+                  'Within Gluzdov-led work (~2015): jewelry retail and franchise builds on Magento. The public site changed substantially over time; current brand presence is on the live domain.',
                 href: 'https://www.grungygentleman.com/',
+                stackIcons: ['magento', 'php', 'mysql', 'elasticsearch', 'docker'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL, Elasticsearch, Docker' },
+                  { q: 'Client / UI?', a: 'e-commerce storefront' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '~2015',
               },
               {
                 name: 'Accuscore (accuscore.com)',
                 detail:
-                  'Short-term engagement: implemented specific logic pieces as needed—no long-running ownership.',
+                  'Custom Zend Framework build (2011–2013): spot logic and enhancements on request—no long-running ownership.',
                 href: 'https://www.accuscore.com',
+                stackIcons: ['zend', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Zend Framework (ZF), PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'web service' },
+                ],
+                caseLogStatus: 'Completed',
+                caseLogPeriod: '2011—2013',
               },
               {
                 name: 'shkafkrovat.com.ua',
-                detail: 'Furniture site for a family friend’s father.',
+                detail: 'WordPress furniture site (~2014), small scope—for a family friend’s father.',
                 href: 'https://shkafkrovat.com.ua/',
+                stackIcons: ['wordpress', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'WordPress, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'theme / storefront' },
+                ],
+                caseLogStatus: 'Archive',
+                caseLogPeriod: '2014',
               },
               {
                 name: 'Dikoros-Taiga',
-                detail: 'Specialty apparel store; included an OpenCart-based stack.',
+                detail: 'Specialty apparel store on OpenCart.',
+                stackIcons: ['opencart', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'OpenCart, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'storefront' },
+                ],
+                caseLogStatus: 'Completed',
               },
               {
                 name: 'rkb-bank',
                 detail: 'Magento engineering for a bank-related storefront integration layer.',
+                stackIcons: ['magento', 'php', 'mysql'],
+                stackQa: [
+                  { q: 'Backend?', a: 'Magento, PHP, MySQL' },
+                  { q: 'Client / UI?', a: 'bank storefront' },
+                ],
+                caseLogStatus: 'Completed',
               },
             ],
           },
@@ -1656,7 +2109,7 @@ export const cv: Record<Lang, CVContent> = {
       cards: [
         {
           title: 'WebStar Technology — case hub',
-          tag: 'Partner · Simferopol',
+          tag: 'Partner',
           body: 'Project catalog and industry pages: worth mirroring the pattern “one URL per case” with explicit goal / stack / outcome blocks.',
           href: 'https://webstartechnology.ru',
         },
@@ -1667,9 +2120,9 @@ export const cv: Record<Lang, CVContent> = {
           href: 'https://webstartechnology.ru/kpsk',
         },
         {
-          title: 'Krymresurs',
-          tag: 'Corporate layer',
-          body: 'Public site; the main system is internal document flow and unified data from multiple sources.',
+          title: 'Krymresurs — ERP',
+          tag: 'ERP · Laravel',
+          body: 'ERP: document workflows, integrations, unified data; krymresurs.ru is the public storefront, not the full contour.',
           href: 'https://krymresurs.ru/',
         },
       ],

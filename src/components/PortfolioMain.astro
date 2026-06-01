@@ -4,6 +4,7 @@ import { getCv } from '../i18n/cv-data';
 import { resolveProjectCaseLinks } from '../lib/resolve-project-case-links';
 import { PORTFOLIO_PREVIEWS } from '../config/portfolio-previews';
 import { caseSlug } from '../lib/case-slug';
+import { inferPortfolioMeta, type PortfolioMode } from '../lib/portfolio-case-meta';
 import CaseInfraSchema from './CaseInfraSchema.astro';
 
 interface Props {
@@ -145,6 +146,7 @@ type ShowcaseCard = {
   result: string;
   stack?: string;
   tags: string[];
+  portfolioModes?: PortfolioMode[];
   score: number;
   priority: number;
   hasMedia: boolean;
@@ -155,16 +157,6 @@ type ShowcaseCard = {
   status?: 'stabilized' | 'delivery';
   challenges?: Array<{ broken: string; fixed: string }>;
 };
-
-function inferAiEnhanced(nameLc: string, titleLc: string, explicit?: boolean): boolean {
-  if (explicit !== undefined) return explicit;
-  const raw = `${nameLc} ${titleLc}`;
-  if (/(magento|windowcleaner|gratisiskolan|verkter|rattan|finaldraft|microline|nancysbeauty)/.test(raw)) {
-    return false;
-  }
-  if (/(крымресурс|krymresurs)/.test(raw)) return true;
-  return false;
-}
 
 function inferStack(nameLc: string, tags: string[], lang: Lang): string {
   const ru = lang === 'ru';
@@ -178,29 +170,33 @@ function inferStack(nameLc: string, tags: string[], lang: Lang): string {
   }
   if (nameLc.includes('кпск') || nameLc.includes('kpsk')) {
     return ru
-      ? 'Laravel, PHP, банковский контур, API, страховые интеграции'
-      : 'Laravel, PHP, banking layer, API, insurance integrations';
+      ? 'PHP (самописный), Apache, MySQL, API, страховая витрина'
+      : 'Custom PHP, Apache, MySQL, API, insurance storefront';
   }
   if (nameLc.includes('гагарин') || nameLc.includes('gagarin')) {
     return ru ? 'Laravel, Statamic, PHP, интеграции' : 'Laravel, Statamic, PHP, integrations';
   }
   if (
     nameLc.includes('музыкальный') ||
-    nameLc.includes('пневматика') ||
     nameLc.includes('кко') ||
     nameLc.includes('muzteatr') ||
-    nameLc.includes('pneumo') ||
     nameLc.includes('kko')
   ) {
-    return ru ? 'Laravel/PHP, CMS, поддержка и доработки' : 'Laravel/PHP, CMS, support and enhancements';
+    return ru ? 'WordPress, PHP, MySQL' : 'WordPress, PHP, MySQL';
+  }
+  if (nameLc.includes('dnforum') || nameLc.includes('xenforo')) {
+    return ru ? 'XenForo, PHP, MySQL' : 'XenForo, PHP, MySQL';
+  }
+  if (nameLc.includes('biznesmashin')) {
+    return ru ? '1С-Битрикс, PHP, MySQL, Apache' : '1C-Bitrix, PHP, MySQL, Apache';
   }
   if (nameLc.includes('колл-центр') || nameLc.includes('call center')) {
     return ru ? 'Laravel, PHP, MySQL, API' : 'Laravel, PHP, MySQL, API';
   }
   if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
     return ru
-      ? 'PHP, Laravel, интеграции, документооборот, API'
-      : 'PHP, Laravel, integrations, document workflows, API';
+      ? 'ERP, Laravel, PHP, MySQL, Redis, React/Vue, интеграции'
+      : 'ERP, Laravel, PHP, MySQL, Redis, React/Vue, integrations';
   }
   if (nameLc.includes('доставка') || nameLc.includes('dostavka')) {
     return 'Laravel, PHP, CDEK API, MySQL';
@@ -247,22 +243,22 @@ function inferChallenges(
     return lang === 'ru'
       ? [
           {
-            broken: 'Правки делались напрямую в проде, рос риск деградации производительности.',
-            fixed: 'Введён управляемый контур релизов: этапные выкладки и проверка перед продом без остановки продаж.',
+            broken: 'Крупный объём новых задач на M1 и необходимость не тормозить продажи перед переходом на M2.',
+            fixed: 'Закрыт контур на M1, затем поэтапная миграция на M2 и запуск новых витрин под продукт.',
           },
           {
-            broken: 'UX-узкие места в каталоге/checkout тормозили коммерческий рост.',
-            fixed: 'Итеративно переработаны ключевые сценарии на основе поведенческой аналитики.',
+            broken: 'Неочевидные узкие места в UI каталога и checkout сдерживали конверсию.',
+            fixed: 'Тепловые карты и итерации UI — прирост продаж порядка 35%.',
           },
         ]
       : [
           {
-            broken: 'Production hot-edits were increasing performance and reliability risk.',
-            fixed: 'A controlled release contour was introduced: phased deploys and pre-prod checks without stopping sales.',
+            broken: 'A large M1 scope had to ship without pausing revenue ahead of M2.',
+            fixed: 'M1 delivery completed, then phased M2 migration and new product storefronts.',
           },
           {
-            broken: 'UX bottlenecks in catalog/checkout were limiting commercial growth.',
-            fixed: 'Critical user flows were iteratively improved using behavior analytics.',
+            broken: 'Catalog/checkout UX friction was capping conversion.',
+            fixed: 'Heatmaps and UI iterations—roughly 35% sales uplift.',
           },
         ];
   }
@@ -362,36 +358,36 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
     if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
       if (lang === 'ru') {
         problem =
-          'У клиента было три приложения для разных организаций с дублями данных, рассинхроном процессов и большим объёмом ручного труда. Легаси-контур мешал согласованию и развитию функционала.';
+          'У клиента было три приложения для разных организаций с дублями данных, рассинхроном процессов и большим объёмом ручного труда. Легаси-контур мешал согласованию и развитию ERP-функционала.';
         action =
-          'Собрал интеграционную прослойку и объединил три приложения в единый рабочий контур, настроил синхронизацию данных и наполнения, параллельно развивая новую платформу техсопровождения и документооборота.';
+          'Собрал интеграционную прослойку и объединил три приложения в единый ERP-контур на Laravel, настроил синхронизацию данных и документооборот, параллельно развивая техсопровождение и внутренние кабинеты.';
         result =
-          'Сократили ручной труд и ускорили согласования, новый функционал внедряется быстрее. Проект находится на финальном этапе миграции в единый защищённый контур без дублей данных.';
+          'Сократили ручной труд и ускорили согласования, новый функционал внедряется быстрее. Проект на финальном этапе миграции в единый защищённый ERP без дублей данных.';
       } else {
         problem =
-          'The client had three organization-specific apps with duplicated data, process drift, and heavy manual work. Legacy architecture was slowing down coordination and feature growth.';
+          'The client had three organization-specific apps with duplicated data, process drift, and heavy manual work. Legacy architecture was slowing ERP coordination and feature growth.';
         action =
-          'Built an integration layer to unify the three apps into one operational contour, synchronized data/content flows, and advanced a new platform for technical operations and document workflows.';
+          'Built an integration layer to unify the three apps into one Laravel ERP contour, synchronized data and document workflows, and advanced technical operations and internal portals.';
         result =
-          'Manual workload and coordination delays were reduced, while feature delivery became faster. The migration is now near completion into a single secure contour without data duplication.';
+          'Manual workload and coordination delays were reduced, while feature delivery became faster. Migration is near completion into a single secure ERP without data duplication.';
       }
     }
 
     if (nameLc.includes('windowcleaner')) {
       if (lang === 'ru') {
         problem =
-          'Проект стабильно развивался, но ключевая задача была в другом: системно усилить продажи и рыночную долю без потери качества операционного контура.';
+          'На Magento 1 встал пакет крупных новых задач: развить витрину и коммерцию без остановки продаж, с выходом на этап перехода к M2.';
         action =
-          'В связке с владельцем (Крис) прошли методичный путь развития: сопровождение Magento 1.x, подготовка и миграция на 2.x, запуск 5 нишевых площадок, а также плотная работа с тепловыми картами и UX-деталями checkout/каталога для упрощения пользовательского пути.';
+          'Закрыл задачи на M1, затем подготовил и провёл поэтапный переход на Magento 2; запустил новые площадки под линейки продукции. Тепловые карты и UX каталога/checkout — в связке с владельцем (Крис).';
         result =
-          'По совокупности релизов получили прирост продаж примерно на 40% относительно прошлых периодов. Контур остался устойчивым даже в сложные периоды безопасности и высокой нагрузки.';
+          'Новые площадки в проде, M2 без «большого взрыва»; продажи выросли примерно на 35% за счёт UI и поведенческой аналитики. Контур остался устойчивым под нагрузкой.';
       } else {
         problem =
-          'The store was already operating steadily, but the real goal was to increase sales and market share in a systematic way without losing operational stability.';
+          'Magento 1 had a large batch of new scope: grow the storefront and revenue without stopping sales, ahead of an M2 transition phase.';
         action =
-          'Working closely with the owner (Chris), we evolved Magento 1.x, migrated to 2.x, launched 5 niche storefronts, and used heatmap-driven UX improvements to simplify customer flow across catalog and checkout.';
+          'Delivered the M1 work, then led a phased Magento 2 migration and launched new storefronts for product lines. Heatmaps and catalog/checkout UX—with the owner (Chris).';
         result =
-          'Across release cycles, sales grew by roughly 40% versus previous periods, while the platform remained stable through high-load and security-sensitive phases.';
+          'New sites live, M2 without big-bang; sales up roughly 35% from UI and behavior analytics. The contour stayed stable under load.';
       }
     }
 
@@ -523,10 +519,8 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
 
     if (
       nameLc.includes('музыкальный') ||
-      nameLc.includes('пневматика') ||
       nameLc.includes('кко') ||
       nameLc.includes('muzteatr') ||
-      nameLc.includes('pneumo') ||
       nameLc.includes('kko')
     ) {
       if (lang === 'ru') {
@@ -578,58 +572,7 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       }
     }
 
-    const tags = (() => {
-      const manual = new Set<string>(['all']);
-      if (nameLc.includes('доставка-зпр') || nameLc.includes('dostavka-zpr')) {
-        manual.add('ecom');
-        manual.add('process');
-      } else if (nameLc.includes('крымресурс') || nameLc.includes('krymresurs')) {
-        manual.add('enterprise');
-        manual.add('migrations');
-        manual.add('process');
-      } else if (nameLc.includes('windowcleaner')) {
-        manual.add('ecom');
-        manual.add('migrations');
-        manual.add('process');
-      } else if (nameLc.includes('gratisiskolan')) {
-        manual.add('ecom');
-        manual.add('migrations');
-        manual.add('process');
-      } else if (nameLc.includes('sechat')) {
-        manual.add('enterprise');
-        manual.add('process');
-      } else if (nameLc.includes('mozgovnet')) {
-        manual.add('enterprise');
-        manual.add('process');
-      } else if (nameLc.includes('biznesmashin')) {
-        manual.add('ecom');
-        manual.add('process');
-      } else if (
-        nameLc.includes('102 пэс') ||
-        nameLc.includes('102 pes') ||
-        nameLc.includes('кпск') ||
-        nameLc.includes('kpsk') ||
-        nameLc.includes('гагарин') ||
-        nameLc.includes('gagarin') ||
-        nameLc.includes('колл-центр') ||
-        nameLc.includes('call center')
-      ) {
-        manual.add('enterprise');
-        manual.add('process');
-      } else if (
-        nameLc.includes('музыкальный') ||
-        nameLc.includes('пневматика') ||
-        nameLc.includes('кко')
-      ) {
-        manual.add('enterprise');
-        manual.add('process');
-      } else {
-        // Conservative fallback: do not over-classify unknown projects
-        if (/(мигра|migration|legacy|upgrade|m1|m2|переход)/.test(text)) manual.add('migrations');
-        if (/(процесс|контур|integration|flow|queue|cache|архит)/.test(text)) manual.add('process');
-      }
-      return Array.from(manual);
-    })();
+    const portfolioMeta = inferPortfolioMeta(project.name, project.detail, group.context ?? '');
 
     const score =
       (project.log ? 3 : 0) +
@@ -659,13 +602,15 @@ const cases: ShowcaseCard[] = projectGroups.flatMap((group) =>
       problem,
       action,
       result,
-      stack: inferStack(nameLc, tags, lang),
-      tags,
+      stack: inferStack(nameLc, portfolioMeta.tags, lang),
+      tags: portfolioMeta.tags,
+      portfolioModes: portfolioMeta.modes,
       score,
       priority,
       hasMedia,
       mediaSlides,
-      aiEnhanced: inferAiEnhanced(nameLc, project.name),
+      aiEnhanced: portfolioMeta.aiEnhanced,
+      rescue: portfolioMeta.rescue,
     };
   })
 );
@@ -713,6 +658,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Интерфейс и бизнес-потоки оставались устойчивыми при развитии функционала: платформа готова к дальнейшему росту без деградации UX.',
           tags: ['all', 'ecom', 'process', 'enterprise'],
+          portfolioModes: ['legacy', 'profit'],
           score: 1000,
           priority: 122,
           hasMedia: false,
@@ -729,6 +675,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Проект сохранял рабочую коммерческую динамику, а изменения выкатывались предсказуемо и без критичных инцидентов в продакшене.',
           tags: ['all', 'ecom', 'process'],
+          portfolioModes: ['legacy', 'profit'],
           score: 996,
           priority: 114,
           hasMedia: false,
@@ -744,28 +691,32 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Платформа переведена в современный контур без остановки коммерческого цикла: бизнес продолжил продажи, а команда получила поддерживаемую архитектуру.',
           tags: ['all', 'migrations', 'enterprise', 'process'],
+          portfolioModes: ['legacy'],
           score: 999,
           priority: 120,
           hasMedia: false,
           mediaSlides: [],
           aiEnhanced: false,
+          rescue: true,
         },
         {
-          title: 'Техдолг в профит: windowcleaner.com',
-          tag: 'E-commerce · рост',
+          title: 'windowcleaner.com: M1 → M2 и рост продаж',
+          tag: 'E-commerce · Magento',
           href: 'https://windowcleaner.com/',
           problem:
-            'Хаотичные правки в продакшене снижали производительность и делали развитие непредсказуемым.',
+            'На Magento 1 — пакет крупных новых задач; дальше этап перехода на M2 и новые площадки под продукцию без остановки продаж.',
           action:
-            'Ввёл дисциплину релизов: этапные выкладки, проверки перед продом и улучшения UX на основе поведенческой аналитики — без Docker/CI/CD в том контуре.',
+            'Закрыл объём на M1, провёл поэтапный переход на Magento 2, запустил новые витрины. Тепловые карты и UX каталога/checkout.',
           result:
-            'Платформа масштабируется и стабильно живёт более 5 лет; суммарный эффект релизов дал измеримый рост коммерческой эффективности.',
-          tags: ['all', 'ecom', 'process', 'enterprise'],
+            'Новые площадки в проде, M2 без «большого взрыва»; ~35% к продажам за счёт UI и поведенческой аналитики.',
+          tags: ['all', 'ecom', 'process', 'enterprise', 'migrations'],
+          portfolioModes: ['legacy', 'profit'],
           score: 998,
           priority: 118,
           hasMedia: false,
           mediaSlides: [],
           aiEnhanced: false,
+          rescue: false,
         },
         {
           title: 'Интерфейсная точность: Pixel Perfect + high-load',
@@ -777,6 +728,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Интерфейс точно соответствует макету, система остаётся быстрой и пригодной к развитию. Детали проекта — в формате NDA.',
           tags: ['all', 'process', 'enterprise'],
+          portfolioModes: ['legacy'],
           score: 997,
           priority: 116,
           hasMedia: false,
@@ -797,6 +749,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Interface and business flows stayed stable while functionality evolved, keeping the platform growth-ready without UX regression.',
           tags: ['all', 'ecom', 'process', 'enterprise'],
+          portfolioModes: ['legacy', 'profit'],
           score: 1000,
           priority: 122,
           hasMedia: false,
@@ -813,6 +766,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'Commercial flow stayed stable, and updates were released predictably without critical production incidents.',
           tags: ['all', 'ecom', 'process'],
+          portfolioModes: ['legacy', 'profit'],
           score: 996,
           priority: 114,
           hasMedia: false,
@@ -828,28 +782,32 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'The platform moved to a modern contour without interrupting commercial operations, while the team gained a maintainable architecture.',
           tags: ['all', 'migrations', 'enterprise', 'process'],
+          portfolioModes: ['legacy'],
           score: 999,
           priority: 120,
           hasMedia: false,
           mediaSlides: [],
           aiEnhanced: false,
+          rescue: true,
         },
         {
-          title: 'Tech debt to profit: windowcleaner.com',
-          tag: 'Profit Architect',
+          title: 'windowcleaner.com: M1 → M2 and sales growth',
+          tag: 'E-commerce · Magento',
           href: 'https://windowcleaner.com/',
           problem:
-            'Chaotic production edits were degrading performance and making delivery unpredictable.',
+            'Magento 1 had a large batch of new scope, then an M2 transition and new storefronts for product lines—without stopping sales.',
           action:
-            'Introduced release discipline: phased deploys, pre-production checks, and behavior-driven UX—without Docker/CI/CD in that contour.',
+            'Delivered M1 work, phased Magento 2 migration, launched new sites. Heatmaps and catalog/checkout UX.',
           result:
-            'The platform has scaled and remained stable for 5+ years, with release cycles producing measurable commercial impact.',
-          tags: ['all', 'ecom', 'process', 'enterprise'],
+            'New storefronts live, M2 without big-bang; ~35% sales uplift from UI and behavior analytics.',
+          tags: ['all', 'ecom', 'process', 'enterprise', 'migrations'],
+          portfolioModes: ['legacy', 'profit'],
           score: 998,
           priority: 118,
           hasMedia: false,
           mediaSlides: [],
           aiEnhanced: false,
+          rescue: false,
         },
         {
           title: 'Interface precision: Pixel Perfect + high-load',
@@ -861,6 +819,7 @@ const featuredLayer: ShowcaseCard[] =
           result:
             'UI matches Figma exactly, delivery remains fast, and architecture stays growth-ready. Details are presented NDA-safe.',
           tags: ['all', 'process', 'enterprise'],
+          portfolioModes: ['legacy'],
           score: 997,
           priority: 116,
           hasMedia: false,
@@ -872,13 +831,16 @@ const featuredLayer: ShowcaseCard[] =
 
 const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
   const titleLc = card.title.toLowerCase();
-  const rescue = card.rescue ?? ((card.tags.includes('migrations') || card.tags.includes('enterprise')));
-  const aiEnhanced = inferAiEnhanced(titleLc, card.title, card.aiEnhanced);
+  const inferred = inferPortfolioMeta(card.title, `${card.problem} ${card.action}`, '');
+  const tags = card.tags.length > 1 ? card.tags : inferred.tags;
+  const portfolioModes = card.portfolioModes ?? inferred.modes;
+  const rescue = card.rescue ?? inferred.rescue;
+  const aiEnhanced = card.aiEnhanced ?? inferred.aiEnhanced;
   const status = card.status ?? (rescue ? 'stabilized' : 'delivery');
   const challenges = card.challenges ?? inferChallenges(lang, titleLc, card.problem, card.action);
   const slug = card.slug ?? caseSlug(card.title);
-  const stack = card.stack ?? inferStack(titleLc, card.tags, lang);
-  return { ...card, slug, stack, rescue, aiEnhanced, status, challenges };
+  const stack = card.stack ?? inferStack(titleLc, tags, lang);
+  return { ...card, slug, stack, tags, portfolioModes, rescue, aiEnhanced, status, challenges };
 });
 ---
 
@@ -966,6 +928,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
           class="case-card case-card--incident case-card--postmortem retro-panel-soft lift-2026"
           data-case-card
           data-case-tags={card.tags.join(',')}
+          data-portfolio-modes={(card.portfolioModes ?? ['legacy', 'profit']).join(',')}
           style="order:0"
         >
           <div class="case-card__veil" aria-hidden="true"></div>
@@ -1135,11 +1098,23 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
     var cards = Array.from(document.querySelectorAll('[data-case-card]'));
     if (!btns.length || !cards.length) return;
 
+    var portfolioRoot = document.querySelector('[data-portfolio-root]');
+    var activeFocusFilter: 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process' = 'all';
+
+    function currentPortfolioMode(): 'legacy' | 'profit' | 'ai' {
+      var m = portfolioRoot instanceof HTMLElement ? portfolioRoot.getAttribute('data-portfolio-mode') : 'legacy';
+      if (m === 'profit' || m === 'ai') return m;
+      return 'legacy';
+    }
+
     function applyFilter(filter: 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process') {
+      var mode = currentPortfolioMode();
       cards.forEach(function (card) {
         var tags = (card.getAttribute('data-case-tags') || '').split(',');
-        var show = filter === 'all' || tags.indexOf(filter) >= 0;
-        card.classList.toggle('case-card--hidden', !show);
+        var tagOk = filter === 'all' || tags.indexOf(filter) >= 0;
+        var modes = (card.getAttribute('data-portfolio-modes') || '').split(',').filter(Boolean);
+        var modeOk = modes.length === 0 || modes.indexOf(mode) >= 0;
+        card.classList.toggle('case-card--hidden', !(tagOk && modeOk));
       });
       btns.forEach(function (btn) {
         var on = btn.getAttribute('data-case-filter-btn') === filter;
@@ -1157,7 +1132,13 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
     btns.forEach(function (btn) {
       btn.addEventListener('click', function () {
-        applyFilter((btn.getAttribute('data-case-filter-btn') || 'all') as 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process');
+        activeFocusFilter = (btn.getAttribute('data-case-filter-btn') || 'all') as
+          | 'all'
+          | 'ecom'
+          | 'enterprise'
+          | 'migrations'
+          | 'process';
+        applyFilter(activeFocusFilter);
       });
     });
     cards.forEach(function (card) {
@@ -1167,7 +1148,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
 
     var modeBtns = Array.from(document.querySelectorAll('[data-layer-mode-btn]'));
     var panels = Array.from(document.querySelectorAll('[data-layer-mode-panel]'));
-    var portfolioRoot = document.querySelector('[data-portfolio-root]');
+
     function applyMode(mode: 'legacy' | 'profit' | 'ai') {
       if (portfolioRoot instanceof HTMLElement) {
         portfolioRoot.setAttribute('data-portfolio-mode', mode);
@@ -1238,11 +1219,7 @@ const curatedShowcase = [...featuredLayer, ...showcase].map((card) => {
         }
       });
 
-      var preferredFilter: 'all' | 'ecom' | 'enterprise' | 'migrations' | 'process' = 'all';
-      if (mode === 'legacy') preferredFilter = 'migrations';
-      if (mode === 'profit') preferredFilter = 'ecom';
-      if (mode === 'ai') preferredFilter = 'process';
-      applyFilter(preferredFilter);
+      applyFilter(activeFocusFilter);
     }
     modeBtns.forEach(function (btn) {
       btn.addEventListener('click', function () {
